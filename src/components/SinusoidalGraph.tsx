@@ -77,7 +77,7 @@ const SinusoidalGraph: React.FC = () => {
             fill="none"
             stroke="#e0e0e0"
             strokeWidth="3"
-            className={`transition-all duration-1000`}
+            className="transition-all duration-1000"
             style={{
               strokeDasharray: 500,
               strokeDashoffset: pathOffset,
@@ -97,7 +97,7 @@ const SinusoidalGraph: React.FC = () => {
             fill="none"
             stroke="url(#gradientLine)"
             strokeWidth="3"
-            className={`transition-all duration-1000`}
+            className="transition-all duration-1000"
             style={{
               strokeDasharray: 500,
               strokeDashoffset: pathOffset,
@@ -116,55 +116,57 @@ const SinusoidalGraph: React.FC = () => {
         </svg>
         
         {/* Points on the curve */}
-        {pointData.map((point, index) => (
-          <React.Fragment key={index}>
-            {/* Point */}
-            <div 
-              className="graph-point"
-              style={{ 
-                left: point.x, 
-                top: point.y, 
-                borderColor: point.color,
-                transform: `translate(-50%, -50%) scale(${index <= activePoint ? 1.5 : 0.8})`,
-                boxShadow: index <= activePoint ? `0 0 10px ${point.color}` : 'none',
-                opacity: isVisible ? 1 : 0,
-                transitionDelay: `${index * 0.3}s`
-              }}
-            />
-            
-            {/* Label */}
-            {point.label && (
+        {pointData.map((point, index) => {
+          return (
+            <React.Fragment key={index}>
+              {/* Point */}
               <div 
-                className={`absolute px-3 py-1 rounded text-white text-sm font-medium`}
+                className="graph-point"
                 style={{ 
                   left: point.x, 
                   top: point.y, 
-                  transform: `translate(-50%, ${point.label === 'Oggi' ? '100%' : '-150%'})`,
-                  backgroundColor: point.color,
-                  opacity: index <= activePoint ? 1 : 0,
-                  transition: 'opacity 0.5s',
-                  transitionDelay: `${index * 0.3 + 0.2}s`
+                  borderColor: point.color,
+                  transform: `translate(-50%, -50%) scale(${index <= activePoint ? 1.5 : 0.8})`,
+                  boxShadow: index <= activePoint ? `0 0 10px ${point.color}` : 'none',
+                  opacity: isVisible ? 1 : 0,
+                  transitionDelay: `${index * 0.3}s`
+                }}
+              />
+              
+              {/* Label */}
+              {point.label && (
+                <div 
+                  className={`absolute px-3 py-1 rounded text-white text-sm font-medium`}
+                  style={{ 
+                    left: point.x, 
+                    top: point.y, 
+                    transform: `translate(-50%, ${point.label === 'Oggi' ? '100%' : '-150%'})`,
+                    backgroundColor: point.color,
+                    opacity: index <= activePoint ? 1 : 0,
+                    transition: 'opacity 0.5s',
+                    transitionDelay: `${index * 0.3 + 0.2}s`
+                  }}
+                >
+                  {point.label}
+                </div>
+              )}
+              
+              {/* Week label */}
+              <div
+                className="absolute text-xs text-gray-500"
+                style={{
+                  left: point.x,
+                  bottom: '-25px',
+                  transform: 'translateX(-50%)',
+                  opacity: isVisible ? 1 : 0,
+                  transitionDelay: `${index * 0.3}s`
                 }}
               >
-                {point.label}
+                {point.week}
               </div>
-            )}
-            
-            {/* Week label */}
-            <div
-              className="absolute text-xs text-gray-500"
-              style={{
-                left: point.x,
-                bottom: '-25px',
-                transform: 'translateX(-50%)',
-                opacity: isVisible ? 1 : 0,
-                transitionDelay: `${index * 0.3}s`
-              }}
-            >
-              {point.week}
-            </div>
-          </React.Fragment>
-        ))}
+            </React.Fragment>
+          );
+        })}
       </div>
       
       <p className="text-xs text-center text-gray-400 mt-2 mb-10">

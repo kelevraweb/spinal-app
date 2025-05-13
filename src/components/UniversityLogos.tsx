@@ -29,10 +29,10 @@ const UniversityLogos: React.FC = () => {
   return (
     <div className="my-10 py-6 max-w-2xl mx-auto animate-fade-in">
       <h2 className="text-2xl font-bold text-center mb-3">
-        Liven was developed using scientific practices
+        Metodo ispirato dalle ricerche delle università più autorevoli al mondo
       </h2>
       <p className="text-center mb-10 text-gray-600">
-        Your journey is based on decades of research
+        Il tuo percorso si basa su decenni di ricerca scientifica
       </p>
 
       <div className="flex flex-col items-center space-y-5">
@@ -40,8 +40,12 @@ const UniversityLogos: React.FC = () => {
           <div
             key={idx}
             className={`university-logo w-64 h-16 flex items-center justify-center transition-all duration-500 ${
-              idx === activeIndex ? 'scale-110 shadow-lg' : 'opacity-70'
+              idx === activeIndex ? 'scale-110 shadow-lg animate-pulse-glow' : 'opacity-70'
             }`}
+            style={{
+              boxShadow: idx === activeIndex ? '0 0 15px rgba(66, 153, 225, 0.6)' : 'none',
+              animation: idx === activeIndex ? 'pulse 2s infinite' : 'none'
+            }}
           >
             <div className="text-center font-serif">
               {uni.logo.split('\n').map((line, i) => (

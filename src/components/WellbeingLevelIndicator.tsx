@@ -14,7 +14,7 @@ interface WellbeingLevelProps {
 const levelDescriptions = {
   Low: "Questo indica un benessere compromesso, con sintomi frequenti come ansia, stress elevato, disturbi del sonno e scarsa energia.",
   Normal: "Questo indica un benessere generale equilibrato, con occasionali momenti di stress ma buona capacità di recupero.",
-  Medium: "Questo significa che potresti occasionalmente sentirti in ansia, sperimentare un po' di pressione, notare una leggera diminuzione di energia e avere disturbi minori del sonno.",
+  Medium: "Potresti sperimentare: lievi preoccupazioni, calo d'energia, difficoltà nel sonno.",
   High: "Questo indica livelli preoccupanti di stress, ansia frequente, energia molto bassa e significativi problemi di sonno."
 };
 
@@ -59,9 +59,9 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
       
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Livello di effetti negativi</h3>
-          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
-            {level === 'Medium' ? 'Medio' : level}
+          <h3 className="text-lg font-semibold">Il tuo stato attuale è</h3>
+          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">
+            MEDIO
           </span>
         </div>
         
@@ -93,7 +93,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
               }}
             >
               <span className="slider-label" style={{ backgroundColor: levelColors[level] }}>
-                {level === 'Medium' ? 'Medio' : level}
+                MEDIO
               </span>
             </div>
           </div>

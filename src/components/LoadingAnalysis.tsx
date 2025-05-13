@@ -110,7 +110,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       intervals.forEach(interval => clearInterval(interval));
       clearInterval(completionCheck);
     };
-  }, [bars]);
+  }, [bars, onComplete]);
   
   const handleAnswer = (index: number, answer: boolean) => {
     setBars(prevBars => {

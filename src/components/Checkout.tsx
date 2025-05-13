@@ -1,6 +1,5 @@
 
-import React, { useState } from 'react';
-import { testimonials, userReviews } from '../data/testimonials';
+import React, { useState, useEffect } from 'react';
 import { Rating } from './Rating';
 
 interface CheckoutProps {
@@ -9,6 +8,7 @@ interface CheckoutProps {
 
 const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('monthly');
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
   
   const plans = {
     trial: {
@@ -57,17 +57,42 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
     }
   };
 
+  const testimonials = [
+    {
+      name: "Sara T.",
+      text: "Dopo solo 3 settimane di percorso, mi sento molto più consapevole dei miei schemi relazionali.",
+      rating: 5
+    },
+    {
+      name: "Marco L.",
+      text: "Ho imparato a mettere confini sani senza sentirmi in colpa. La mia relazione è migliorata tantissimo.",
+      rating: 5
+    },
+    {
+      name: "Giulia M.",
+      text: "Finalmente ho smesso di cercare l'approvazione degli altri e ho iniziato a dare valore a me stessa.",
+      rating: 4
+    }
+  ];
+
+  useEffect(() => {
+    const testimonialInterval = setInterval(() => {
+      setActiveTestimonial(prev => (prev + 1) % testimonials.length);
+    }, 5000);
+    
+    return () => clearInterval(testimonialInterval);
+  }, [testimonials.length]);
+
   const benefits = [
-    'Piano personalizzato in base al tuo profilo emotivo',
-    'Accesso illimitato a tutti i contenuti premium',
-    'Esercizi guidati per ogni situazione',
-    'Analisi settimanale dei progressi',
-    'Supporto via chat con i nostri esperti',
-    'Garanzia soddisfatti o rimborsati'
+    'Più energia quotidiana',
+    'Meno ansia e preoccupazioni',
+    'Focus mentale chiaro',
+    'Relazioni più sane e costruttive',
+    'Migliore autostima',
+    'Resilienza emotiva'
   ];
 
   const handlePurchase = () => {
-    // Here we would integrate with Stripe or another payment processor
     onPurchase();
   };
 
@@ -97,7 +122,49 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
         </div>
       </div>
       
+      {/* Benefits Grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-5 my-8">
+        {benefits.map((benefit, index) => (
+          <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="flex-shrink-0 h-10 w-10 mr-3 bg-brand-primary bg-opacity-10 rounded-full flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-primary">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+            </div>
+            <span className="font-medium">{benefit}</span>
+          </div>
+        ))}
+      </div>
+      
+      {/* Testimonial Carousel */}
+      <div className="my-12 overflow-hidden relative">
+        <h3 className="text-xl font-bold text-center mb-6">Le persone amano i nostri piani</h3>
+        <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${activeTestimonial * 100}%)` }}>
+          {testimonials.map((testimonial, index) => (
+            <div key={index} className="w-full flex-shrink-0 px-4">
+              <div className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
+                <Rating rating={testimonial.rating} />
+                <p className="my-4 italic text-gray-700">"{testimonial.text}"</p>
+                <p className="text-right font-semibold">— {testimonial.name}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="flex justify-center mt-4 space-x-2">
+          {testimonials.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setActiveTestimonial(idx)}
+              className={`w-2 h-2 rounded-full ${activeTestimonial === idx ? 'bg-brand-primary' : 'bg-gray-300'}`}
+              aria-label={`Vai alla testimonianza ${idx + 1}`}
+            />
+          ))}
+        </div>
+      </div>
+      
       {/* Plan Selection */}
+      <h3 className="text-xl font-bold text-center mb-6">Scegli il tuo piano</h3>
       <div className="flex flex-col md:flex-row gap-4 my-8">
         {/* Trial Plan */}
         <div 
@@ -261,54 +328,9 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
         <div className="w-8 h-5 bg-gray-200 rounded"></div>
       </div>
       
-      {/* Trust Indicators */}
+      {/* Program outline */}
       <div className="mt-16">
-        <h3 className="text-xl font-bold text-center mb-6">I nostri obiettivi</h3>
-        
-        <div className="space-y-4 max-w-xl mx-auto">
-          {[
-            "I nostri contenuti sono progettati per aiutarti a diventare più sano",
-            "Il nostro focus è aiutarti a creare abitudini migliori",
-            "Tutto ciò che produciamo è scientificamente provato",
-            "Ti aiutiamo a comprendere meglio le tue emozioni e azioni",
-            "Il nostro obiettivo è aumentare la tua fiducia in 4-6 settimane",
-          ].map((goal, i) => (
-            <div key={i} className="flex items-start">
-              <div className="flex-shrink-0 h-6 w-6 mr-3 mt-0.5">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
-                  <circle cx="12" cy="12" r="10"></circle>
-                  <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
-              </div>
-              <p>{goal}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-      
-      {/* Statistics */}
-      <div className="mt-16">
-        <h3 className="text-xl font-bold text-center mb-2">Persone come te hanno ottenuto grandi risultati con il nostro piano</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div className="text-center">
-            <div className="text-3xl font-bold text-brand-primary">83%</div>
-            <p className="text-sm mt-1">degli utenti sono riusciti a fermare convinzioni dannose e svilupparne di più positive</p>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-brand-primary">77%</div>
-            <p className="text-sm mt-1">degli utenti hanno riportato un miglioramento della qualità del sonno seguendo il nostro piano</p>
-          </div>
-          <div className="text-center">
-            <div className="text-3xl font-bold text-brand-primary">90%</div>
-            <p className="text-sm mt-1">degli utenti si sentono più se stessi in meno di 2 mesi</p>
-          </div>
-        </div>
-      </div>
-      
-      {/* Programma */}
-      <div className="mt-16">
-        <h3 className="text-xl font-bold text-center mb-8">Come il programma ti aiuta a guarire...</h3>
+        <h3 className="text-xl font-bold text-center mb-8">Come il programma ti aiuta a migliorare...</h3>
         
         <div className="space-y-6 max-w-2xl mx-auto">
           {[
@@ -344,43 +366,23 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
         </div>
       </div>
       
-      {/* User Reviews */}
+      {/* Statistics */}
       <div className="mt-16">
-        <h3 className="text-xl font-bold text-center mb-6">Le persone amano il nostro piano</h3>
+        <h3 className="text-xl font-bold text-center mb-2">Persone come te hanno ottenuto grandi risultati con il nostro piano</h3>
         
-        <div className="space-y-8 max-w-2xl mx-auto">
-          {[
-            {
-              id: 1,
-              name: "Marco L.",
-              text: "Il piano è stato una svolta nella mia vita. Mi ha aiutato a riconoscere schemi tossici nelle mie relazioni che non avevo mai notato prima. Ora mi sento più sicuro nelle mie interazioni.",
-              stars: 5,
-              date: "2 settimane fa"
-            },
-            {
-              id: 2,
-              name: "Giulia R.",
-              text: "Ero scettica all'inizio, ma dopo poche settimane i benefici erano evidenti. Ho imparato a gestire meglio le mie emozioni e a comunicare in modo più efficace con il mio partner.",
-              stars: 5,
-              date: "1 mese fa"
-            },
-            {
-              id: 3,
-              name: "Alessandro M.",
-              text: "Questo programma mi ha dato gli strumenti per superare l'ansia sociale che mi impediva di costruire relazioni autentiche. È davvero cambiato tutto per me.",
-              stars: 4,
-              date: "3 settimane fa"
-            }
-          ].map((review) => (
-            <div key={review.id} className="bg-white border border-gray-100 rounded-lg p-6 shadow-sm">
-              <div className="flex items-center mb-4">
-                <Rating rating={review.stars} />
-                <span className="ml-auto text-sm text-gray-500">{review.date}</span>
-              </div>
-              <h4 className="font-medium">{review.name}</h4>
-              <p className="text-gray-600 mt-2">{review.text}</p>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-primary">83%</div>
+            <p className="text-sm mt-1">degli utenti sono riusciti a fermare convinzioni dannose e svilupparne di più positive</p>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-primary">77%</div>
+            <p className="text-sm mt-1">degli utenti hanno riportato un miglioramento della qualità del sonno seguendo il nostro piano</p>
+          </div>
+          <div className="text-center">
+            <div className="text-3xl font-bold text-brand-primary">90%</div>
+            <p className="text-sm mt-1">degli utenti si sentono più se stessi in meno di 2 mesi</p>
+          </div>
         </div>
       </div>
       
@@ -398,9 +400,9 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
       
       {/* Money Back Guarantee */}
       <div className="mt-16 border-2 border-green-100 rounded-xl p-6 max-w-2xl mx-auto">
-        <div className="flex items-start">
-          <div className="mr-4">
-            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center">
+        <div className="flex flex-col md:flex-row items-start md:items-center">
+          <div className="mr-4 flex-shrink-0 mx-auto md:mx-0">
+            <div className="w-16 h-16 bg-green-50 rounded-full flex items-center justify-center mb-4 md:mb-0">
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="8 12 12 16 16 12"></polyline>
@@ -409,17 +411,10 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
             </div>
           </div>
           <div>
-            <h3 className="text-lg font-bold mb-2">Garanzia di rimborso di 30 giorni</h3>
+            <h3 className="text-lg font-bold mb-2 text-center md:text-left">Garanzia di rimborso di 30 giorni</h3>
             <p className="text-gray-600">
               Crediamo così tanto nel nostro programma che se non noti miglioramenti nei primi 30 giorni, ti rimborseremo completamente. Senza domande. Il tuo percorso verso una migliore salute emotiva dovrebbe essere senza rischi.
             </p>
-            <button className="mt-4 text-brand-primary font-medium flex items-center">
-              SCOPRI DI PIÙ
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="ml-1">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
           </div>
         </div>
       </div>

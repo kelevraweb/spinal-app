@@ -34,11 +34,11 @@ const TrustMapAnimation: React.FC = () => {
 
   return (
     <div className="w-full max-w-2xl mx-auto my-8 animate-fade-in pt-16">
-      <h2 className="text-2xl font-bold text-center mb-6">
+      <h2 className="text-2xl font-bold text-center mb-3">
         Unisciti a oltre <span className="text-brand-primary">1.000.000</span> di persone
       </h2>
       <p className="text-center mb-8 text-gray-600">
-        Diventa parte di una comunità mondiale in crescita e raggiungi i tuoi obiettivi con noi!
+        Persone da tutto il mondo stanno già usando questo metodo per trasformare la loro vita emotiva
       </p>
       
       <div className="map-animation-container">

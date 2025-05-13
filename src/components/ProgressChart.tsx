@@ -40,28 +40,29 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
       
       <h3 className="text-2xl font-bold text-center mb-8">Giugno 2025</h3>
       
-      <div className="progress-chart">
-        {chartData.map((data, index) => (
-          <div
-            key={index}
-            className="chart-bar"
-            style={{
-              backgroundColor: data.color,
-              height: animated ? `${data.value}%` : '10%',
-              opacity: animated ? 1 : 0.5,
-              transition: `height 1s ease-out ${index * 0.2}s, opacity 0.5s ease-out ${index * 0.2}s`
-            }}
-          >
-            {data.isGoal && animated && (
-              <div className="chart-goal animate-bounce-slow">Obiettivo</div>
-            )}
-          </div>
-        ))}
-      </div>
-      
-      <div className="flex justify-between px-4 text-sm text-gray-500">
-        <div>Aprile</div>
-        <div>Giugno</div>
+      <div className="flex justify-center h-72 mb-10">
+        <div className="flex items-end justify-between w-full max-w-md">
+          {chartData.map((data, index) => (
+            <div key={index} className="relative flex flex-col items-center">
+              <div 
+                className="chart-bar w-20 rounded-t-md"
+                style={{
+                  backgroundColor: data.color,
+                  height: animated ? `${data.value}%` : '10%',
+                  opacity: animated ? 1 : 0.5,
+                  transition: `height 1s ease-out ${index * 0.2}s, opacity 0.5s ease-out ${index * 0.2}s`
+                }}
+              >
+                {data.isGoal && animated && (
+                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-bounce-slow">
+                    Obiettivo
+                  </div>
+                )}
+              </div>
+              <div className="mt-2 text-sm text-gray-600">{data.month}</div>
+            </div>
+          ))}
+        </div>
       </div>
       
       <p className="text-xs text-center text-gray-400 mt-2">
