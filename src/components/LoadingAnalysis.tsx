@@ -24,14 +24,14 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       answered: false
     },
     { 
-      name: 'Autostima', 
+      name: 'Analisi autostima', 
       progress: 0, 
       color: 'bg-green-500',
       question: 'Ti capita spesso di procrastinare?',
       answered: false
     },
     { 
-      name: 'Benessere emotivo', 
+      name: 'Analisi benessere emotivo', 
       progress: 0, 
       color: 'bg-purple-500',
       question: 'Ti senti sopraffatto/a dalle emozioni?',
@@ -39,8 +39,9 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     }
   ]);
   
-  const [activeQuestionIndex, setActiveQuestionIndex] = useState<number | null>(null);
+  const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const [animationPaused, setAnimationPaused] = useState(false);
 
   const testimonials = [
     {
@@ -71,46 +72,61 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   }, []);
 
   useEffect(() => {
-    // Simulate progress bars advancement
-    const intervals = bars.map((bar, index) => {
-      return setInterval(() => {
+    let activeIntervals: NodeJS.Timeout[] = [];
+    
+    // Process bars sequentially
+    const processBar = (index: number) => {
+      if (index >= bars.length) {
+        // All bars are complete
+        setTimeout(onComplete, 1000);
+        return;
+      }
+      
+      const interval = setInterval(() => {
         setBars(prevBars => {
-          // Stop at 50% if not answered yet
-          if (prevBars[index].progress >= 50 && !prevBars[index].answered) {
-            clearInterval(intervals[index]);
-            setActiveQuestionIndex(index);
-            return prevBars;
+          const newBars = [...prevBars];
+          
+          // If we've reached 50% and haven't answered the question yet
+          if (newBars[index].progress >= 50 && !newBars[index].answered && !animationPaused) {
+            setAnimationPaused(true);
+            setActiveBarIndex(index);
+            clearInterval(interval);
+            
+            return newBars;
           }
           
-          const newBars = [...prevBars];
-          if (newBars[index].progress < 100) {
-            newBars[index] = {
-              ...newBars[index],
-              progress: Math.min(newBars[index].progress + 1, 100)
-            };
-          } else {
-            clearInterval(intervals[index]);
+          // Continue bar progress if not paused
+          if (!animationPaused) {
+            if (newBars[index].progress < 100) {
+              newBars[index] = {
+                ...newBars[index],
+                progress: Math.min(newBars[index].progress + 1, 100)
+              };
+            } else {
+              // Bar is complete, move to next bar
+              clearInterval(interval);
+              if (index < bars.length - 1) {
+                processBar(index + 1);
+              } else {
+                setTimeout(onComplete, 1000);
+              }
+            }
           }
           
           return newBars;
         });
       }, 50);
-    });
+      
+      activeIntervals.push(interval);
+    };
     
-    // Check if all bars are completed
-    const completionCheck = setInterval(() => {
-      const allComplete = bars.every(bar => bar.progress >= 100);
-      if (allComplete) {
-        clearInterval(completionCheck);
-        setTimeout(onComplete, 1000);
-      }
-    }, 200);
+    // Start with the first bar
+    processBar(0);
     
     return () => {
-      intervals.forEach(interval => clearInterval(interval));
-      clearInterval(completionCheck);
+      activeIntervals.forEach(interval => clearInterval(interval));
     };
-  }, [bars, onComplete]);
+  }, [bars.length, animationPaused, onComplete]);
   
   const handleAnswer = (index: number, answer: boolean) => {
     setBars(prevBars => {
@@ -122,7 +138,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       return newBars;
     });
     
-    setActiveQuestionIndex(null);
+    setActiveBarIndex(null);
+    setAnimationPaused(false);
   };
 
   return (
@@ -148,7 +165,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
             />
             
             {/* Question popup when bar reaches 50% */}
-            {activeQuestionIndex === index && (
+            {activeBarIndex === index && (
               <div className="absolute right-0 top-10 bg-white rounded-lg shadow-lg p-4 border border-gray-200 w-full sm:w-80 z-10 animate-fade-in">
                 <h4 className="font-medium mb-3">{bar.question}</h4>
                 <div className="flex gap-2">

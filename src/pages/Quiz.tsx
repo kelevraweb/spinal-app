@@ -181,6 +181,14 @@ const Quiz: React.FC = () => {
     });
   };
 
+  const handleProgressChartComplete = () => {
+    // After progress chart is shown, show email capture
+    setState({
+      ...state,
+      showSpecialPage: 'emailCapture'
+    });
+  };
+
   const handleEmailCapture = (email: string) => {
     // Update user profile with email
     const updatedProfile = {
@@ -207,14 +215,6 @@ const Quiz: React.FC = () => {
     // Here you would integrate with Stripe
     console.log('Elaborazione acquisto...');
     navigate('/thank-you');
-  };
-
-  const handleProgressChartComplete = () => {
-    // After progress chart is shown, show email capture
-    setState({
-      ...state,
-      showSpecialPage: 'emailCapture'
-    });
   };
 
   // Render special pages based on current state
