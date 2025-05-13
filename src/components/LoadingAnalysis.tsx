@@ -164,11 +164,11 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
               className="h-3"
             />
             
-            {/* Question popup when bar reaches 50% */}
+            {/* Question popup when bar reaches 50% - now centered */}
             {activeBarIndex === index && (
-              <div className="absolute right-0 top-10 bg-white rounded-lg shadow-lg p-4 border border-gray-200 w-full sm:w-80 z-10 animate-fade-in">
+              <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
                 <h4 className="font-medium mb-3">{bar.question}</h4>
-                <div className="flex gap-2">
+                <div className="flex gap-4">
                   <button 
                     onClick={() => handleAnswer(index, true)}
                     className="flex-1 bg-brand-primary text-white rounded-full px-4 py-2 text-sm"

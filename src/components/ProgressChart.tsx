@@ -44,20 +44,22 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
         <div className="flex items-end justify-between w-full max-w-md">
           {chartData.map((data, index) => (
             <div key={index} className="relative flex flex-col items-center">
-              <div 
-                className="chart-bar w-20 rounded-t-md"
-                style={{
-                  backgroundColor: data.color,
-                  height: animated ? `${data.value}%` : '10%',
-                  opacity: animated ? 1 : 0.5,
-                  transition: `height 1s ease-out ${index * 0.2}s, opacity 0.5s ease-out ${index * 0.2}s`
-                }}
-              >
-                {data.isGoal && animated && (
-                  <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-bounce-slow">
-                    Obiettivo
-                  </div>
-                )}
+              <div className="relative w-20 bg-gray-100 rounded-md h-full">
+                <div 
+                  className="absolute bottom-0 w-full chart-bar rounded-t-md"
+                  style={{
+                    backgroundColor: data.color,
+                    height: animated ? `${data.value}%` : '10%',
+                    opacity: animated ? 1 : 0.5,
+                    transition: `height 1s ease-out ${index * 0.2}s, opacity 0.5s ease-out ${index * 0.2}s`
+                  }}
+                >
+                  {data.isGoal && animated && (
+                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-bounce-slow">
+                      Obiettivo
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="mt-2 text-sm text-gray-600">{data.month}</div>
             </div>

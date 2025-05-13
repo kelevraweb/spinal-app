@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer } from '../types/quiz';
@@ -128,7 +127,7 @@ const Quiz: React.FC = () => {
         ...state,
         answers: updatedAnswers,
         isCompleted: true,
-        showSpecialPage: 'loadingAnalysis'
+        showSpecialPage: 'wellbeingLevel'
       });
       return;
     }
@@ -171,6 +170,14 @@ const Quiz: React.FC = () => {
       
       setIsAnimating(false);
     }, 300);
+  };
+
+  const handleWellbeingLevelComplete = () => {
+    // After wellbeingLevel is shown, show loadingAnalysis
+    setState({
+      ...state,
+      showSpecialPage: 'loadingAnalysis'
+    });
   };
 
   const handleLoadingAnalysisComplete = () => {
@@ -268,11 +275,20 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <TrustMapAnimation />
+            <TrustMapAnimation worldMap={true} />
           </>
         );
         
       case 'wellbeingLevel':
+        // Add timeout to automatically proceed to next screen after 5 seconds
+        useEffect(() => {
+          const timer = setTimeout(() => {
+            handleWellbeingLevelComplete();
+          }, 5000);
+          
+          return () => clearTimeout(timer);
+        }, []);
+        
         return (
           <>
             <TopNavBar 
@@ -299,7 +315,15 @@ const Quiz: React.FC = () => {
         );
         
       case 'progressChart':
-        setTimeout(handleProgressChartComplete, 5000);
+        // Add timeout to automatically proceed to next screen after 5 seconds
+        useEffect(() => {
+          const timer = setTimeout(() => {
+            handleProgressChartComplete();
+          }, 5000);
+          
+          return () => clearTimeout(timer);
+        }, []);
+        
         return (
           <>
             <TopNavBar 
