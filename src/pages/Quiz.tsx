@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer } from '../types/quiz';
 import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
+import TopNavBar from '../components/TopNavBar';
 
 // Question type components
 import SingleChoice from '../components/QuestionTypes/SingleChoice';
@@ -20,6 +21,7 @@ import WellbeingLevelIndicator from '../components/WellbeingLevelIndicator';
 import EmailCapture from '../components/EmailCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import Checkout from '../components/Checkout';
+import LoadingAnalysis from '../components/LoadingAnalysis';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
@@ -92,22 +94,27 @@ const Quiz: React.FC = () => {
     // Special pages triggers
     let showSpecialPage = undefined;
     
-    // After question 2 (demographic data) show trust map
+    // Dopo domanda 2 (dati demografici) mostra trust map
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
     
-    // After question 23 show universities
+    // Dopo domanda 23 mostra università
     if (state.currentStep === 22) {
       showSpecialPage = 'universities';
     }
     
-    // After question 25 show expert
+    // Dopo domanda 25 mostra l'esperto
     if (state.currentStep === 24) {
       showSpecialPage = 'expert';
     }
+
+    // Dopo la schermata dell'esperto mostra la mappa mondiale
+    if (state.showSpecialPage === 'expert') {
+      showSpecialPage = 'worldMap';
+    }
     
-    // After question 26 show wellbeing level
+    // Dopo domanda 26 mostra livello benessere
     if (state.currentStep === 25) {
       showSpecialPage = 'wellbeingLevel';
     }
@@ -121,7 +128,7 @@ const Quiz: React.FC = () => {
         ...state,
         answers: updatedAnswers,
         isCompleted: true,
-        showSpecialPage: 'progressChart'
+        showSpecialPage: 'loadingAnalysis'
       });
       return;
     }
@@ -166,6 +173,14 @@ const Quiz: React.FC = () => {
     }, 300);
   };
 
+  const handleLoadingAnalysisComplete = () => {
+    // Dopo il caricamento mostra il grafico di progresso
+    setState({
+      ...state,
+      showSpecialPage: 'progressChart'
+    });
+  };
+
   const handleEmailCapture = (email: string) => {
     // Update user profile with email
     const updatedProfile = {
@@ -190,7 +205,7 @@ const Quiz: React.FC = () => {
 
   const handlePurchase = () => {
     // Here you would integrate with Stripe
-    console.log('Processing purchase...');
+    console.log('Elaborazione acquisto...');
     navigate('/thank-you');
   };
 
@@ -206,29 +221,135 @@ const Quiz: React.FC = () => {
   if (state.showSpecialPage) {
     switch(state.showSpecialPage) {
       case 'trustMap':
-        return <TrustMapAnimation />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <TrustMapAnimation />
+          </>
+        );
         
       case 'universities':
-        return <UniversityLogos />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <UniversityLogos />
+          </>
+        );
         
       case 'expert':
-        return <ExpertReview />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <ExpertReview />
+          </>
+        );
+
+      case 'worldMap':
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <TrustMapAnimation />
+          </>
+        );
         
       case 'wellbeingLevel':
-        return <WellbeingLevelIndicator level="Medium" />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <WellbeingLevelIndicator level="Medium" />
+          </>
+        );
+        
+      case 'loadingAnalysis':
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
+          </>
+        );
         
       case 'progressChart':
         setTimeout(handleProgressChartComplete, 5000);
-        return <ProgressChart />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <ProgressChart />
+          </>
+        );
         
       case 'emailCapture':
-        return <EmailCapture onSubmit={handleEmailCapture} />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <EmailCapture onSubmit={handleEmailCapture} />
+          </>
+        );
         
       case 'sinusoidalGraph':
-        return <SinusoidalGraph />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <SinusoidalGraph />
+          </>
+        );
         
       case 'checkout':
-        return <Checkout onPurchase={handlePurchase} />;
+        return (
+          <>
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={true}
+            />
+            <Checkout onPurchase={handlePurchase} />
+          </>
+        );
     }
   }
 
@@ -281,55 +402,63 @@ const Quiz: React.FC = () => {
         );
         
       default:
-        return <p>Question type not supported</p>;
+        return <p>Tipo di domanda non supportato</p>;
     }
   };
 
   return (
-    <div className={`quiz-container ${isAnimating ? 'opacity-50' : ''}`}>
-      <div className="quiz-card">
-        {/* Progress bar */}
-        <div className="progress-container">
-          <div 
-            className="progress-bar"
-            style={{ width: `${(state.currentStep / state.totalSteps) * 100}%` }}
-          ></div>
-        </div>
-        
-        {/* Question */}
-        <h2 className="question-title">
-          {state.currentQuestion?.question}
-        </h2>
-        
-        {/* Question content based on type */}
-        {renderQuestionContent()}
-        
-        {/* Navigation buttons */}
-        <div className="flex justify-between mt-8">
-          {state.currentStep > 0 ? (
-            <button 
-              type="button"
-              className="btn-secondary"
-              onClick={handleBack}
-              disabled={isAnimating}
-            >
-              Back
-            </button>
-          ) : (
-            <div></div> /* Empty div to maintain layout */
-          )}
+    <>
+      <TopNavBar 
+        currentStep={state.currentStep} 
+        totalSteps={state.totalSteps} 
+        onBack={handleBack}
+        canGoBack={state.currentStep > 0}
+      />
+      <div className={`quiz-container pt-16 ${isAnimating ? 'opacity-50' : ''}`}>
+        <div className="quiz-card">
+          {/* Progress bar */}
+          <div className="progress-container">
+            <div 
+              className="progress-bar"
+              style={{ width: `${(state.currentStep / state.totalSteps) * 100}%` }}
+            ></div>
+          </div>
           
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={handleNext}
-            disabled={!isNextEnabled || isAnimating}
-          >
-            {state.currentStep === state.totalSteps - 1 ? 'Complete' : 'Next'}
-          </button>
+          {/* Question */}
+          <h2 className="question-title">
+            {state.currentQuestion?.question}
+          </h2>
+          
+          {/* Question content based on type */}
+          {renderQuestionContent()}
+          
+          {/* Navigation buttons */}
+          <div className="flex justify-between mt-8">
+            {state.currentStep > 0 ? (
+              <button 
+                type="button"
+                className="btn-secondary"
+                onClick={handleBack}
+                disabled={isAnimating}
+              >
+                Indietro
+              </button>
+            ) : (
+              <div></div> /* Empty div to maintain layout */
+            )}
+            
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleNext}
+              disabled={!isNextEnabled || isAnimating}
+            >
+              {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

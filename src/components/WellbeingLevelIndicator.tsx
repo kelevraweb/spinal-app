@@ -35,10 +35,10 @@ const levelPositions = {
 const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({ 
   level = 'Medium',
   details = {
-    mainDifficulty: 'Worry',
-    triggerType: 'External circumstances',
-    challengingPeriod: 'Few months',
-    energyLevel: 'Medium'
+    mainDifficulty: 'Preoccupazione',
+    triggerType: 'Circostanze esterne',
+    challengingPeriod: 'Alcuni mesi',
+    energyLevel: 'Medio'
   }
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -52,23 +52,23 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
   }, []);
 
   return (
-    <div className={`max-w-2xl mx-auto my-10 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+    <div className={`max-w-2xl mx-auto my-10 transition-opacity duration-1000 pt-16 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
       <h2 className="text-2xl font-bold text-center mb-6">
-        Summary of your Well-being Profile
+        Riepilogo del tuo Profilo di Benessere
       </h2>
       
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-4">
-          <h3 className="text-lg font-semibold">Negative effects level</h3>
+          <h3 className="text-lg font-semibold">Livello di effetti negativi</h3>
           <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm">
-            {level}
+            {level === 'Medium' ? 'Medio' : level}
           </span>
         </div>
         
         <div className="relative my-10">
           <img 
             src="https://images.unsplash.com/photo-1494774157363-9d7fbfd6c613?w=800&auto=format&fit=crop"
-            alt="Person experiencing stress"
+            alt="Persona che sperimenta stress"
             className="w-full h-40 object-cover rounded-lg mb-8"
           />
           
@@ -78,7 +78,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
               top: '50%'
             }}
           >
-            Your level
+            Il tuo livello
           </div>
         </div>
         
@@ -93,16 +93,16 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
               }}
             >
               <span className="slider-label" style={{ backgroundColor: levelColors[level] }}>
-                {level}
+                {level === 'Medium' ? 'Medio' : level}
               </span>
             </div>
           </div>
           
           <div className="flex justify-between mt-2 text-sm text-gray-500">
-            <span>Low</span>
-            <span>Normal</span>
-            <span>Medium</span>
-            <span>High</span>
+            <span>Basso</span>
+            <span>Normale</span>
+            <span>Medio</span>
+            <span>Alto</span>
           </div>
         </div>
         
@@ -111,7 +111,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
             <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-orange-100 text-orange-500 rounded-full">
               !
             </span>
-            <h4 className="font-semibold text-orange-900">MEDIUM level</h4>
+            <h4 className="font-semibold text-orange-900">Livello MEDIO</h4>
           </div>
           <p className="mt-2 text-orange-800">
             {levelDescriptions[level]}
@@ -127,7 +127,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
                 </svg>
               </span>
               <div>
-                <h5 className="text-sm text-gray-600">Main difficulty</h5>
+                <h5 className="text-sm text-gray-600">Difficoltà principale</h5>
                 <p className="font-semibold">{details.mainDifficulty}</p>
               </div>
             </div>
@@ -144,7 +144,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
                 </svg>
               </span>
               <div>
-                <h5 className="text-sm text-gray-600">Challenging period</h5>
+                <h5 className="text-sm text-gray-600">Periodo di difficoltà</h5>
                 <p className="font-semibold">{details.challengingPeriod}</p>
               </div>
             </div>
@@ -158,7 +158,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
                 </svg>
               </span>
               <div>
-                <h5 className="text-sm text-gray-600">Trigger</h5>
+                <h5 className="text-sm text-gray-600">Fattore scatenante</h5>
                 <p className="font-semibold">{details.triggerType}</p>
               </div>
             </div>
@@ -172,7 +172,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
                 </svg>
               </span>
               <div>
-                <h5 className="text-sm text-gray-600">Energy level</h5>
+                <h5 className="text-sm text-gray-600">Livello di energia</h5>
                 <p className="font-semibold">{details.energyLevel}</p>
               </div>
             </div>

@@ -29,16 +29,16 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
   }, [initialData]);
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4">
+    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
       <h2 className="text-2xl font-bold text-center mb-3">
-        A plan designed to support your wellbeing journey
+        Un piano progettato per supportare il tuo benessere
       </h2>
       
       <p className="text-center mb-8 text-gray-600">
-        Based on your answers, we expect you to improve your well-being by
+        In base alle tue risposte, prevediamo che migliorerai il tuo benessere entro
       </p>
       
-      <h3 className="text-2xl font-bold text-center mb-8">June 2025</h3>
+      <h3 className="text-2xl font-bold text-center mb-8">Giugno 2025</h3>
       
       <div className="progress-chart">
         {chartData.map((data, index) => (
@@ -53,7 +53,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
             }}
           >
             {data.isGoal && animated && (
-              <div className="chart-goal animate-bounce-slow">Goal</div>
+              <div className="chart-goal animate-bounce-slow">Obiettivo</div>
             )}
           </div>
         ))}
@@ -65,7 +65,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
       </div>
       
       <p className="text-xs text-center text-gray-400 mt-2">
-        The chart is a non-customized illustration and results may vary
+        Il grafico è un'illustrazione non personalizzata e i risultati possono variare
       </p>
     </div>
   );

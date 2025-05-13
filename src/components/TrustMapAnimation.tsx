@@ -2,13 +2,13 @@
 import React, { useEffect, useState } from "react";
 
 const worldMapPositions = [
-  { x: 20, y: 20 }, // North America
-  { x: 45, y: 30 }, // Europe
+  { x: 20, y: 20 }, // Nord America
+  { x: 45, y: 30 }, // Europa
   { x: 70, y: 25 }, // Asia
   { x: 55, y: 60 }, // Africa
-  { x: 25, y: 70 }, // South America
+  { x: 25, y: 70 }, // Sud America
   { x: 85, y: 80 }, // Australia
-  { x: 50, y: 40 }  // Middle East
+  { x: 50, y: 40 }  // Medio Oriente
 ];
 
 const TrustMapAnimation: React.FC = () => {
@@ -33,12 +33,12 @@ const TrustMapAnimation: React.FC = () => {
   }, []);
 
   return (
-    <div className="w-full max-w-2xl mx-auto my-8 animate-fade-in">
+    <div className="w-full max-w-2xl mx-auto my-8 animate-fade-in pt-16">
       <h2 className="text-2xl font-bold text-center mb-6">
-        Join over <span className="text-brand-primary">1,000,000</span> people
+        Unisciti a oltre <span className="text-brand-primary">1.000.000</span> di persone
       </h2>
       <p className="text-center mb-8 text-gray-600">
-        Become part of a growing worldwide community and achieve your goals with us!
+        Diventa parte di una comunità mondiale in crescita e raggiungi i tuoi obiettivi con noi!
       </p>
       
       <div className="map-animation-container">

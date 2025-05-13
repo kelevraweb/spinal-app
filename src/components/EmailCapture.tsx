@@ -34,12 +34,12 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
   };
 
   return (
-    <div className="max-w-xl mx-auto my-12 px-6 animate-fade-in">
+    <div className="max-w-xl mx-auto my-12 px-6 animate-fade-in pt-16">
       <h2 className="text-2xl font-bold text-center mb-2">
-        Enter your email to
+        Inserisci la tua email per
       </h2>
       <h2 className="text-2xl font-bold text-center mb-6">
-        get your personal <span className="text-brand-primary">Well-being Management Plan!</span>
+        ricevere il tuo <span className="text-brand-primary">Piano di Gestione del Benessere!</span>
       </h2>
       
       <form onSubmit={handleSubmit} className="mt-8">
@@ -60,7 +60,7 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
             </svg>
           </button>
           {!isValid && (
-            <p className="text-red-500 text-sm mt-1">Please enter a valid email address</p>
+            <p className="text-red-500 text-sm mt-1">Inserisci un indirizzo email valido</p>
           )}
         </div>
 
@@ -70,13 +70,13 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
             <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
           </svg>
           <p>
-            We respect your privacy and are committed to protecting your personal data. Your data will be processed according to our Privacy policy.
+            Rispettiamo la tua privacy e ci impegniamo a proteggere i tuoi dati personali. I tuoi dati saranno trattati secondo la nostra Informativa sulla privacy.
           </p>
         </div>
         
         <div className="mt-6">
           <button type="submit" className="btn-primary w-full">
-            Continue
+            Continua
           </button>
         </div>
       </form>

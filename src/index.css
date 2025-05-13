@@ -43,6 +43,10 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+
+    --brand-primary: 150 50% 50%;
+    --brand-light: 150 50% 95%;
+    --brand-accent: 262 80% 76%;
   }
 
   .dark {
@@ -137,6 +141,49 @@
 
   .brain-icon {
     @apply relative inline-flex items-center justify-center w-32 h-32 rounded-full animate-pulse-glow;
+  }
+}
+
+@keyframes bounce-slow {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ping-slow {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px theme("colors.green.500");
+  }
+  50% {
+    box-shadow: 0 0 20px theme("colors.green.500");
+  }
+}
+
+@layer utilities {
+  .animate-bounce-slow {
+    animation: bounce-slow 2s ease-in-out infinite;
+  }
+
+  .animate-ping-slow {
+    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 2s ease-in-out infinite;
   }
 }
 
