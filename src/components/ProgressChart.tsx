@@ -1,18 +1,19 @@
 
 import React, { useEffect, useState } from 'react';
 import { ProgressChartData } from '../types/quiz';
-
-const months = ['Aprile', 'Maggio', 'Giugno'];
+import { Button } from './ui/button';
+import { Progress } from './ui/progress';
 
 interface ProgressChartProps {
   initialData?: ProgressChartData[];
+  onContinue?: () => void;
 }
 
-const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
+const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }) => {
   const [chartData, setChartData] = useState<ProgressChartData[]>([
-    { month: 'Aprile', value: 20, color: '#F7685B' },
-    { month: 'Maggio', value: 40, color: '#FFB129' },
-    { month: 'Giugno', value: 60, color: '#A5DC86', isGoal: true }
+    { month: 'Aprile', value: 20, color: '#F7685B', label: 'Inizio' },
+    { month: 'Maggio', value: 40, color: '#FFB129', label: 'Progresso' },
+    { month: 'Giugno', value: 60, color: '#A5DC86', isGoal: true, label: 'Obiettivo' }
   ]);
   const [animated, setAnimated] = useState(false);
 
@@ -40,30 +41,94 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData }) => {
       
       <h3 className="text-2xl font-bold text-center mb-8">Giugno 2025</h3>
       
-      <div className="flex justify-center h-72 mb-10">
-        <div className="flex items-end justify-between w-full max-w-md">
+      <div className="relative bg-white rounded-lg shadow-lg p-8 mb-10">
+        <div className="flex justify-between mb-16">
           {chartData.map((data, index) => (
-            <div key={index} className="relative flex flex-col items-center">
-              <div className="relative w-20 bg-gray-100 rounded-md h-full">
+            <div key={index} className="flex flex-col items-center relative">
+              <div className="w-24 h-64 bg-gray-100 rounded-t-lg relative overflow-hidden">
                 <div 
-                  className="absolute bottom-0 w-full chart-bar rounded-t-md"
+                  className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-1000 ease-out`}
                   style={{
                     backgroundColor: data.color,
-                    height: animated ? `${data.value}%` : '10%',
-                    opacity: animated ? 1 : 0.5,
-                    transition: `height 1s ease-out ${index * 0.2}s, opacity 0.5s ease-out ${index * 0.2}s`
+                    height: animated ? `${data.value}%` : '0%',
+                    transitionDelay: `${index * 0.3}s`
                   }}
                 >
-                  {data.isGoal && animated && (
-                    <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-medium animate-bounce-slow">
-                      Obiettivo
-                    </div>
-                  )}
+                  <div 
+                    className="absolute top-0 left-0 w-full flex justify-center transform -translate-y-10"
+                    style={{ opacity: animated ? 1 : 0, transition: `opacity 0.5s ease ${index * 0.3 + 0.5}s` }}
+                  >
+                    <span 
+                      className="px-4 py-2 rounded-full text-white font-bold text-lg"
+                      style={{ backgroundColor: data.color }}
+                    >
+                      {data.value}%
+                    </span>
+                  </div>
                 </div>
+
+                {data.isGoal && animated && (
+                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-green-500 text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce-slow">
+                    Obiettivo
+                  </div>
+                )}
               </div>
-              <div className="mt-2 text-sm text-gray-600">{data.month}</div>
+
+              <div className="mt-4 flex flex-col items-center">
+                <span className="font-bold text-lg">{data.month}</span>
+                <span className="text-sm text-gray-600">{data.label}</span>
+              </div>
+
+              {index < chartData.length - 1 && (
+                <div 
+                  className={`absolute h-px bg-gray-300 top-32 transition-all duration-1000`}
+                  style={{ 
+                    width: '100%', 
+                    left: '50%',
+                    opacity: animated ? 1 : 0,
+                    transitionDelay: `${index * 0.3 + 0.2}s`
+                  }}
+                ></div>
+              )}
             </div>
           ))}
+        </div>
+
+        <div className="mt-10">
+          <h4 className="font-semibold text-lg mb-2">Il tuo progresso previsto</h4>
+          <div className="space-y-4">
+            <div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Benessere attuale</span>
+                <span>20%</span>
+              </div>
+              <Progress value={20} className="h-2" />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Dopo 1 mese</span>
+                <span>40%</span>
+              </div>
+              <Progress value={40} className="h-2" />
+            </div>
+            <div>
+              <div className="flex justify-between text-sm text-gray-600 mb-1">
+                <span>Obiettivo finale</span>
+                <span>60%</span>
+              </div>
+              <Progress value={60} className="h-2" />
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-10 text-center">
+          <Button 
+            onClick={onContinue}
+            size="lg" 
+            className="bg-green-500 hover:bg-green-600 text-white"
+          >
+            Continua
+          </Button>
         </div>
       </div>
       

@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
+import { Button } from './ui/button';
 
 interface WellbeingLevelProps {
   level: 'Low' | 'Normal' | 'Medium' | 'High';
@@ -9,6 +10,7 @@ interface WellbeingLevelProps {
     challengingPeriod?: string;
     energyLevel?: string;
   };
+  onContinue?: () => void;
 }
 
 const levelDescriptions = {
@@ -39,7 +41,8 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
     triggerType: 'Circostanze esterne',
     challengingPeriod: 'Alcuni mesi',
     energyLevel: 'Medio'
-  }
+  },
+  onContinue
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [animateThumb, setAnimateThumb] = useState(false);
@@ -215,6 +218,16 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
               </div>
             </div>
           </div>
+        </div>
+        
+        <div className="mt-8 flex justify-center">
+          <Button 
+            onClick={onContinue}
+            size="lg"
+            className="bg-orange-500 hover:bg-orange-600 text-white"
+          >
+            Continua la tua analisi
+          </Button>
         </div>
       </div>
     </div>

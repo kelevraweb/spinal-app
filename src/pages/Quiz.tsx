@@ -46,22 +46,21 @@ const Quiz: React.FC = () => {
     let timer: NodeJS.Timeout | undefined;
     
     // Handle automatic transitions based on current special page
-    if (state.showSpecialPage === 'wellbeingLevel') {
+    if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
+        state.showSpecialPage === 'expert' || state.showSpecialPage === 'worldMap') {
+      // Create a timer to auto-advance these screens after 5 seconds
       timer = setTimeout(() => {
-        handleWellbeingLevelComplete();
-      }, 5000);
-    } 
-    else if (state.showSpecialPage === 'progressChart') {
-      timer = setTimeout(() => {
-        handleProgressChartComplete();
-      }, 5000);
-    }
-    else if (state.showSpecialPage === 'sinusoidalGraph') {
-      timer = setTimeout(() => {
-        setState(prevState => ({
-          ...prevState,
-          showSpecialPage: 'checkout'
-        }));
+        if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
+            state.showSpecialPage === 'expert') {
+          // Move to next question
+          handleSpecialPageComplete();
+        } else if (state.showSpecialPage === 'worldMap') {
+          // After world map go to wellbeing level
+          setState(prevState => ({
+            ...prevState,
+            showSpecialPage: 'wellbeingLevel'
+          }));
+        }
       }, 5000);
     }
     
@@ -203,6 +202,18 @@ const Quiz: React.FC = () => {
     }, 300);
   };
 
+  const handleSpecialPageComplete = () => {
+    // Move to the next step after a special page is shown
+    const nextStep = state.currentStep + 1;
+    
+    setState(prevState => ({
+      ...prevState,
+      currentStep: nextStep,
+      currentQuestion: quizQuestions[nextStep],
+      showSpecialPage: undefined
+    }));
+  };
+
   const handleWellbeingLevelComplete = () => {
     // After wellbeingLevel is shown, show loadingAnalysis
     setState({
@@ -241,6 +252,13 @@ const Quiz: React.FC = () => {
     });
   };
 
+  const handleSinusoidalComplete = () => {
+    setState({
+      ...state,
+      showSpecialPage: 'checkout'
+    });
+  };
+
   const handlePurchase = () => {
     // Here you would integrate with Stripe
     console.log('Elaborazione acquisto...');
@@ -259,7 +277,7 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <TrustMapAnimation />
+            <TrustMapAnimation onContinue={handleSpecialPageComplete} />
           </>
         );
         
@@ -298,7 +316,12 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <TrustMapAnimation worldMap={true} />
+            <TrustMapAnimation worldMap={true} onContinue={() => {
+              setState(prevState => ({
+                ...prevState,
+                showSpecialPage: 'wellbeingLevel'
+              }));
+            }} />
           </>
         );
         
@@ -311,7 +334,10 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <WellbeingLevelIndicator level="Medium" />
+            <WellbeingLevelIndicator 
+              level="Medium" 
+              onContinue={handleWellbeingLevelComplete}
+            />
           </>
         );
         
@@ -337,7 +363,7 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <ProgressChart />
+            <ProgressChart onContinue={handleProgressChartComplete} />
           </>
         );
         
@@ -363,7 +389,7 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <SinusoidalGraph />
+            <SinusoidalGraph onContinue={handleSinusoidalComplete} />
           </>
         );
         
