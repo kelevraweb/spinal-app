@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer } from '../types/quiz';
@@ -39,6 +40,36 @@ const Quiz: React.FC = () => {
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | number>('');
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // Handle automatic transitions between special pages
+  useEffect(() => {
+    let timer: NodeJS.Timeout | undefined;
+    
+    // Handle automatic transitions based on current special page
+    if (state.showSpecialPage === 'wellbeingLevel') {
+      timer = setTimeout(() => {
+        handleWellbeingLevelComplete();
+      }, 5000);
+    } 
+    else if (state.showSpecialPage === 'progressChart') {
+      timer = setTimeout(() => {
+        handleProgressChartComplete();
+      }, 5000);
+    }
+    else if (state.showSpecialPage === 'sinusoidalGraph') {
+      timer = setTimeout(() => {
+        setState(prevState => ({
+          ...prevState,
+          showSpecialPage: 'checkout'
+        }));
+      }, 5000);
+    }
+    
+    // Cleanup function to clear any timers when the component unmounts or state changes
+    return () => {
+      if (timer) clearTimeout(timer);
+    };
+  }, [state.showSpecialPage]);
 
   useEffect(() => {
     // Check if current question has been answered before
@@ -208,14 +239,6 @@ const Quiz: React.FC = () => {
       userProfile: updatedProfile,
       showSpecialPage: 'sinusoidalGraph'
     });
-    
-    // After a delay, show checkout
-    setTimeout(() => {
-      setState(prevState => ({
-        ...prevState,
-        showSpecialPage: 'checkout'
-      }));
-    }, 5000);
   };
 
   const handlePurchase = () => {
@@ -280,15 +303,6 @@ const Quiz: React.FC = () => {
         );
         
       case 'wellbeingLevel':
-        // Add timeout to automatically proceed to next screen after 5 seconds
-        useEffect(() => {
-          const timer = setTimeout(() => {
-            handleWellbeingLevelComplete();
-          }, 5000);
-          
-          return () => clearTimeout(timer);
-        }, []);
-        
         return (
           <>
             <TopNavBar 
@@ -315,15 +329,6 @@ const Quiz: React.FC = () => {
         );
         
       case 'progressChart':
-        // Add timeout to automatically proceed to next screen after 5 seconds
-        useEffect(() => {
-          const timer = setTimeout(() => {
-            handleProgressChartComplete();
-          }, 5000);
-          
-          return () => clearTimeout(timer);
-        }, []);
-        
         return (
           <>
             <TopNavBar 
