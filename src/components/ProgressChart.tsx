@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { ProgressChartData } from '../types/quiz';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
+import { cn } from '@/lib/utils';
 
 interface ProgressChartProps {
   initialData?: ProgressChartData[];
@@ -102,21 +103,21 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>Benessere attuale</span>
                 <span>20%</span>
               </div>
-              <Progress value={20} className="h-2 bg-gray-200" indicatorClassName="bg-[#ff1aa9]" />
+              <Progress value={20} className={cn("h-2 bg-gray-200", "bg-[#ff1aa9]")} />
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Dopo 1 mese</span>
                 <span>40%</span>
               </div>
-              <Progress value={40} className="h-2 bg-gray-200" indicatorClassName="bg-[#ff80c8]" />
+              <Progress value={40} className={cn("h-2 bg-gray-200", "bg-[#ff80c8]")} />
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Obiettivo finale</span>
                 <span>60%</span>
               </div>
-              <Progress value={60} className="h-2 bg-gray-200" indicatorClassName="bg-[#19f1fe]" />
+              <Progress value={60} className={cn("h-2 bg-gray-200", "bg-[#19f1fe]")} />
             </div>
           </div>
         </div>
