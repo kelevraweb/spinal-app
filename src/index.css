@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -14,16 +13,16 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 150 50% 50%;
+    --primary: 182 98% 67%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 322 100% 70%;
+    --secondary-foreground: 210 40% 98%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 262 80% 76%;
+    --accent: 322 100% 70%;
     --accent-foreground: 222.2 47.4% 11.2%;
 
     --destructive: 0 84.2% 60.2%;
@@ -37,16 +36,16 @@
 
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary: 322 100% 70%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
 
-    --brand-primary: 150 50% 50%;
-    --brand-light: 150 50% 95%;
-    --brand-accent: 262 80% 76%;
+    --brand-primary: 182 98% 67%;
+    --brand-light: 182 98% 95%;
+    --brand-accent: 322 100% 70%;
   }
 
   .dark {
@@ -56,13 +55,13 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 150 50% 50%;
+    --primary: 182 98% 67%;
     --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 322 100% 70%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 264 86% 72%;
+    --accent: 322 100% 70%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
@@ -104,11 +103,11 @@
   }
   
   .btn-primary {
-    @apply bg-brand-primary hover:bg-green-600 text-white font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-md;
+    @apply bg-brand-primary hover:bg-[#00d9e6] text-white font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#19f1fe] shadow-md;
   }
 
   .btn-secondary {
-    @apply bg-white border-2 border-brand-primary text-brand-primary font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 hover:bg-brand-light focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 shadow-sm;
+    @apply bg-white border-2 border-brand-secondary text-brand-secondary font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 hover:bg-[#fff0f8] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#ff1aa9] shadow-sm;
   }
 
   .option-btn {
@@ -124,7 +123,7 @@
   }
   
   .progress-bar {
-    @apply h-full bg-gradient-to-r from-green-400 to-green-600 rounded-full transition-all duration-300 ease-out;
+    @apply h-full bg-gradient-to-r from-[#19f1fe] to-[#00d9e6] rounded-full transition-all duration-300 ease-out;
   }
 
   .testimonial-card {
@@ -206,7 +205,7 @@
   position: relative;
   height: 10px;
   border-radius: 5px;
-  background: linear-gradient(90deg, #F7685B 0%, #FFB129 25%, #A5DC86 75%, #47B881 100%);
+  background: linear-gradient(90deg, #ff1aa9 0%, #ff80c8 25%, #8af8fe 75%, #19f1fe 100%);
 }
 
 .slider-thumb {
@@ -214,7 +213,7 @@
   width: 25px;
   height: 25px;
   background: white;
-  border: 3px solid #47B881;
+  border: 3px solid #19f1fe;
   border-radius: 50%;
   top: 50%;
   transform: translate(-50%, -50%);

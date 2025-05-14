@@ -21,10 +21,10 @@ const levelDescriptions = {
 };
 
 const levelColors = {
-  Low: '#F7685B',
-  Normal: '#A5DC86',
-  Medium: '#FFB129',
-  High: '#F7685B'
+  Low: '#ff1aa9',
+  Normal: '#19f1fe',
+  Medium: '#ff80c8',
+  High: '#ff1aa9'
 };
 
 const levelPositions = {
@@ -79,15 +79,15 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
       <div className="bg-white rounded-lg shadow-md p-6">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold">Il tuo stato attuale è</h3>
-          <span className="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-sm font-bold">
+          <span className="bg-[#fff0f8] text-[#ff1aa9] px-3 py-1 rounded-full text-sm font-bold">
             {levelInItalian}
           </span>
         </div>
         
         <div className="relative my-10">
-          <div className="w-full h-40 bg-gradient-to-r from-red-100 via-yellow-100 to-red-100 rounded-lg flex items-center justify-center overflow-hidden">
+          <div className="w-full h-40 bg-gradient-to-r from-[#fff0f8] via-[#e5fcff] to-[#fff0f8] rounded-lg flex items-center justify-center overflow-hidden">
             <div className="w-20 h-20 rounded-full bg-white/80 backdrop-blur-sm shadow-md flex items-center justify-center z-10 animate-pulse-slow">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-orange-500">
+              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#ff1aa9]">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
@@ -96,13 +96,13 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
             {/* Oscillation waves */}
             <div className="absolute inset-0 flex items-center">
               <svg width="100%" height="40" viewBox="0 0 200 40" xmlns="http://www.w3.org/2000/svg">
-                <path d="M0,20 Q25,5 50,20 T100,20 T150,20 T200,20" fill="none" stroke="rgba(251, 146, 60, 0.3)" strokeWidth="1">
+                <path d="M0,20 Q25,5 50,20 T100,20 T150,20 T200,20" fill="none" stroke="rgba(255, 26, 169, 0.3)" strokeWidth="1">
                   <animate attributeName="d" dur="5s" repeatCount="indefinite" 
                     values="M0,20 Q25,5 50,20 T100,20 T150,20 T200,20;
                            M0,20 Q25,35 50,20 T100,20 T150,20 T200,20;
                            M0,20 Q25,5 50,20 T100,20 T150,20 T200,20" />
                 </path>
-                <path d="M0,20 Q25,15 50,20 T100,20 T150,20 T200,20" fill="none" stroke="rgba(251, 146, 60, 0.2)" strokeWidth="1" strokeDasharray="4,4">
+                <path d="M0,20 Q25,15 50,20 T100,20 T150,20 T200,20" fill="none" stroke="rgba(25, 241, 254, 0.2)" strokeWidth="1" strokeDasharray="4,4">
                   <animate attributeName="d" dur="7s" repeatCount="indefinite" 
                     values="M0,20 Q25,15 50,20 T100,20 T150,20 T200,20;
                            M0,20 Q25,25 50,20 T100,20 T150,20 T200,20;
@@ -123,7 +123,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
         </div>
         
         <div className="mb-4 mt-10">
-          <div className="wellbeing-slider relative h-3 bg-gradient-to-r from-red-300 via-yellow-300 to-red-300 rounded-full overflow-hidden">
+          <div className="wellbeing-slider relative h-3 bg-gradient-to-r from-[#ff1aa9] via-[#ff80c8] to-[#19f1fe] rounded-full overflow-hidden">
             <div 
               className={`slider-thumb absolute w-6 h-6 bg-white rounded-full border-4 -mt-1.5 transform -translate-x-1/2 shadow-md ${animateThumb ? '' : 'left-0'}`} 
               style={{ 
@@ -147,14 +147,14 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
           </div>
         </div>
         
-        <div className={`bg-orange-50 border-l-4 border-orange-300 p-4 rounded-md my-6 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
+        <div className={`bg-[#fff0f8] border-l-4 border-[#ff1aa9] p-4 rounded-md my-6 ${isVisible ? 'animate-fade-in' : 'opacity-0'}`}>
           <div className="flex items-center">
-            <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-orange-100 text-orange-500 rounded-full">
+            <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-[#ff80c8] text-white rounded-full">
               !
             </span>
-            <h4 className="font-semibold text-orange-900">Livello {levelInItalian}</h4>
+            <h4 className="font-semibold text-[#ff1aa9]">Livello {levelInItalian}</h4>
           </div>
-          <p className="mt-2 text-orange-800">
+          <p className="mt-2 text-gray-700">
             {levelDescriptions[level]}
           </p>
         </div>
@@ -162,7 +162,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
         <div className="grid grid-cols-2 gap-4 mt-6">
           <div className="bg-gray-50 p-4 rounded-md shadow-sm">
             <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-green-100 text-green-500 rounded-full">
+              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-[#e5fcff] text-[#19f1fe] rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
                 </svg>
@@ -176,7 +176,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
           
           <div className="bg-gray-50 p-4 rounded-md shadow-sm">
             <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-green-100 text-green-500 rounded-full">
+              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-[#e5fcff] text-[#19f1fe] rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                   <line x1="16" y1="2" x2="16" y2="6"></line>
@@ -193,7 +193,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
           
           <div className="bg-gray-50 p-4 rounded-md shadow-sm">
             <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-green-100 text-green-500 rounded-full">
+              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-[#e5fcff] text-[#19f1fe] rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
                 </svg>
@@ -207,7 +207,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
           
           <div className="bg-gray-50 p-4 rounded-md shadow-sm">
             <div className="flex items-start">
-              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-green-100 text-green-500 rounded-full">
+              <span className="inline-flex items-center justify-center w-6 h-6 mr-2 bg-[#e5fcff] text-[#19f1fe] rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path>
                 </svg>
@@ -224,7 +224,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelProps> = ({
           <Button 
             onClick={onContinue}
             size="lg"
-            className="bg-orange-500 hover:bg-orange-600 text-white"
+            className="bg-[#ff1aa9] hover:bg-[#e6009a] text-white"
           >
             Continua la tua analisi
           </Button>

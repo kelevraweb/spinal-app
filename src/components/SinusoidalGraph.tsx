@@ -38,10 +38,10 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
   }, []);
 
   const pointData = [
-    { week: 'SETTIMANA 1', x: '15%', y: '80%', color: '#F7685B', label: 'Oggi', active: true },
-    { week: 'SETTIMANA 2', x: '38%', y: '60%', color: '#F7685B' },
-    { week: 'SETTIMANA 3', x: '62%', y: '35%', color: '#FFB129' },
-    { week: 'SETTIMANA 4', x: '85%', y: '20%', color: '#47B881', label: 'Dopo LoveCoach' }
+    { week: 'SETTIMANA 1', x: '15%', y: '80%', color: '#ff1aa9', label: 'Oggi', active: true },
+    { week: 'SETTIMANA 2', x: '38%', y: '60%', color: '#ff80c8' },
+    { week: 'SETTIMANA 3', x: '62%', y: '35%', color: '#8af8fe' },
+    { week: 'SETTIMANA 4', x: '85%', y: '20%', color: '#19f1fe', label: 'Dopo LoveCoach' }
   ];
   
   return (
@@ -76,9 +76,9 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
             {/* Define gradient */}
             <defs>
               <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#F7685B" />
-                <stop offset="50%" stopColor="#FFB129" />
-                <stop offset="100%" stopColor="#47B881" />
+                <stop offset="0%" stopColor="#ff1aa9" />
+                <stop offset="50%" stopColor="#ff80c8" />
+                <stop offset="100%" stopColor="#19f1fe" />
               </linearGradient>
               
               {/* Shadow filter */}
@@ -217,15 +217,15 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
           {/* Legend */}
           <div className="absolute -bottom-10 left-0 flex items-center gap-3 text-xs text-gray-600">
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#F7685B]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#ff1aa9]"></div>
               <span>Stress</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#FFB129]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#ff80c8]"></div>
               <span>Miglioramento</span>
             </div>
             <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#47B881]"></div>
+              <div className="w-3 h-3 rounded-full bg-[#19f1fe]"></div>
               <span>Benessere</span>
             </div>
           </div>
@@ -239,7 +239,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
           <Button 
             onClick={onContinue}
             size="lg"
-            className="bg-blue-500 hover:bg-blue-600 text-white"
+            className="bg-[#19f1fe] hover:bg-[#00d9e6] text-white"
           >
             Continua <ChevronRight className="ml-2" size={18} />
           </Button>
