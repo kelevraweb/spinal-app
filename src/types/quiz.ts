@@ -39,6 +39,7 @@ export type ProgressChartData = {
   value: number;
   color: string;
   isGoal?: boolean;
+  label?: string;
 };
 
 export type Testimonial = {
