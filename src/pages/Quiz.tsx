@@ -129,12 +129,12 @@ const Quiz: React.FC = () => {
     }
     
     // Dopo domanda 23 mostra università
-    if (state.currentStep === 22) {
+    if (state.currentStep === 23) {
       showSpecialPage = 'universities';
     }
     
-    // Dopo domanda 25 mostra l'esperto
-    if (state.currentStep === 24) {
+    // Dopo domanda 26 mostra l'esperto
+    if (state.currentStep === 26) {
       showSpecialPage = 'expert';
     }
 
@@ -143,8 +143,8 @@ const Quiz: React.FC = () => {
       showSpecialPage = 'worldMap';
     }
     
-    // Dopo domanda 26 mostra livello benessere
-    if (state.currentStep === 25) {
+    // Dopo la domanda 30 mostra livello benessere
+    if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
     

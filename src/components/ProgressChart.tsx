@@ -33,11 +33,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
   return (
     <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
       <h2 className="text-2xl font-bold text-center mb-3">
-        Un piano progettato per supportare il tuo benessere
+        Un piano progettato per migliorare la tua postura e il tuo benessere fisico
       </h2>
       
       <p className="text-center mb-8 text-gray-600">
-        In base alle tue risposte, prevediamo che migliorerai il tuo benessere entro
+        In base alle tue risposte, prevediamo che migliorerai la tua postura e ridurrai il dolore entro
       </p>
       
       <h3 className="text-2xl font-bold text-center mb-8">Giugno 2025</h3>
@@ -100,7 +100,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
           <div className="space-y-4">
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Benessere attuale</span>
+                <span>Benessere posturale attuale</span>
                 <span>20%</span>
               </div>
               <Progress value={20} className={cn("h-2 bg-gray-200", "bg-[#ff1aa9]")} />

@@ -17,24 +17,24 @@ interface BarData {
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   const [bars, setBars] = useState<BarData[]>([
     { 
-      name: 'Analisi energia', 
+      name: 'Analisi posturale', 
       progress: 0, 
       color: 'bg-blue-500', 
-      question: 'Ti senti spesso svuotato/a a fine giornata?',
+      question: 'Ti senti spesso bloccato/a nei movimenti?',
       answered: false
     },
     { 
-      name: 'Analisi autostima', 
+      name: 'Analisi mobilità', 
       progress: 0, 
       color: 'bg-green-500',
-      question: 'Ti capita spesso di procrastinare?',
+      question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?',
       answered: false
     },
     { 
-      name: 'Analisi benessere emotivo', 
+      name: 'Analisi benessere fisico', 
       progress: 0, 
       color: 'bg-purple-500',
-      question: 'Ti senti sopraffatto/a dalle emozioni?',
+      question: 'Ti senti spesso rigido/a quando ti svegli al mattino?',
       answered: false
     }
   ]);
@@ -45,20 +45,20 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
 
   const testimonials = [
     {
-      name: "Sara T.",
-      text: "Dopo solo 3 settimane di percorso, mi sento molto più consapevole dei miei schemi relazionali."
+      name: "Marco L.",
+      text: "Dopo solo 3 settimane di percorso, il mio mal di schiena è diminuito notevolmente e la mia postura è migliorata."
     },
     {
-      name: "Marco L.",
-      text: "Ho imparato a mettere confini sani senza sentirmi in colpa. La mia relazione è migliorata tantissimo."
+      name: "Sara T.",
+      text: "Ho finalmente capito come prendermi cura della mia schiena. Ora mi sento più energica e con meno dolori."
     },
     {
       name: "Giulia M.",
-      text: "Finalmente ho smesso di cercare l'approvazione degli altri e ho iniziato a dare valore a me stessa."
+      text: "Gli esercizi giornalieri sono semplici ma efficaci. In poche settimane ho notato una grande differenza."
     },
     {
       name: "Alessandro B.",
-      text: "Il piano personalizzato mi ha aiutato a gestire l'ansia che bloccava le mie relazioni. Ottimo!"
+      text: "Il piano personalizzato ha risolto i miei problemi di cervicale che mi tormentavano da anni. Ottimo!"
     }
   ];
 
@@ -148,7 +148,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
         Creazione del tuo
       </h2>
       <h2 className="text-2xl font-bold text-center text-brand-primary mb-6">
-        piano di benessere personalizzato
+        piano posturale personalizzato
       </h2>
       
       <div className="space-y-8 mt-10">
