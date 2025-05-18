@@ -140,11 +140,12 @@ const Pricing: React.FC = () => {
       {/* Security Badge */}
       <div className="text-center mb-12">
         <p className="font-medium mb-2">Paga in modo sicuro e protetto</p>
-        <div className="flex justify-center items-center gap-4">
-          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-          <div className="w-12 h-8 bg-gray-200 rounded"></div>
-          <div className="w-12 h-8 bg-gray-200 rounded"></div>
+        <div className="flex justify-center items-center">
+          <img 
+            src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
+            alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
+            className="max-w-full h-auto"
+          />
         </div>
       </div>
 
