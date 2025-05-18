@@ -167,7 +167,6 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
   // Original TrustMap content
   return (
     <div className={`max-w-2xl mx-auto my-10 px-4 pt-16 transition-opacity duration-1000 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
-      {/* Keep original TrustMapAnimation content */}
       <h2 className="text-2xl font-bold text-center mb-4">
         Verifica dell'affidabilità del metodo
       </h2>
@@ -176,21 +175,33 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
         Il metodo di benessere è stato validato da ricercatori ed esperti in psicologia
       </p>
       
-      <div className="relative w-full h-[300px] bg-[#f5f7fa] rounded-lg overflow-hidden shadow-md flex items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4">
-            <svg className="w-20 h-20 mx-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-            </svg>
+      <div className="relative w-full h-[300px] bg-[#f5f7fa] rounded-lg overflow-hidden shadow-md flex">
+        {/* Content on the left */}
+        <div className="flex-1 flex items-center justify-center p-4">
+          <div className="text-center">
+            <div className="mb-4">
+              <svg className="w-20 h-20 mx-auto text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            
+            <h3 className="text-xl font-bold">
+              Validato da esperti
+            </h3>
+            
+            <p className="mt-2 text-gray-600 max-w-md mx-auto">
+              Ogni step del percorso è basato su evidenze scientifiche e protocolli testati clinicamente
+            </p>
           </div>
-          
-          <h3 className="text-xl font-bold">
-            Validato da esperti
-          </h3>
-          
-          <p className="mt-2 text-gray-600 max-w-md mx-auto">
-            Ogni step del percorso è basato su evidenze scientifiche e protocolli testati clinicamente
-          </p>
+        </div>
+        
+        {/* Doctor image on the right */}
+        <div className="w-[40%] relative overflow-hidden">
+          <img
+            src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png"
+            alt="Medici esperti"
+            className="h-full object-contain object-right"
+          />
         </div>
       </div>
       
