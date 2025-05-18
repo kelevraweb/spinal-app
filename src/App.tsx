@@ -9,20 +9,36 @@ import Quiz from "./pages/Quiz";
 import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
 
-// Import all the icons we're using
-import {
-  Frown,
-  Meh,
-  Smile,
-  Clock,
-  Timer,
-  Calendar,
-  Award,
-  Trophy,
-  Star,
-  Dumbbell,
-  Activity
-} from 'lucide-react';
+// Configure FontAwesome
+import { library } from '@fortawesome/fontawesome-svg-core';
+import { 
+  faSmile, 
+  faMeh, 
+  faFrown,
+  faClock,
+  faCalendarAlt,
+  faStopwatch,
+  faDumbbell,
+  faHeartbeat,
+  faTrophy,
+  faStar,
+  faChartLine
+} from '@fortawesome/free-solid-svg-icons';
+
+// Add icons to the library
+library.add(
+  faSmile, 
+  faMeh, 
+  faFrown, 
+  faClock, 
+  faCalendarAlt, 
+  faStopwatch, 
+  faDumbbell, 
+  faHeartbeat, 
+  faTrophy, 
+  faStar,
+  faChartLine
+);
 
 const queryClient = new QueryClient();
 

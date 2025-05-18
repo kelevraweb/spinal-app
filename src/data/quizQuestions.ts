@@ -5,14 +5,23 @@ export const quizQuestions: QuizQuestion[] = [
     id: "gender",
     question: "Qual è il tuo sesso?",
     type: "single",
-    options: ["Maschio", "Femmina"],
+    options: [
+      { text: "Maschio", iconName: "body" },
+      { text: "Femmina", iconName: "body" }
+    ],
     required: true
   },
   {
     id: "age",
     question: "Qual è la tua fascia d'età?",
     type: "single",
-    options: ["18-24", "25-34", "35-44", "45-54", "55+"],
+    options: [
+      { text: "18-24", iconName: "calendar" },
+      { text: "25-34", iconName: "calendar" },
+      { text: "35-44", iconName: "calendar" },
+      { text: "45-54", iconName: "calendar" },
+      { text: "55+", iconName: "calendar" }
+    ],
     required: true
   },
   {
@@ -138,7 +147,7 @@ export const quizQuestions: QuizQuestion[] = [
       { text: "Quasi nulla", iconName: "body" },
       { text: "Solo camminate leggere", iconName: "walking" },
       { text: "Faccio sport o esercizi regolari", iconName: "dumbbell" },
-      { text: "Alterno periodi attivi e sedentari", iconName: "running" }
+      { text: "Alterno periodi attivi e sedentari", iconName: "activity" }
     ],
     required: true
   },
@@ -146,35 +155,59 @@ export const quizQuestions: QuizQuestion[] = [
     id: "online_posture_program",
     question: "Hai mai seguito un percorso online per migliorare la postura o alleviare dolori?",
     type: "single",
-    options: ["Sì", "No", "Ho provato, ma l'ho abbandonato"],
+    options: [
+      { text: "Sì", iconName: "smile" },
+      { text: "No", iconName: "frown" },
+      { text: "Ho provato, ma l'ho abbandonato", iconName: "meh" }
+    ],
     required: true
   },
   {
     id: "end_of_day_feeling",
     question: "Come ti senti a fine giornata?",
     type: "single",
-    options: ["Rigida/o e stanca/o", "Con dolori o tensioni", "Scarico/a mentalmente", "Bene"],
+    options: [
+      { text: "Rigida/o e stanca/o", iconName: "frown" },
+      { text: "Con dolori o tensioni", iconName: "frown" },
+      { text: "Scarico/a mentalmente", iconName: "meh" },
+      { text: "Bene", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "avoid_movements",
     question: "Ti capita di evitare movimenti o attività per paura del dolore?",
     type: "single",
-    options: ["Spesso", "Qualche volta", "Mai"],
+    options: [
+      { text: "Spesso", iconName: "frown" },
+      { text: "Qualche volta", iconName: "meh" },
+      { text: "Mai", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "posture_diagnosis",
     question: "Hai mai ricevuto diagnosi (non mediche) come: cifosi, scoliosi, lordosi accentuata?",
     type: "single",
-    options: ["Sì", "No", "Non so"],
+    options: [
+      { text: "Sì", iconName: "frown" },
+      { text: "No", iconName: "smile" },
+      { text: "Non so", iconName: "meh" }
+    ],
     required: true
   },
   {
     id: "main_goal",
     question: "Qual è l'obiettivo principale che ti motiva ad iniziare questo percorso?",
     type: "multiple",
-    options: ["Eliminare il mal di schiena", "Correggere la postura", "Sentirmi più energico/a", "Prevenire problemi futuri", "Aumentare la mobilità", "Capire come ascoltare meglio il mio corpo"],
+    options: [
+      { text: "Eliminare il mal di schiena", iconName: "activity" },
+      { text: "Correggere la postura", iconName: "body" },
+      { text: "Sentirmi più energico/a", iconName: "star" },
+      { text: "Prevenire problemi futuri", iconName: "chart" },
+      { text: "Aumentare la mobilità", iconName: "activity" },
+      { text: "Capire come ascoltare meglio il mio corpo", iconName: "body" }
+    ],
     maxSelections: 2,
     required: true
   },
@@ -182,56 +215,95 @@ export const quizQuestions: QuizQuestion[] = [
     id: "improvement_blockers",
     question: "Cosa ti ha bloccato finora dal migliorare la tua schiena?",
     type: "single",
-    options: ["Poco tempo", "Non sapere da dove iniziare", "Paura di peggiorare la situazione", "Mi dimentico di farlo", "Nessun blocco, sto cercando il metodo giusto"],
+    options: [
+      { text: "Poco tempo", iconName: "clock" },
+      { text: "Non sapere da dove iniziare", iconName: "meh" },
+      { text: "Paura di peggiorare la situazione", iconName: "frown" },
+      { text: "Mi dimentico di farlo", iconName: "meh" },
+      { text: "Nessun blocco, sto cercando il metodo giusto", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "consistency",
     question: "Quando inizi qualcosa per migliorare la tua salute o benessere, quanto riesci a mantenere la costanza?",
     type: "single",
-    options: ["Inizio motivato/a, ma poi mollo", "Ci provo, ma mi perdo se non ho una guida", "Sono costante solo se vedo risultati subito", "Sono determinato/a e mi impegno davvero"],
+    options: [
+      { text: "Inizio motivato/a, ma poi mollo", iconName: "frown" },
+      { text: "Ci provo, ma mi perdo se non ho una guida", iconName: "meh" },
+      { text: "Sono costante solo se vedo risultati subito", iconName: "meh" },
+      { text: "Sono determinato/a e mi impegno davvero", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "abandonment",
     question: "Hai mai abbandonato un percorso per il tuo benessere prima di vedere risultati?",
     type: "single",
-    options: ["Sì, spesso", "Qualche volta", "No, ma faccio fatica a essere costante", "No, quando inizio qualcosa la porto a termine"],
+    options: [
+      { text: "Sì, spesso", iconName: "frown" },
+      { text: "Qualche volta", iconName: "meh" },
+      { text: "No, ma faccio fatica a essere costante", iconName: "meh" },
+      { text: "No, quando inizio qualcosa la porto a termine", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "body_feeling",
     question: "Come ti senti rispetto al tuo corpo e ai tuoi movimenti?",
     type: "single",
-    options: ["Lo sento \"bloccato\" e poco reattivo", "Mi sento rigido/a e poco sicuro/a", "A volte fluido, a volte impacciato", "Mi muovo bene e mi fido del mio corpo"],
+    options: [
+      { text: "Lo sento \"bloccato\" e poco reattivo", iconName: "frown" },
+      { text: "Mi sento rigido/a e poco sicuro/a", iconName: "frown" },
+      { text: "A volte fluido, a volte impacciato", iconName: "meh" },
+      { text: "Mi muovo bene e mi fido del mio corpo", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "stress_pain",
     question: "Quando sei stressato/a o stanco/a, il dolore o la rigidità aumentano?",
     type: "single",
-    options: ["Sì, ogni volta", "Solo in periodi particolari", "Non ci ho mai fatto caso", "No, il dolore è sempre uguale"],
+    options: [
+      { text: "Sì, ogni volta", iconName: "frown" },
+      { text: "Solo in periodi particolari", iconName: "meh" },
+      { text: "Non ci ho mai fatto caso", iconName: "meh" },
+      { text: "No, il dolore è sempre uguale", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "training_time",
     question: "In quale momento della giornata vorresti allenarti?",
     type: "single",
-    options: ["Mattina presto", "Pausa pranzo", "Sera", "Quando capita, senza orari fissi"],
+    options: [
+      { text: "Mattina presto", iconName: "clock" },
+      { text: "Pausa pranzo", iconName: "clock" },
+      { text: "Sera", iconName: "clock" },
+      { text: "Quando capita, senza orari fissi", iconName: "clock" }
+    ],
     required: true
   },
   {
     id: "approach_preference",
     question: "Che tipo di approccio preferisci?",
     type: "single",
-    options: ["Video brevi e semplici", "Sessioni guidate più strutturate", "Tecniche di rilassamento + movimento", "Un mix equilibrato"],
+    options: [
+      { text: "Video brevi e semplici", iconName: "clock" },
+      { text: "Sessioni guidate più strutturate", iconName: "clock" },
+      { text: "Tecniche di rilassamento + movimento", iconName: "clock" },
+      { text: "Un mix equilibrato", iconName: "clock" }
+    ],
     required: true
   },
   {
     id: "expert_reference",
     question: "Hai sentito parlare di noi da un esperto?",
     type: "single",
-    options: ["Sì", "No"],
+    options: [
+      { text: "Sì", iconName: "smile" },
+      { text: "No", iconName: "frown" }
+    ],
     required: true
   },
   {
@@ -262,14 +334,23 @@ export const quizQuestions: QuizQuestion[] = [
     id: "posture_knowledge",
     question: "Quanto ne sai sugli allenamenti posturali?",
     type: "single",
-    options: ["Nulla", "Non così tanto", "Molto"],
+    options: [
+      { text: "Nulla", iconName: "frown" },
+      { text: "Non così tanto", iconName: "meh" },
+      { text: "Molto", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "future_physical_state",
     question: "Come ti immagini fisicamente nei prossimi 5 anni se non fai nulla?",
     type: "single",
-    options: ["Con più dolori e meno energia", "Probabilmente simile a ora", "Non ci ho mai pensato", "Spero di stare meglio, ma non so come"],
+    options: [
+      { text: "Con più dolori e meno energia", iconName: "frown" },
+      { text: "Probabilmente simile a ora", iconName: "meh" },
+      { text: "Non ci ho mai pensato", iconName: "meh" },
+      { text: "Spero di stare meglio, ma non so come", iconName: "chart" }
+    ],
     required: true
   }
 ];

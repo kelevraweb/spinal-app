@@ -1,7 +1,25 @@
 
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
-import * as LucideIcons from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faSmile, 
+  faMeh, 
+  faFrown, 
+  faClock, 
+  faCalendarAlt, 
+  faStopwatch, 
+  faDumbbell, 
+  faHeartbeat, 
+  faTrophy, 
+  faStar, 
+  faWalking,
+  faRunning,
+  faYoga,
+  faPerson,
+  faSpine,
+  faChartLine
+} from '@fortawesome/free-solid-svg-icons';
 
 interface SingleChoiceProps {
   options: string[] | QuizOption[];
@@ -18,8 +36,25 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   useImages = false,
   questionId
 }) => {
-  // Check if options is array of strings or array of QuizOption
-  const hasIconOptions = options.length > 0 && typeof options[0] !== 'string';
+  // Map of FontAwesome icons
+  const iconMap: Record<string, any> = {
+    'smile': faSmile,
+    'meh': faMeh,
+    'frown': faFrown,
+    'clock': faClock,
+    'calendar': faCalendarAlt,
+    'timer': faStopwatch,
+    'dumbbell': faDumbbell,
+    'activity': faHeartbeat,
+    'trophy': faTrophy,
+    'star': faStar,
+    'walking': faWalking,
+    'running': faRunning,
+    'yoga': faYoga,
+    'body': faPerson,
+    'spine': faSpine, // Might need to use a different icon if this isn't available
+    'chart': faChartLine
+  };
   
   // Show image cards for gender selection
   if (useImages && questionId === 'gender') {
@@ -66,7 +101,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     );
   }
 
-  // Default view for all other questions
+  // Default view for all other questions - removed the circle selector
   return (
     <div className="space-y-3 mt-6">
       {options.map((option, index) => {
@@ -74,11 +109,8 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         const optionText = typeof option === 'string' ? option : option.text;
         const optionIconName = typeof option === 'string' ? null : option.iconName;
         
-        // Dynamically get the icon component if an icon name is provided
-        let IconComponent = null;
-        if (optionIconName && LucideIcons[optionIconName]) {
-          IconComponent = LucideIcons[optionIconName];
-        }
+        // Default icon if none provided
+        const icon = optionIconName ? iconMap[optionIconName.toLowerCase()] || faChartLine : faChartLine;
         
         return (
           <button
@@ -87,16 +119,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             className={`option-btn ${value === optionText ? 'selected' : ''}`}
             onClick={() => onChange(optionText)}
           >
-            <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center mr-3 flex-shrink-0">
-              {value === optionText && (
-                <div className="w-3 h-3 rounded-full bg-brand-primary"></div>
-              )}
-            </div>
-            
-            <div className="flex items-center">
-              {IconComponent && (
-                <IconComponent className="mr-2 text-brand-primary" size={20} />
-              )}
+            <div className="flex items-center w-full">
+              <FontAwesomeIcon 
+                icon={icon} 
+                className={`mr-3 ${value === optionText ? 'text-brand-primary text-xl' : 'text-gray-400'}`}
+                size="lg"
+              />
               <span>{optionText}</span>
             </div>
           </button>

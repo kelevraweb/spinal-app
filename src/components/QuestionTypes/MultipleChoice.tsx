@@ -1,19 +1,27 @@
 
 import React, { useState } from 'react';
 import { QuizOption } from '../../types/quiz';
-import {
-  Activity,
-  Dumbbell,
-  Frown,
-  Meh,
-  Smile,
-  Clock,
-  Timer,
-  Calendar,
-  Award,
-  Trophy,
-  Star
-} from 'lucide-react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faSmile, 
+  faMeh, 
+  faFrown, 
+  faClock, 
+  faCalendarAlt, 
+  faStopwatch, 
+  faDumbbell, 
+  faHeartbeat, 
+  faTrophy, 
+  faStar, 
+  faWalking,
+  faRunning,
+  faYoga,
+  faPerson,
+  faSquare,
+  faSquareCheck,
+  faChartLine
+} from '@fortawesome/free-solid-svg-icons';
+import { faSquare as faSquareRegular } from '@fortawesome/free-regular-svg-icons';
 
 interface MultipleChoiceProps {
   options: string[] | QuizOption[];
@@ -29,9 +37,25 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   maxSelections
 }) => {
   const [error, setError] = useState<string | null>(null);
-  
-  // Check if options is array of strings or array of QuizOption
-  const hasIconOptions = options.length > 0 && typeof options[0] !== 'string';
+
+  // Map of FontAwesome icons
+  const iconMap: Record<string, any> = {
+    'smile': faSmile,
+    'meh': faMeh,
+    'frown': faFrown,
+    'clock': faClock,
+    'calendar': faCalendarAlt,
+    'timer': faStopwatch,
+    'dumbbell': faDumbbell,
+    'activity': faHeartbeat,
+    'trophy': faTrophy,
+    'star': faStar,
+    'walking': faWalking,
+    'running': faRunning,
+    'yoga': faYoga,
+    'body': faPerson,
+    'chart': faChartLine
+  };
 
   const handleOptionClick = (optionText: string) => {
     let newValue: string[];
@@ -42,7 +66,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     } else {
       // Add option if not at max selections
       if (maxSelections && value.length >= maxSelections) {
-        setError(`You can select a maximum of ${maxSelections} options`);
+        setError(`Puoi selezionare un massimo di ${maxSelections} opzioni`);
         setTimeout(() => setError(null), 3000);
         return;
       }
@@ -50,28 +74,6 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     }
     
     onChange(newValue);
-  };
-
-  // Icon mapping function
-  const getIconComponent = (iconName: string | undefined) => {
-    if (!iconName) return null;
-    
-    // Map of available icons
-    const iconMap: Record<string, React.ReactNode> = {
-      'activity': <Activity size={20} />,
-      'dumbbell': <Dumbbell size={20} />,
-      'frown': <Frown size={20} />,
-      'meh': <Meh size={20} />,
-      'smile': <Smile size={20} />,
-      'clock': <Clock size={20} />,
-      'timer': <Timer size={20} />,
-      'calendar': <Calendar size={20} />,
-      'award': <Award size={20} />,
-      'trophy': <Trophy size={20} />,
-      'star': <Star size={20} />
-    };
-    
-    return iconMap[iconName.toLowerCase()] || null;
   };
 
   return (
@@ -87,28 +89,29 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         const optionText = typeof option === 'string' ? option : option.text;
         const optionIconName = typeof option === 'string' ? null : option.iconName;
         
-        // Get the icon component
-        const IconComponent = getIconComponent(optionIconName);
+        // Default icon if none provided
+        const iconOption = optionIconName ? iconMap[optionIconName.toLowerCase()] || faChartLine : faChartLine;
+        const isSelected = value.includes(optionText);
         
         return (
           <button
             key={index}
             type="button"
-            className={`option-btn ${value.includes(optionText) ? 'selected' : ''}`}
+            className={`option-btn ${isSelected ? 'selected' : ''}`}
             onClick={() => handleOptionClick(optionText)}
           >
-            <div className="w-6 h-6 rounded border-2 flex items-center justify-center mr-3 flex-shrink-0">
-              {value.includes(optionText) && (
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-brand-primary">
-                  <polyline points="20 6 9 17 4 12"></polyline>
-                </svg>
-              )}
-            </div>
-            
-            <div className="flex items-center">
-              {IconComponent && (
-                <span className="mr-2 text-brand-primary">{IconComponent}</span>
-              )}
+            <div className="flex items-center w-full">
+              <FontAwesomeIcon 
+                icon={isSelected ? faSquareCheck : faSquareRegular}
+                className={`mr-3 ${isSelected ? 'text-brand-primary' : 'text-gray-400'}`}
+                size="lg"
+              />
+              
+              <FontAwesomeIcon 
+                icon={iconOption} 
+                className={`mr-2 ${isSelected ? 'text-brand-primary' : 'text-gray-500'}`}
+              />
+              
               <span>{optionText}</span>
             </div>
           </button>
