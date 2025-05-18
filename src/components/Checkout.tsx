@@ -398,80 +398,6 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
         </div>
       </div>
 
-      {/* Plan Selection Repeat */}
-      <div className="mb-12">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-6">Il tuo piano personalizzato per la salute della schiena è pronto!</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          {/* Trial Plan */}
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardHeader className="bg-gray-50">
-              <CardTitle className="text-xl text-center">{plans.trial.title}</CardTitle>
-              <div className="text-center">
-                <span className="text-3xl font-bold">€{plans.trial.price}</span>
-                <span className="text-sm">/{plans.trial.period}</span>
-              </div>
-              <p className="text-center text-sm text-gray-500">{plans.trial.billingText}</p>
-              <p className="text-center text-sm">{plans.trial.duration}</p>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <Button onClick={() => openCheckoutDialog('trial')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-            </CardContent>
-          </Card>
-
-          {/* Monthly Plan */}
-          <Card className="border-2 border-brand-primary hover:shadow-lg transition-shadow">
-            <div className="bg-brand-primary text-white py-1 text-center text-sm font-medium">PIÙ POPOLARE</div>
-            <CardHeader className="bg-gray-50">
-              <CardTitle className="text-xl text-center">{plans.monthly.title}</CardTitle>
-              <div className="text-center">
-                <span className="text-3xl font-bold">€{plans.monthly.price}</span>
-                <span className="text-sm">/{plans.monthly.period}</span>
-              </div>
-              <p className="text-center text-sm text-gray-500">{plans.monthly.billingText}</p>
-              <p className="text-center text-sm">{plans.monthly.duration}</p>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <Button onClick={() => openCheckoutDialog('monthly')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-            </CardContent>
-          </Card>
-
-          {/* Quarterly Plan */}
-          <Card className="border-2 hover:shadow-lg transition-shadow">
-            <CardHeader className="bg-gray-50">
-              <CardTitle className="text-xl text-center">{plans.quarterly.title}</CardTitle>
-              <div className="text-center">
-                <span className="text-3xl font-bold">€{plans.quarterly.price}</span>
-                <span className="text-sm">/{plans.quarterly.period}</span>
-              </div>
-              <p className="text-center text-sm text-gray-500">{plans.quarterly.billingText}</p>
-              <p className="text-center text-sm">{plans.quarterly.duration}</p>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <Button onClick={() => openCheckoutDialog('quarterly')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div className="text-center mb-6 text-sm text-gray-600">
-          <p>Cliccando su "Ottieni il mio piano", accetti l'attivazione di un abbonamento con rinnovo automatico.</p>
-          <p>Il primo mese ha un costo di €49,99, poi €49,99/mese (IVA inclusa).</p>
-          <p>Puoi disdire in qualsiasi momento direttamente dall'app o scrivendo a:</p>
-          <p className="font-medium">📧 support@xxx.com</p>
-          <p>Consulta l'Informativa sull'abbonamento per tutti i dettagli.</p>
-        </div>
-        
-        <div className="text-center mb-6">
-          <p className="font-medium mb-2">Paga in modo sicuro e protetto</p>
-          <div className="flex justify-center items-center gap-4">
-            <div className="w-12 h-8 bg-gray-200 rounded"></div>
-            <div className="w-12 h-8 bg-gray-200 rounded"></div>
-            <div className="w-12 h-8 bg-gray-200 rounded"></div>
-            <div className="w-12 h-8 bg-gray-200 rounded"></div>
-          </div>
-        </div>
-      </div>
-
       {/* Money Back Guarantee */}
       <div className="mb-12 bg-green-50 p-6 rounded-lg">
         <h2 className="text-xl font-bold mb-3">Garanzia Soddisfatti o Rimborsati – 30 Giorni</h2>
@@ -481,7 +407,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
         <p>📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
       </div>
 
-      {/* Checkout Dialog */}
+      {/* Simplified dialog that only shows payment form */}
       <Dialog open={showCheckoutDialog} onOpenChange={setShowCheckoutDialog}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
@@ -642,4 +568,3 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
 };
 
 export default Checkout;
-
