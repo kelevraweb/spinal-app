@@ -117,7 +117,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <span className="font-medium text-lg text-left">Quasi nulla</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
-              src="/lovable-uploads/16876eab-c5be-4f65-91e0-e35ebcf6a05f.png" 
+              src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" 
               alt="Quasi nulla" 
               className="w-full h-full object-cover"
             />
@@ -136,7 +136,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <span className="font-medium text-lg text-left">Solo camminate leggere</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
-              src="/lovable-uploads/41d1066f-6aa1-414c-99ec-e3ed8c16b5c2.png" 
+              src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png" 
               alt="Solo camminate leggere" 
               className="w-full h-full object-cover"
             />
@@ -155,7 +155,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <span className="font-medium text-lg text-left">Faccio sport o esercizi regolari</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
-              src="/lovable-uploads/f9761bc7-1b3c-41d4-b369-f7b90c8b429b.png" 
+              src="/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png" 
               alt="Faccio sport" 
               className="w-full h-full object-cover"
             />
@@ -174,7 +174,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <span className="font-medium text-lg text-left">Alterno periodi attivi e sedentari</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
-              src="/lovable-uploads/7acf66fc-31a1-4a02-b3dc-31dcfe0dbb00.png" 
+              src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" 
               alt="Alterno periodi" 
               className="w-full h-full object-cover"
             />
