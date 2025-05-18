@@ -85,7 +85,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button type="button" className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${value === 'Alterno periodi attivi e sedentari' ? 'border-brand-primary bg-brand-primary/10' : 'border-gray-300 hover:border-gray-400'}`} onClick={() => onChange('Alterno periodi attivi e sedentari')}>
           <span className="font-medium text-lg text-left">Alterno periodi attivi e sedentari</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
-            <img src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" alt="Alterno periodi" className="w-full h-full object-cover" />
+            <img src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" alt="Alterno periodi" className="w-full h-full object-contain" />
           </div>
         </button>
       </div>;
