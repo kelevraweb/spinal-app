@@ -1,3 +1,4 @@
+
 import { QuizOption, QuizQuestion } from '../types/quiz';
 
 export const quizQuestions: QuizQuestion[] = [
@@ -23,7 +24,7 @@ export const quizQuestions: QuizQuestion[] = [
       { text: "Spesso, ho paura che diventi cronico", iconName: "frown" },
       { text: "Qualche volta, ma ci convivo", iconName: "meh" },
       { text: "Raramente, non mi preoccupo", iconName: "smile" },
-      { text: "Non ho dolori, voglio solo migliorare la postura", iconName: "spine" }
+      { text: "Non ho dolori, voglio solo migliorare la postura", iconName: "activity" }
     ],
     required: true
   },
@@ -32,9 +33,9 @@ export const quizQuestions: QuizQuestion[] = [
     question: "Come valuti oggi la tua postura e il tuo stile di vita?",
     type: "single",
     options: [
-      { text: "So di avere una postura scorretta", iconName: "spine" },
-      { text: "Penso di avere una postura normale ma sedentaria", iconName: "body" },
-      { text: "Faccio già attività fisica ma sento rigidità", iconName: "walking" },
+      { text: "So di avere una postura scorretta", iconName: "activity" },
+      { text: "Penso di avere una postura normale ma sedentaria", iconName: "activity" },
+      { text: "Faccio già attività fisica ma sento rigidità", iconName: "activity" },
       { text: "Non saprei dire", iconName: "meh" }
     ],
     required: true

@@ -1,7 +1,19 @@
 
 import React, { useState } from 'react';
 import { QuizOption } from '../../types/quiz';
-import * as LucideIcons from 'lucide-react';
+import {
+  Activity,
+  Dumbbell,
+  Frown,
+  Meh,
+  Smile,
+  Clock,
+  Timer,
+  Calendar,
+  Award,
+  Trophy,
+  Star
+} from 'lucide-react';
 
 interface MultipleChoiceProps {
   options: string[] | QuizOption[];
@@ -40,6 +52,28 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     onChange(newValue);
   };
 
+  // Icon mapping function
+  const getIconComponent = (iconName: string | undefined) => {
+    if (!iconName) return null;
+    
+    // Map of available icons
+    const iconMap: Record<string, React.ReactNode> = {
+      'activity': <Activity size={20} />,
+      'dumbbell': <Dumbbell size={20} />,
+      'frown': <Frown size={20} />,
+      'meh': <Meh size={20} />,
+      'smile': <Smile size={20} />,
+      'clock': <Clock size={20} />,
+      'timer': <Timer size={20} />,
+      'calendar': <Calendar size={20} />,
+      'award': <Award size={20} />,
+      'trophy': <Trophy size={20} />,
+      'star': <Star size={20} />
+    };
+    
+    return iconMap[iconName.toLowerCase()] || null;
+  };
+
   return (
     <div className="space-y-3 mt-6">
       {maxSelections && (
@@ -53,11 +87,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
         const optionText = typeof option === 'string' ? option : option.text;
         const optionIconName = typeof option === 'string' ? null : option.iconName;
         
-        // Dynamically get the icon component if an icon name is provided
-        let IconComponent = null;
-        if (optionIconName && LucideIcons[optionIconName]) {
-          IconComponent = LucideIcons[optionIconName];
-        }
+        // Get the icon component
+        const IconComponent = getIconComponent(optionIconName);
         
         return (
           <button
@@ -76,7 +107,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             
             <div className="flex items-center">
               {IconComponent && (
-                <IconComponent className="mr-2 text-brand-primary" size={20} />
+                <span className="mr-2 text-brand-primary">{IconComponent}</span>
               )}
               <span>{optionText}</span>
             </div>

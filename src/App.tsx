@@ -21,9 +21,9 @@ import {
   Trophy,
   Star,
   Dumbbell,
-  Walking,
-  Running,
-  Yoga
+  Activity,
+  Yoga as YogaIcon,
+  Running as RunningIcon
 } from 'lucide-react';
 
 const queryClient = new QueryClient();
