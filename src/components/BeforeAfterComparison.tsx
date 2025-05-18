@@ -100,9 +100,9 @@ const BeforeAfterComparison: React.FC = () => {
             
             <div className="relative overflow-hidden mb-5 rounded-lg h-[200px] md:h-[250px] bg-gray-100">
               <img 
-                src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png" 
+                src="/lovable-uploads/c99bbbe1-5997-45bd-a1ff-752a4a9049f1.png" 
                 alt="Situazione attuale" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                 <p className="text-white font-medium">Dolore e disagio quotidiano</p>
@@ -151,9 +151,9 @@ const BeforeAfterComparison: React.FC = () => {
             
             <div className="relative overflow-hidden mb-5 rounded-lg h-[200px] md:h-[250px] bg-gray-100">
               <img 
-                src="/lovable-uploads/8416fbc2-1a9c-4811-b5e7-3f97afd4ef1a.png" 
+                src="/lovable-uploads/eb4eabe5-ba3d-4388-948c-d21e0211167f.png" 
                 alt="Situazione dopo il piano" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain"
               />
               <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3">
                 <p className="text-white font-medium">Libertà di movimento e benessere</p>
