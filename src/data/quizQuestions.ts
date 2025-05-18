@@ -1,4 +1,3 @@
-
 import { QuizQuestion } from '../types/quiz';
 
 export const quizQuestions: QuizQuestion[] = [
@@ -6,7 +5,7 @@ export const quizQuestions: QuizQuestion[] = [
     id: "gender",
     question: "Qual è il tuo sesso?",
     type: "single",
-    options: ["Maschio", "Femmina", "Altro"],
+    options: ["Maschio", "Femmina"],
     required: true
   },
   {

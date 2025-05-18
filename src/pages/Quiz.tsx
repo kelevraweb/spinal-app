@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer } from '../types/quiz';
@@ -419,6 +418,8 @@ const Quiz: React.FC = () => {
             options={state.currentQuestion.options || []}
             value={currentAnswer as string}
             onChange={handleAnswerChange}
+            useImages={state.currentQuestion.id === 'gender'}
+            questionId={state.currentQuestion.id}
           />
         );
         
