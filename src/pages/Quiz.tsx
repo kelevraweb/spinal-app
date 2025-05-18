@@ -40,6 +40,7 @@ const Quiz: React.FC = () => {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
+  const [debugMessage, setDebugMessage] = useState<string>(''); // For debugging purposes
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -57,7 +58,7 @@ const Quiz: React.FC = () => {
       timer = setTimeout(() => {
         if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
             state.showSpecialPage === 'expert') {
-          // Move to next question
+          // Move to next question - use handleSpecialPageComplete to ensure proper state updates
           handleSpecialPageComplete();
         } else if (state.showSpecialPage === 'worldMap') {
           // After world map go to wellbeing level
@@ -87,6 +88,11 @@ const Quiz: React.FC = () => {
     } else {
       setCurrentAnswer('');
       setIsNextEnabled(false);
+    }
+
+    // For debug purposes - add information about current step and question
+    if (state.currentQuestion) {
+      setDebugMessage(`Step: ${state.currentStep}, Question ID: ${state.currentQuestion.id}`);
     }
   }, [state.currentStep, state.currentQuestion]);
 
@@ -131,27 +137,27 @@ const Quiz: React.FC = () => {
     // Special pages triggers
     let showSpecialPage = undefined;
     
-    // Dopo domanda 2 (dati demografici) mostra trust map
+    // After question 2 (demographic data) show trust map
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
     
-    // Dopo domanda 23 mostra università
+    // After question 23 show universities
     if (state.currentStep === 23) {
       showSpecialPage = 'universities';
     }
     
-    // Dopo domanda 26 mostra l'esperto
+    // After question 26 show expert
     if (state.currentStep === 26) {
       showSpecialPage = 'expert';
     }
 
-    // Dopo la schermata dell'esperto mostra la mappa mondiale
+    // After expert screen show world map
     if (state.showSpecialPage === 'expert') {
       showSpecialPage = 'worldMap';
     }
     
-    // Dopo la domanda 30 mostra livello benessere
+    // After question 30 show wellbeing level
     if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
@@ -172,24 +178,34 @@ const Quiz: React.FC = () => {
     
     setIsAnimating(true);
     
-    // Update state with new answers and next question
-    setState({
-      ...state,
+    // First update answers
+    setState(prevState => ({
+      ...prevState,
       answers: updatedAnswers,
+      // Only update special page status but keep other state intact
       showSpecialPage
-    });
+    }));
     
-    // Reduced transition time from 300ms to 200ms for smoother experience
-    setTimeout(() => {
-      setState(prevState => ({
-        ...prevState,
-        currentStep: nextStep,
-        currentQuestion: quizQuestions[nextStep],
-        showSpecialPage: undefined
-      }));
-      
-      setIsAnimating(false);
-    }, showSpecialPage ? 5000 : 200);
+    // If showing a special page, don't immediately change the current question
+    // Instead, let the special page complete and trigger handleSpecialPageComplete
+    if (!showSpecialPage) {
+      // For normal transitions, change to next question after animation
+      setTimeout(() => {
+        setState(prevState => ({
+          ...prevState,
+          currentStep: nextStep,
+          currentQuestion: quizQuestions[nextStep],
+        }));
+        
+        setIsAnimating(false);
+      }, 200);
+    } else {
+      // For special pages, just finish the animation for current question
+      // The special page transition will be handled in handleSpecialPageComplete
+      setTimeout(() => {
+        setIsAnimating(false);
+      }, 200);
+    }
   };
 
   const handleBack = () => {
@@ -198,7 +214,6 @@ const Quiz: React.FC = () => {
     setIsAnimating(true);
     setTransitionDirection('prev');
     
-    // Reduced transition time from 300ms to 200ms for smoother experience
     setTimeout(() => {
       const prevStep = state.currentStep - 1;
       setState({
@@ -216,6 +231,10 @@ const Quiz: React.FC = () => {
     // Move to the next step after a special page is shown
     const nextStep = state.currentStep + 1;
     
+    // Ensure we're not animating when transitioning from special page
+    setIsAnimating(false);
+    
+    // Use the functional setState to ensure we have the latest state
     setState(prevState => ({
       ...prevState,
       currentStep: nextStep,
@@ -473,6 +492,9 @@ const Quiz: React.FC = () => {
     }
   };
 
+  // Add debug information - remove in production
+  console.log(`Current step: ${state.currentStep}, showSpecialPage: ${state.showSpecialPage}, currentQuestion: ${state.currentQuestion?.id}`);
+
   return (
     <>
       <TopNavBar 
@@ -501,7 +523,7 @@ const Quiz: React.FC = () => {
           
           {/* Question */}
           <h2 className="question-title">
-            {state.currentQuestion?.question}
+            {state.currentQuestion?.question || 'Loading...'}
           </h2>
           
           {/* Question content based on type */}
@@ -531,6 +553,11 @@ const Quiz: React.FC = () => {
               {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
             </button>
           </div>
+          
+          {/* Debug info - remove in production */}
+          {/* <div className="mt-4 text-xs text-gray-400">
+            {debugMessage}
+          </div> */}
         </div>
       </div>
     </>

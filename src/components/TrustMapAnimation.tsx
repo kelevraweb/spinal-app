@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -30,6 +29,7 @@ const worldMapPositions = [
 const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false, onContinue }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [step, setStep] = useState(1);
+  const [autoTransition, setAutoTransition] = useState(false);
 
   useEffect(() => {
     const timer1 = setTimeout(() => {
@@ -44,12 +44,28 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
       setStep(3);
     }, 2500);
 
+    // Auto-transition after 5 seconds if needed
+    const autoTimer = setTimeout(() => {
+      if (onContinue) {
+        setAutoTransition(true);
+        onContinue();
+      }
+    }, 5000);
+
     return () => {
       clearTimeout(timer1);
       clearTimeout(timer2);
       clearTimeout(timer3);
+      clearTimeout(autoTimer);
     };
-  }, []);
+  }, [onContinue]);
+
+  // Prevent further button clicks if auto-transition is in progress
+  const handleContinueClick = () => {
+    if (onContinue && !autoTransition) {
+      onContinue();
+    }
+  };
 
   // Render world map version
   if (worldMap) {
@@ -153,7 +169,7 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
 
         <div className="mt-10 text-center">
           <Button 
-            onClick={onContinue}
+            onClick={handleContinueClick}
             size="lg" 
             className="bg-blue-500 hover:bg-blue-600 text-white"
           >
@@ -222,7 +238,7 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
 
       <div className="mt-10 text-center">
         <Button 
-          onClick={onContinue}
+          onClick={handleContinueClick}
           size="lg" 
           className="bg-blue-500 hover:bg-blue-600 text-white"
         >
