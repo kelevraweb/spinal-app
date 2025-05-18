@@ -1,4 +1,3 @@
-
 import { QuizOption, QuizQuestion } from '../types/quiz';
 
 export const quizQuestions: QuizQuestion[] = [
@@ -45,12 +44,12 @@ export const quizQuestions: QuizQuestion[] = [
     question: "Dove senti più spesso dolore o rigidità?",
     type: "multiple",
     options: [
-      { text: "Collo e cervicale", iconName: "spine" },
-      { text: "Parte alta della schiena", iconName: "spine" },
-      { text: "Zona lombare", iconName: "spine" },
-      { text: "Spalle", iconName: "body" },
-      { text: "Anche e bacino", iconName: "body" },
-      { text: "Gambe", iconName: "walking" },
+      { text: "Collo e cervicale", iconName: "activity" },
+      { text: "Parte alta della schiena", iconName: "activity" },
+      { text: "Zona lombare", iconName: "activity" },
+      { text: "Spalle", iconName: "dumbbell" },
+      { text: "Anche e bacino", iconName: "dumbbell" },
+      { text: "Gambe", iconName: "activity" },
       { text: "Nessun dolore, voglio solo prevenzione", iconName: "smile" }
     ],
     maxSelections: 3,
