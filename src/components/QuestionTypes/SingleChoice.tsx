@@ -64,7 +64,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button type="button" className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${value === 'Quasi nulla' ? 'border-brand-primary bg-brand-primary/10' : 'border-gray-300 hover:border-gray-400'}`} onClick={() => onChange('Quasi nulla')}>
           <span className="font-medium text-lg text-left">Quasi nulla</span>
           <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
-            <img src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" alt="Quasi nulla" className="w-full h-full object-cover" />
+            <img src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" alt="Quasi nulla" className="w-full h-full object-contain" />
           </div>
         </button>
         
