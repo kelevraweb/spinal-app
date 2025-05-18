@@ -41,7 +41,7 @@ const Quiz: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
   const [debugMessage, setDebugMessage] = useState<string>('');
-  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
+  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(true); // Set to true for all questions
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -91,8 +91,8 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(false);
     }
     
-    // Check if we're on the gender question (first question)
-    setShouldAutoAdvance(state.currentQuestion?.id === 'gender');
+    // Auto advance for all questions
+    setShouldAutoAdvance(true);
 
     // For debug purposes - add information about current step and question
     if (state.currentQuestion) {
@@ -113,10 +113,19 @@ const Quiz: React.FC = () => {
     } else {
       setIsNextEnabled(true);
       
-      // If we're on gender question and auto advance is enabled
-      if (shouldAutoAdvance && state.currentQuestion?.id === 'gender') {
-        // Add a slight delay to make the selection visible before advancing
-        setTimeout(() => handleNext(), 300);
+      // Auto advance on any question selection
+      if (shouldAutoAdvance) {
+        // For multiple choice questions, we need to check if it's a single selection
+        if (Array.isArray(answer)) {
+          // If it's multiple choice, only auto advance on the first selection
+          const existingAnswer = state.answers.find(a => a.questionId === state.currentQuestion?.id);
+          if (!existingAnswer) {
+            setTimeout(() => handleNext(), 300);
+          }
+        } else {
+          // All other question types, auto advance immediately
+          setTimeout(() => handleNext(), 300);
+        }
       }
     }
   };
@@ -460,7 +469,7 @@ const Quiz: React.FC = () => {
             onChange={handleAnswerChange}
             useImages={state.currentQuestion.id === 'gender'}
             questionId={state.currentQuestion.id}
-            autoAdvance={state.currentQuestion.id === 'gender'}
+            autoAdvance={true} // Always auto-advance
           />
         );
         
@@ -503,9 +512,6 @@ const Quiz: React.FC = () => {
     }
   };
 
-  // Add debug information - remove in production
-  console.log(`Current step: ${state.currentStep}, showSpecialPage: ${state.showSpecialPage}, currentQuestion: ${state.currentQuestion?.id}`);
-
   return (
     <>
       <TopNavBar 
@@ -539,39 +545,6 @@ const Quiz: React.FC = () => {
           
           {/* Question content based on type */}
           {renderQuestionContent()}
-          
-          {/* Navigation buttons - hide for gender question */}
-          <div className="flex justify-between mt-8">
-            {state.currentStep > 0 ? (
-              <button 
-                type="button"
-                className="btn-secondary"
-                onClick={handleBack}
-                disabled={isAnimating}
-              >
-                Indietro
-              </button>
-            ) : (
-              <div></div> /* Empty div to maintain layout */
-            )}
-            
-            {/* Only show Next button if not on gender question */}
-            {state.currentQuestion?.id !== 'gender' && (
-              <button
-                type="button"
-                className="btn-primary"
-                onClick={handleNext}
-                disabled={!isNextEnabled || isAnimating}
-              >
-                {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
-              </button>
-            )}
-          </div>
-          
-          {/* Debug info - remove in production */}
-          {/* <div className="mt-4 text-xs text-gray-400">
-            {debugMessage}
-          </div> */}
         </div>
       </div>
     </>

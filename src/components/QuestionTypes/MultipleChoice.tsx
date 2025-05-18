@@ -52,8 +52,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     'star': faStar,
     'walking': faWalking,
     'running': faRunning,
-    'yoga': faPersonWalking, // Changed from faYoga to faPersonWalking
-    'body': faUserNinja,     // Changed from faPerson to faUserNinja
+    'yoga': faPersonWalking,
+    'body': faUserNinja,
     'chart': faChartLine
   };
 
@@ -102,10 +102,10 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">
-                <div className={`icon-circle ${isSelected ? 'bg-brand-light' : 'bg-gray-100'}`}>
+                <div className={`icon-circle ${isSelected ? 'bg-[#88c2aa]/30' : 'bg-gray-100'}`}>
                   <FontAwesomeIcon 
                     icon={iconOption} 
-                    className={isSelected ? 'text-brand-primary' : 'text-gray-500'}
+                    className={isSelected ? 'text-[#71b8bc]' : 'text-gray-500'}
                   />
                 </div>
                 <span className="ml-2">{optionText}</span>
@@ -113,7 +113,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
               
               <FontAwesomeIcon 
                 icon={isSelected ? faSquareCheck : faSquareRegular}
-                className={`${isSelected ? 'text-brand-primary' : 'text-gray-400'}`}
+                className={`${isSelected ? 'text-[#71b8bc]' : 'text-gray-400'}`}
                 size="lg"
               />
             </div>

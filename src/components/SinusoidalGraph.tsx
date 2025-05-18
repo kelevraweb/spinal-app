@@ -1,260 +1,212 @@
 
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
-import { ChevronRight } from 'lucide-react';
 
 interface SinusoidalGraphProps {
   onContinue?: () => void;
 }
 
 const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const [activePoint, setActivePoint] = useState(0);
-  const [pathAnimated, setPathAnimated] = useState(false);
-  
+  const [animationStep, setAnimationStep] = useState(0);
+
   useEffect(() => {
-    // Initial visibility animation
-    const visibilityTimer = setTimeout(() => {
-      setIsVisible(true);
+    const timer = setTimeout(() => {
+      setAnimationStep(1);
     }, 500);
     
-    // Start path animation
-    const pathTimer = setTimeout(() => {
-      setPathAnimated(true);
-    }, 1000);
-    
-    // Points animation sequence
-    const pointsSequence = [0, 1, 2, 3].map((point, index) => {
-      return setTimeout(() => {
-        setActivePoint(point);
-      }, 1500 + index * 1000);
-    });
-    
-    return () => {
-      clearTimeout(visibilityTimer);
-      clearTimeout(pathTimer);
-      pointsSequence.forEach(timer => clearTimeout(timer));
-    };
+    return () => clearTimeout(timer);
   }, []);
 
-  const pointData = [
-    { week: 'SETTIMANA 1', x: '15%', y: '80%', color: '#ff1aa9', label: 'Oggi', active: true },
-    { week: 'SETTIMANA 2', x: '38%', y: '60%', color: '#ff80c8' },
-    { week: 'SETTIMANA 3', x: '62%', y: '35%', color: '#8af8fe' },
-    { week: 'SETTIMANA 4', x: '85%', y: '20%', color: '#19f1fe', label: 'Dopo LoveCoach' }
-  ];
-  
+  useEffect(() => {
+    if (animationStep === 1) {
+      // Start wave animation after 1s
+      const timer = setTimeout(() => {
+        setAnimationStep(2);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+    
+    if (animationStep === 2) {
+      // Show summary text after 2s
+      const timer = setTimeout(() => {
+        setAnimationStep(3);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+    
+    if (animationStep === 3) {
+      // Show button after 3s
+      const timer = setTimeout(() => {
+        setAnimationStep(4);
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, [animationStep]);
+
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
-      <h2 className="text-xl font-semibold text-center mb-4">Il tuo livello di benessere</h2>
-      
-      <div className="bg-white rounded-lg shadow-lg p-8 mb-6">
-        <div className="relative h-64 mb-8">
-          {/* Background grid */}
-          <div className="absolute inset-0 grid grid-cols-4 grid-rows-4">
-            {/* Vertical grid lines */}
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={`v-${i}`} 
-                className="absolute top-0 bottom-0 w-px bg-gray-100 h-full"
-                style={{ left: `${i * 25}%` }}
-              />
-            ))}
-            
-            {/* Horizontal grid lines */}
-            {[...Array(5)].map((_, i) => (
-              <div 
-                key={`h-${i}`} 
-                className="absolute left-0 right-0 h-px bg-gray-100 w-full"
-                style={{ top: `${i * 25}%` }}
-              />
-            ))}
-          </div>
-          
-          {/* SVG for curve */}
-          <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ opacity: isVisible ? 1 : 0, transition: 'opacity 1s' }}>
-            {/* Define gradient */}
-            <defs>
-              <linearGradient id="gradientLine" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stopColor="#ff1aa9" />
-                <stop offset="50%" stopColor="#ff80c8" />
-                <stop offset="100%" stopColor="#19f1fe" />
-              </linearGradient>
-              
-              {/* Shadow filter */}
-              <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
-                <feDropShadow dx="0" dy="1" stdDeviation="2" floodOpacity="0.2" />
-              </filter>
-              
-              {/* Glow filter */}
-              <filter id="glow">
-                <feGaussianBlur stdDeviation="3" result="blur" />
-                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-              </filter>
-            </defs>
-            
-            {/* Background path for the curve */}
-            <path
-              d="M 0,200 C 80,180 120,140 200,100 C 280,60 350,50 400,50"
-              fill="none"
-              stroke="#e0e0e0"
-              strokeWidth="4"
-              strokeLinecap="round"
-            />
-            
-            {/* Animated gradient path */}
-            <path
-              d="M 0,200 C 80,180 120,140 200,100 C 280,60 350,50 400,50"
-              fill="none"
-              stroke="url(#gradientLine)"
-              strokeWidth="4"
-              strokeLinecap="round"
-              filter="url(#shadow)"
-              style={{
-                strokeDasharray: 500,
-                strokeDashoffset: pathAnimated ? 0 : 500,
-                transition: 'stroke-dashoffset 2s ease-out'
-              }}
-            />
-            
-            {/* Highlight glow on the curve */}
-            <path
-              d="M 0,200 C 80,180 120,140 200,100 C 280,60 350,50 400,50"
-              fill="none"
-              stroke="white"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeOpacity="0.5"
-              filter="url(#glow)"
-              style={{
-                strokeDasharray: 500,
-                strokeDashoffset: pathAnimated ? 0 : 500,
-                transition: 'stroke-dashoffset 2s ease-out'
-              }}
-            />
-          </svg>
-          
-          {/* Points on the curve */}
-          {pointData.map((point, index) => {
-            const isActive = index <= activePoint && pathAnimated;
-            return (
-              <React.Fragment key={index}>
-                {/* Ripple effect for active points */}
-                {isActive && (
-                  <div 
-                    className="absolute rounded-full animate-pulse-slow"
-                    style={{
-                      left: point.x,
-                      top: point.y,
-                      width: '30px',
-                      height: '30px',
-                      backgroundColor: `${point.color}20`,
-                      transform: 'translate(-50%, -50%)',
-                      transition: 'opacity 0.5s',
-                      animation: 'pulse 2s infinite'
-                    }}
-                  />
-                )}
-                
-                {/* Point */}
-                <div 
-                  className="absolute rounded-full border-4 bg-white z-10"
-                  style={{ 
-                    left: point.x, 
-                    top: point.y, 
-                    width: isActive ? '14px' : '10px',
-                    height: isActive ? '14px' : '10px',
-                    borderColor: point.color,
-                    opacity: pathAnimated ? 1 : 0,
-                    transform: `translate(-50%, -50%) scale(${isActive ? 1 : 0.8})`,
-                    boxShadow: isActive ? `0 0 10px ${point.color}` : 'none',
-                    transition: 'all 0.5s',
-                    transitionDelay: `${index * 0.3}s`
-                  }}
-                />
-                
-                {/* Label */}
-                {point.label && (
-                  <div 
-                    className="absolute px-3 py-1.5 rounded-full text-white text-sm font-medium shadow-lg z-10"
-                    style={{ 
-                      left: point.x, 
-                      top: point.y, 
-                      transform: `translate(-50%, ${point.label === 'Oggi' ? '150%' : '-150%'})`,
-                      backgroundColor: point.color,
-                      opacity: isActive ? 1 : 0,
-                      transition: 'opacity 0.5s, transform 0.5s',
-                      transitionDelay: `${index * 0.3 + 0.2}s`
-                    }}
-                  >
-                    {point.label}
-                  </div>
-                )}
-                
-                {/* Week label */}
-                <div
-                  className="absolute text-xs font-medium"
-                  style={{
-                    left: point.x,
-                    bottom: '-25px',
-                    transform: 'translateX(-50%)',
-                    opacity: pathAnimated ? 1 : 0,
-                    color: isActive ? point.color : '#888',
-                    transition: 'opacity 0.5s, color 0.5s',
-                    transitionDelay: `${index * 0.3}s`
-                  }}
-                >
-                  {point.week}
-                </div>
-              </React.Fragment>
-            );
-          })}
-          
-          {/* Y-axis labels */}
-          <div className="absolute text-xs text-gray-500 left-0 top-0 transform -translate-x-6">Alto</div>
-          <div className="absolute text-xs text-gray-500 left-0 bottom-0 transform -translate-x-6">Basso</div>
-          
-          {/* Legend */}
-          <div className="absolute -bottom-10 left-0 flex items-center gap-3 text-xs text-gray-600">
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#ff1aa9]"></div>
-              <span>Stress</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#ff80c8]"></div>
-              <span>Miglioramento</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <div className="w-3 h-3 rounded-full bg-[#19f1fe]"></div>
-              <span>Benessere</span>
-            </div>
-          </div>
-        </div>
-      
-        <p className="text-xs text-center text-gray-400 mt-2 mb-6">
-          Il grafico è un'illustrazione non personalizzata e i risultati possono variare
-        </p>
+    <div className="max-w-3xl mx-auto px-4 pt-16 min-h-screen flex flex-col justify-center">
+      <div className={`transition-opacity duration-500 ${animationStep > 0 ? 'opacity-100' : 'opacity-0'}`}>
+        <h2 className="text-2xl md:text-3xl font-bold text-center mb-10">
+          Il nostro algoritmo ha analizzato il tuo profilo
+        </h2>
         
-        <div className="text-center mt-10">
-          <Button 
-            onClick={onContinue}
-            size="lg"
-            className="bg-[#19f1fe] hover:bg-[#00d9e6] text-white"
+        <div className="bg-white p-6 rounded-xl shadow-md">
+          <div className="text-center mb-8">
+            <h3 className="text-xl font-semibold mb-2 text-[#71b8bc]">Analisi del ciclo emotivo</h3>
+            <p className="text-gray-600">Questa è una rappresentazione del tuo ciclo emotivo attuale</p>
+          </div>
+          
+          <div className="relative h-64 mb-12 overflow-hidden">
+            {/* Static Graph */}
+            <svg
+              viewBox="0 0 1000 300"
+              width="100%"
+              height="300"
+              preserveAspectRatio="none"
+              className="absolute inset-0"
+            >
+              {/* Grid lines - horizontal */}
+              {[0, 1, 2, 3, 4].map((i) => (
+                <line
+                  key={`h-${i}`}
+                  x1="0"
+                  y1={60 * i}
+                  x2="1000"
+                  y2={60 * i}
+                  stroke="#e0e0e0"
+                  strokeWidth="1"
+                />
+              ))}
+              
+              {/* Grid lines - vertical */}
+              {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((i) => (
+                <line
+                  key={`v-${i}`}
+                  x1={100 * i}
+                  y1="0"
+                  x2={100 * i}
+                  y2="240"
+                  stroke="#e0e0e0"
+                  strokeWidth="1"
+                />
+              ))}
+              
+              {/* Non-optimized curve path */}
+              <path
+                d="M0,120 C100,180 200,60 300,60 S400,180 500,180 S600,60 700,60 S800,180 900,120 S1000,60 1000,120"
+                fill="none"
+                stroke="#e0e0e0"
+                strokeWidth="3"
+                strokeDasharray="5,5"
+              />
+              
+              {/* Optimized curve path - appears with animation */}
+              <path
+                d="M0,120 C100,150 200,90 300,90 S400,150 500,150 S600,90 700,90 S800,150 900,120 S1000,90 1000,120"
+                fill="none"
+                stroke="#71b8bc"
+                strokeWidth="3"
+                strokeDasharray={animationStep >= 2 ? "0" : "1000,1000"}
+                strokeDashoffset={animationStep >= 2 ? "0" : "1000"}
+                style={{ transition: "stroke-dashoffset 2s ease" }}
+              />
+              
+              {/* Labels */}
+              <text x="0" y="270" className="text-xs" fill="#666">Lun</text>
+              <text x="200" y="270" className="text-xs" fill="#666">Mer</text>
+              <text x="400" y="270" className="text-xs" fill="#666">Ven</text>
+              <text x="600" y="270" className="text-xs" fill="#666">Dom</text>
+              <text x="800" y="270" className="text-xs" fill="#666">Mar</text>
+              <text x="980" y="270" className="text-xs" fill="#666">Mer</text>
+              
+              {/* Points on optimized curve */}
+              {animationStep >= 2 && [
+                { x: 0, y: 120 },
+                { x: 200, y: 90 },
+                { x: 400, y: 150 },
+                { x: 600, y: 90 },
+                { x: 800, y: 150 },
+                { x: 1000, y: 120 }
+              ].map((point, i) => (
+                <circle
+                  key={i}
+                  cx={point.x}
+                  cy={point.y}
+                  r="6"
+                  fill="#71b8bc"
+                  className={`animate-pulse`}
+                  style={{ animationDelay: `${i * 0.2}s` }}
+                />
+              ))}
+            </svg>
+            
+            {/* Legend */}
+            <div className="absolute top-0 right-0 bg-white p-2 rounded-lg shadow-sm border border-gray-100">
+              <div className="flex items-center mb-1">
+                <div className="w-4 h-1 bg-[#e0e0e0] mr-2"></div>
+                <span className="text-xs text-gray-500">Ciclo attuale</span>
+              </div>
+              <div className="flex items-center">
+                <div className="w-4 h-1 bg-[#71b8bc] mr-2"></div>
+                <span className="text-xs text-gray-500">Ciclo ottimizzato</span>
+              </div>
+            </div>
+            
+            {/* Y-axis labels */}
+            <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between py-4">
+              <span className="text-xs text-gray-500">Alto</span>
+              <span className="text-xs text-gray-500">Medio</span>
+              <span className="text-xs text-gray-500">Basso</span>
+            </div>
+          </div>
+          
+          {/* Result explanation */}
+          <div 
+            className={`bg-[#88c2aa]/10 p-4 rounded-lg border border-[#71b8bc]/20 mb-6 transition-all duration-500 ${
+              animationStep >= 3 ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'
+            }`}
           >
-            Continua <ChevronRight className="ml-2" size={18} />
-          </Button>
+            <h4 className="font-semibold text-[#71b8bc] mb-2">La tua analisi:</h4>
+            <ul className="space-y-2 text-gray-700">
+              <li className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-[#71b8bc] mt-1">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Il tuo ciclo emotivo attuale mostra <strong>picchi di stress</strong> seguiti da periodi di affaticamento</span>
+              </li>
+              <li className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-[#71b8bc] mt-1">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Con il nostro piano personalizzato, equilibreremo il tuo ciclo per <strong>ridurre i picchi di stress</strong></span>
+              </li>
+              <li className="flex items-start">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2 text-[#71b8bc] mt-1">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <span>Questa stabilità ti porterà a <strong>migliori livelli di energia</strong> e una postura più sana</span>
+              </li>
+            </ul>
+          </div>
+          
+          <div 
+            className={`text-center mt-8 transition-opacity duration-500 ${
+              animationStep >= 4 ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            <Button 
+              onClick={onContinue} 
+              size="lg"
+              className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8"
+            >
+              Scopri il tuo piano personalizzato
+            </Button>
+          </div>
         </div>
       </div>
-      
-      <h2 className="text-2xl font-bold text-center mt-10">
-        Il tuo piano personale di
-      </h2>
-      <h2 className="text-2xl font-bold text-center text-brand-primary mb-3">
-        Gestione del Benessere
-      </h2>
-      <h2 className="text-2xl font-bold text-center">
-        è pronto!
-      </h2>
     </div>
   );
 };

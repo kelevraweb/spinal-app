@@ -1,6 +1,4 @@
-
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 type PlanType = 'trial' | 'monthly' | 'quarterly';
@@ -9,19 +7,14 @@ export function useCheckout() {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
+  // This function is kept for compatibility with existing code
+  // In the new implementation, we'll handle the payment in-page instead of redirecting to Stripe
   const initiateCheckout = async (planType: PlanType) => {
     setIsLoading(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { planType },
-      });
-      
-      if (error) throw new Error(error.message);
-      if (!data?.url) throw new Error('No checkout URL returned');
-      
-      // Open Stripe checkout in a new tab
-      window.open(data.url, '_blank');
+      // Instead of calling Supabase function, we'll now handle the payment in-page
+      // We're deliberately keeping this function here for compatibility
       return true;
     } catch (error) {
       console.error('Checkout error:', error);

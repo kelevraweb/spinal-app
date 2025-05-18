@@ -12,9 +12,9 @@ interface ProgressChartProps {
 
 const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }) => {
   const [chartData, setChartData] = useState<ProgressChartData[]>([
-    { month: 'Aprile', value: 20, color: '#ff1aa9', label: 'Inizio' },
-    { month: 'Maggio', value: 40, color: '#ff80c8', label: 'Progresso' },
-    { month: 'Giugno', value: 60, color: '#19f1fe', isGoal: true, label: 'Obiettivo' }
+    { month: 'Aprile', value: 20, color: '#71b8bc', label: 'Inizio' },
+    { month: 'Maggio', value: 40, color: '#88c2aa', label: 'Progresso' },
+    { month: 'Giugno', value: 60, color: '#71b8bc', isGoal: true, label: 'Obiettivo' }
   ]);
   const [animated, setAnimated] = useState(false);
 
@@ -69,7 +69,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 </div>
 
                 {data.isGoal && animated && (
-                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#19f1fe] text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce-slow">
+                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#71b8bc] text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce-slow">
                     Obiettivo
                   </div>
                 )}
@@ -79,18 +79,6 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span className="font-bold text-lg">{data.month}</span>
                 <span className="text-sm text-gray-600">{data.label}</span>
               </div>
-
-              {index < chartData.length - 1 && (
-                <div 
-                  className={`absolute h-px bg-gray-300 top-32 transition-all duration-1000`}
-                  style={{ 
-                    width: '100%', 
-                    left: '50%',
-                    opacity: animated ? 1 : 0,
-                    transitionDelay: `${index * 0.3 + 0.2}s`
-                  }}
-                ></div>
-              )}
             </div>
           ))}
         </div>
@@ -103,21 +91,21 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>Benessere posturale attuale</span>
                 <span>20%</span>
               </div>
-              <Progress value={20} className={cn("h-2 bg-gray-200", "bg-[#ff1aa9]")} />
+              <Progress value={20} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#71b8bc]" />
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Dopo 1 mese</span>
                 <span>40%</span>
               </div>
-              <Progress value={40} className={cn("h-2 bg-gray-200", "bg-[#ff80c8]")} />
+              <Progress value={40} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#88c2aa]" />
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Obiettivo finale</span>
                 <span>60%</span>
               </div>
-              <Progress value={60} className={cn("h-2 bg-gray-200", "bg-[#19f1fe]")} />
+              <Progress value={60} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#71b8bc]" />
             </div>
           </div>
         </div>
@@ -126,7 +114,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
           <Button 
             onClick={onContinue}
             size="lg" 
-            className="bg-[#19f1fe] hover:bg-[#00d9e6] text-white"
+            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white"
           >
             Continua
           </Button>
