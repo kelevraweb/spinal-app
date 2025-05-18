@@ -89,7 +89,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
       <div className="flex justify-center mb-6 space-x-4">
         <button
           className={`flex items-center py-2 px-4 rounded-lg ${
-            paymentMethod === 'card' ? 'bg-brand-primary/10 border-2 border-brand-primary' : 'bg-gray-100'
+            paymentMethod === 'card' ? 'bg-[#71b8bc]/10 border-2 border-[#71b8bc]' : 'bg-gray-100'
           }`}
           onClick={() => setPaymentMethod('card')}
         >
@@ -99,7 +99,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
         
         <button
           className={`flex items-center py-2 px-4 rounded-lg ${
-            paymentMethod === 'paypal' ? 'bg-brand-primary/10 border-2 border-brand-primary' : 'bg-gray-100'
+            paymentMethod === 'paypal' ? 'bg-[#71b8bc]/10 border-2 border-[#71b8bc]' : 'bg-gray-100'
           }`}
           onClick={() => setPaymentMethod('paypal')}
         >
@@ -123,7 +123,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
               id="cardNumber"
               name="cardNumber"
               placeholder="1234 5678 9012 3456"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#71b8bc]"
               value={cardDetails.cardNumber}
               onChange={handleInputChange}
               required
@@ -139,7 +139,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
               id="cardName"
               name="cardName"
               placeholder="Mario Rossi"
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#71b8bc]"
               value={cardDetails.cardName}
               onChange={handleInputChange}
               required
@@ -156,7 +156,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
                 id="expiryDate"
                 name="expiryDate"
                 placeholder="MM/AA"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#71b8bc]"
                 value={cardDetails.expiryDate}
                 onChange={handleInputChange}
                 required
@@ -172,7 +172,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
                 id="cvv"
                 name="cvv"
                 placeholder="123"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-brand-primary"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-[#71b8bc]"
                 value={cardDetails.cvv}
                 onChange={handleInputChange}
                 required
@@ -183,8 +183,8 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
           <button
             type="submit"
             disabled={isLoading}
-            className={`w-full bg-brand-primary text-white py-3 rounded-md font-medium mt-4 ${
-              isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-brand-primary/90'
+            className={`w-full bg-[#71b8bc] text-white py-3 rounded-md font-medium mt-4 ${
+              isLoading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-[#5da0a4]'
             }`}
           >
             {isLoading ? (
@@ -217,8 +217,8 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
       
       <div className="flex justify-center mt-4">
         <img 
-          src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png" 
-          alt="Metodi di pagamento accettati" 
+          src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
+          alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
           className="h-6 w-auto"
         />
       </div>

@@ -44,7 +44,7 @@ const ComparisonIndicator: React.FC<ComparisonIndicatorProps> = ({
           <span className="text-xs font-semibold">{currentBeforeValue}%</span>
           <FontAwesomeIcon 
             icon={faArrowRight} 
-            className="text-brand-primary mx-2 animate-pulse" 
+            className="text-purple-500 mx-2 animate-pulse" 
           />
           <span className="text-xs font-semibold">{currentAfterValue}%</span>
         </div>
@@ -55,11 +55,11 @@ const ComparisonIndicator: React.FC<ComparisonIndicatorProps> = ({
           value={currentBeforeValue} 
         />
         <div className="w-6 flex-shrink-0 flex justify-center">
-          <FontAwesomeIcon icon={faArrowRight} className="text-brand-primary" />
+          <FontAwesomeIcon icon={faArrowRight} className="text-purple-500" />
         </div>
         <Progress 
           className="h-2 bg-gray-200" 
-          indicatorClassName="bg-brand-primary"
+          indicatorClassName="bg-[#9b87f5]"
           value={currentAfterValue} 
         />
       </div>
@@ -87,13 +87,13 @@ const BeforeAfterComparison: React.FC = () => {
         Come potrebbe cambiare la tua vita con il nostro piano personalizzato?
       </h2>
       
-      <div className="bg-gradient-to-b from-brand-light to-white p-6 rounded-lg shadow-md">
+      <div className="bg-gradient-to-b from-[#E5DEFF] to-white p-6 rounded-lg shadow-md">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Before Column */}
           <div className="bg-white p-5 rounded-lg shadow-sm">
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-brand-light rounded-full flex items-center justify-center mr-3">
-                <span className="text-brand-primary font-bold">ORA</span>
+              <div className="w-12 h-12 bg-[#D6BCFA] rounded-full flex items-center justify-center mr-3">
+                <span className="text-[#9b87f5] font-bold">ORA</span>
               </div>
               <h3 className="text-lg font-bold text-[#1A1F2C]">La tua situazione attuale</h3>
             </div>
@@ -138,13 +138,13 @@ const BeforeAfterComparison: React.FC = () => {
           
           {/* After Column */}
           <div className="bg-white p-5 rounded-lg shadow-sm relative">
-            <div className="absolute -top-3 -right-3 bg-brand-primary text-white px-3 py-1 rounded-full text-sm font-bold">
+            <div className="absolute -top-3 -right-3 bg-[#9b87f5] text-white px-3 py-1 rounded-full text-sm font-bold">
               OBIETTIVO
             </div>
             
             <div className="flex items-center mb-4">
-              <div className="w-12 h-12 bg-brand-light rounded-full flex items-center justify-center mr-3">
-                <span className="text-brand-primary font-bold">DOPO</span>
+              <div className="w-12 h-12 bg-[#E5DEFF] rounded-full flex items-center justify-center mr-3">
+                <span className="text-[#9b87f5] font-bold">DOPO</span>
               </div>
               <h3 className="text-lg font-bold text-[#1A1F2C]">Con il piano "Schiena Libera"</h3>
             </div>
