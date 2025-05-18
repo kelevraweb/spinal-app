@@ -39,6 +39,7 @@ const Quiz: React.FC = () => {
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | number>('');
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -124,6 +125,9 @@ const Quiz: React.FC = () => {
       updatedAnswers.push(newAnswer);
     }
     
+    // Set transition direction
+    setTransitionDirection('next');
+    
     // Special pages triggers
     let showSpecialPage = undefined;
     
@@ -175,7 +179,7 @@ const Quiz: React.FC = () => {
       showSpecialPage
     });
     
-    // Wait for animation to complete before moving to next question
+    // Reduced transition time from 300ms to 200ms for smoother experience
     setTimeout(() => {
       setState(prevState => ({
         ...prevState,
@@ -185,14 +189,16 @@ const Quiz: React.FC = () => {
       }));
       
       setIsAnimating(false);
-    }, showSpecialPage ? 5000 : 300);
+    }, showSpecialPage ? 5000 : 200);
   };
 
   const handleBack = () => {
     if (state.currentStep <= 0 || isAnimating) return;
     
     setIsAnimating(true);
+    setTransitionDirection('prev');
     
+    // Reduced transition time from 300ms to 200ms for smoother experience
     setTimeout(() => {
       const prevStep = state.currentStep - 1;
       setState({
@@ -203,7 +209,7 @@ const Quiz: React.FC = () => {
       });
       
       setIsAnimating(false);
-    }, 300);
+    }, 200);
   };
 
   const handleSpecialPageComplete = () => {
@@ -475,8 +481,16 @@ const Quiz: React.FC = () => {
         onBack={handleBack}
         canGoBack={state.currentStep > 0}
       />
-      <div className={`quiz-container pt-16 ${isAnimating ? 'opacity-50' : ''}`}>
-        <div className="quiz-card">
+      <div className="quiz-container pt-16">
+        <div 
+          className={`quiz-card transform transition-all duration-200 ${
+            isAnimating 
+              ? transitionDirection === 'next' 
+                ? 'translate-x-4 opacity-0' 
+                : '-translate-x-4 opacity-0' 
+              : 'translate-x-0 opacity-100'
+          }`}
+        >
           {/* Progress bar */}
           <div className="progress-container">
             <div 
