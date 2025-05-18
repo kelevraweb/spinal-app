@@ -100,19 +100,22 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
             className={`option-btn ${isSelected ? 'selected' : ''}`}
             onClick={() => handleOptionClick(optionText)}
           >
-            <div className="flex items-center w-full">
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <div className={`icon-circle ${isSelected ? 'bg-brand-light' : 'bg-gray-100'}`}>
+                  <FontAwesomeIcon 
+                    icon={iconOption} 
+                    className={isSelected ? 'text-brand-primary' : 'text-gray-500'}
+                  />
+                </div>
+                <span className="ml-2">{optionText}</span>
+              </div>
+              
               <FontAwesomeIcon 
                 icon={isSelected ? faSquareCheck : faSquareRegular}
-                className={`mr-3 ${isSelected ? 'text-brand-primary' : 'text-gray-400'}`}
+                className={`${isSelected ? 'text-brand-primary' : 'text-gray-400'}`}
                 size="lg"
               />
-              
-              <FontAwesomeIcon 
-                icon={iconOption} 
-                className={`mr-2 ${isSelected ? 'text-brand-primary' : 'text-gray-500'}`}
-              />
-              
-              <span>{optionText}</span>
             </div>
           </button>
         );

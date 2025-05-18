@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -65,19 +64,19 @@ export default {
 				},
 				// Brand colors - updated with new color values
 				brand: {
-					primary: '#19f1fe',
-					secondary: '#ff1aa9',
-					light: '#e5fcff',
+					primary: '#71b8bc',
+					secondary: '#88c2aa',
+					light: '#e5f6f7',
 					dark: '#1A1F2C',
 					muted: '#f1f0fb',
-					accent: '#ff1aa9',
+					accent: '#88c2aa',
 				},
 				rating: {
-					1: '#ff1aa9',
-					2: '#ff4db8',
-					3: '#ff80c8',
-					4: '#8af8fe',
-					5: '#19f1fe',
+					1: '#88c2aa',
+					2: '#7fc0a5',
+					3: '#7ac2ab',
+					4: '#75bab9',
+					5: '#71b8bc',
 				}
 			},
 			borderRadius: {
