@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -8,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Checkout from '@/components/Checkout';
+import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 
 const Pricing: React.FC = () => {
   const navigate = useNavigate();
@@ -51,6 +51,9 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto p-4 bg-white">
+      {/* Before-After Comparison Section */}
+      <BeforeAfterComparison />
+      
       {/* Hero Section */}
       <div className="text-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold mb-4">Il tuo piano personalizzato per la salute della schiena è pronto!</h1>
