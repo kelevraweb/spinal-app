@@ -19,11 +19,7 @@ import ProgressChart from '../components/ProgressChart';
 import WellbeingLevelIndicator from '../components/WellbeingLevelIndicator';
 import EmailCapture from '../components/EmailCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
-import Checkout from '../components/Checkout';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-
-// Import Dialog for plan selection
-import { Dialog, DialogContent } from '../components/ui/dialog';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
@@ -47,8 +43,6 @@ const Quiz: React.FC = () => {
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
   const [debugMessage, setDebugMessage] = useState<string>('');
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false); // Set to false by default
-  const [showPaymentDialog, setShowPaymentDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('monthly');
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -293,21 +287,8 @@ const Quiz: React.FC = () => {
   };
 
   const handleSinusoidalComplete = () => {
-    setState({
-      ...state,
-      showSpecialPage: 'checkout'
-    });
-  };
-
-  const handleSelectPlan = (plan: 'trial' | 'monthly' | 'quarterly') => {
-    setSelectedPlan(plan);
-    setShowPaymentDialog(true);
-  };
-
-  const handlePurchase = () => {
-    // Here you would integrate with Stripe
-    console.log('Elaborazione acquisto...');
-    navigate('/thank-you');
+    // Navigate to the Pricing page instead of showing the checkout component
+    navigate('/pricing');
   };
 
   // Render special pages based on current state
@@ -435,192 +416,6 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
-          </>
-        );
-        
-      case 'checkout':
-        return (
-          <>
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={true}
-            />
-            {/* Modified Checkout component to show only plans and use dialog for payment form */}
-            <div className="max-w-4xl mx-auto my-10 px-4 animate-fade-in pt-16">
-              <h2 className="text-2xl md:text-3xl font-bold text-center mb-2">
-                Il tuo piano personalizzato è pronto!
-              </h2>
-              
-              <div className="flex justify-center space-x-4 my-6">
-                <div className="flex items-center">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-[#88c2aa]/30 text-[#71b8bc] rounded-full mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  <span>Accesso Istantaneo</span>
-                </div>
-                
-                <div className="flex items-center">
-                  <span className="inline-flex items-center justify-center w-6 h-6 bg-[#88c2aa]/30 text-[#71b8bc] rounded-full mr-2">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                    </svg>
-                  </span>
-                  <span>Pagamento Sicuro</span>
-                </div>
-              </div>
-              
-              {/* Plan Selection */}
-              <h3 className="text-xl font-bold text-center mb-6">Scegli il tuo piano</h3>
-              <div className="flex flex-col md:flex-row gap-4 my-8">
-                {/* Trial Plan */}
-                <div className="flex-1 border-2 rounded-xl p-6 transition-all">
-                  <div className="text-lg font-semibold mb-2">Prova</div>
-                  
-                  <div className="flex items-baseline">
-                    <span className="text-3xl font-bold">€0.99</span>
-                    <span className="text-gray-500 ml-1">/settimana</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-500 mt-1">Pagamento unico</p>
-                  <p className="text-sm text-gray-700 font-medium mt-2">7 giorni</p>
-                  
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span className="text-sm">Piano personalizzato base</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Accesso ai contenuti introduttivi</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Analisi del profilo emotivo</span>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    className="w-full mt-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    onClick={() => handleSelectPlan('trial')}
-                  >
-                    Seleziona
-                  </button>
-                </div>
-                
-                {/* Monthly Plan */}
-                <div className="flex-1 border-2 rounded-xl p-6 transition-all">
-                  <div className="bg-[#71b8bc] text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-2">
-                    PIÙ POPOLARE
-                  </div>
-                  
-                  <div className="text-lg font-semibold mb-2">Mensile</div>
-                  
-                  <div className="flex items-baseline">
-                    <span className="text-3xl font-bold">€7.99</span>
-                    <span className="text-gray-500 ml-1">/mese</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-500 mt-1">Fatturazione mensile</p>
-                  <p className="text-sm text-gray-700 font-medium mt-2">1 mese</p>
-                  
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span className="text-sm">Piano personalizzato completo</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Accesso illimitato a tutti i contenuti</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Esercizi guidati per ogni situazione</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Analisi settimanale dei progressi</span>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    className="w-full mt-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    onClick={() => handleSelectPlan('monthly')}
-                  >
-                    Seleziona
-                  </button>
-                </div>
-                
-                {/* Quarterly Plan */}
-                <div className="flex-1 border-2 rounded-xl p-6 transition-all">
-                  <div className="bg-[#88c2aa] text-white text-xs font-bold px-3 py-1 rounded-full inline-block mb-2">
-                    RISPARMI 16%
-                  </div>
-                  
-                  <div className="text-lg font-semibold mb-2">Trimestrale</div>
-                  
-                  <div className="flex items-baseline">
-                    <span className="text-3xl font-bold">€19.99</span>
-                    <span className="text-gray-500 ml-1">/3 mesi</span>
-                  </div>
-                  
-                  <p className="text-sm text-gray-500 mt-1">Fatturazione trimestrale</p>
-                  <p className="text-sm text-gray-700 font-medium mt-2">6 funzionalità complete</p>
-                  
-                  <div className="mt-4 space-y-2">
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span className="text-sm">Piano personalizzato premium</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Accesso illimitato a tutti i contenuti</span>
-                    </div>
-                    <div className="flex items-start">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mt-1 mr-2 text-[#88c2aa]">
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                      <span>Supporto via chat con i nostri esperti</span>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    className="w-full mt-4 py-2 rounded-full text-sm font-medium bg-gray-100 text-gray-800 hover:bg-gray-200"
-                    onClick={() => handleSelectPlan('quarterly')}
-                  >
-                    Seleziona
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            {/* Payment Dialog */}
-            <Dialog open={showPaymentDialog} onOpenChange={setShowPaymentDialog}>
-              <DialogContent className="w-full max-w-lg">
-                <Checkout onPurchase={handlePurchase} selectedPlan={selectedPlan} />
-              </DialogContent>
-            </Dialog>
           </>
         );
     }
