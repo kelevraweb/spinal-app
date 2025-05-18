@@ -217,8 +217,8 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
       
       <div className="flex justify-center mt-4">
         <img 
-          src="/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png" 
-          alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
+          src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png" 
+          alt="Metodi di pagamento accettati" 
           className="h-6 w-auto"
         />
       </div>

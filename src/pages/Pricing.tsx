@@ -138,45 +138,29 @@ const Pricing: React.FC = () => {
         <p>Consulta l'Informativa sull'abbonamento per tutti i dettagli.</p>
       </div>
 
-      {/* Security Badge */}
+      {/* Security Badge - UPDATED with new image */}
       <div className="text-center mb-12">
         <p className="font-medium mb-2">Paga in modo sicuro e protetto</p>
         <div className="flex justify-center items-center">
           <img 
-            src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
-            alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
+            src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png" 
+            alt="Pay Safe & Secure" 
             className="max-w-xs h-auto"
           />
         </div>
       </div>
 
-      {/* Statistics Section with Circular Stats */}
+      {/* Statistics Section with Circular Stats - UPDATED with new image */}
       <div className="mb-12">
         <h2 className="text-xl font-bold text-center mb-8">Persone come te hanno ottenuto risultati straordinari!</h2>
         
         <div className="flex flex-wrap justify-center gap-8 mb-6">
           <div className="relative flex items-center justify-center">
             <img 
-              src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png"
-              alt="83% degli utenti" 
-              className="w-40 h-40"
+              src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png"
+              alt="Statistiche utenti" 
+              className="w-auto h-auto max-w-full"
             />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="text-sm text-gray-600">degli utenti è riuscito a migliorare dopo</p>
-              <p className="text-sm font-bold text-brand-primary">sole 6 settimane</p>
-            </div>
-          </div>
-          
-          <div className="relative flex items-center justify-center">
-            <img 
-              src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png"
-              alt="77% degli utenti" 
-              className="w-40 h-40"
-            />
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <p className="text-sm text-gray-600">degli utenti hanno iniziato con</p>
-              <p className="text-sm font-bold text-brand-primary">dolori simili ai tuoi</p>
-            </div>
           </div>
         </div>
 
@@ -342,13 +326,13 @@ const Pricing: React.FC = () => {
         </div>
       </div>
 
-      {/* Money Back Guarantee */}
+      {/* Money Back Guarantee - UPDATED with new image */}
       <div className="mb-12 bg-brand-light p-6 rounded-lg border border-brand-primary/30">
         <div className="flex flex-wrap items-center gap-6">
           <img 
-            src="/lovable-uploads/8416fbc2-1a9c-4811-b5e7-3f97afd4ef1a.png"
+            src="/lovable-uploads/eca5092d-dc6c-48c1-a4d7-849a52a9f1da.png"
             alt="Garanzia Soddisfatti o Rimborsati" 
-            className="w-24 h-24 object-contain mx-auto md:mx-0"
+            className="w-32 h-32 object-contain mx-auto md:mx-0"
           />
           
           <div className="flex-1">
