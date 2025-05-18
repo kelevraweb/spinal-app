@@ -19,7 +19,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   onChange,
   useImages = false,
   questionId,
-  autoAdvance = true // Set default to true to enable auto-advance for all questions
+  autoAdvance = false // Disable auto-advance by default
 }) => {
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
@@ -45,7 +45,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     'senior': faWalking      // Icon for seniors
   };
 
-  // Handler for selection that will always trigger immediate advancement
+  // Handler for selection that will not trigger immediate advancement
   const handleSelection = (selectedValue: string) => {
     onChange(selectedValue);
   };

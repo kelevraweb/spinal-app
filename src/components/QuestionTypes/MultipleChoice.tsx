@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
@@ -19,7 +19,8 @@ import {
   faUserNinja,
   faSquare,
   faSquareCheck,
-  faChartLine
+  faChartLine,
+  faArrowRight
 } from '@fortawesome/free-solid-svg-icons';
 import { faSquare as faSquareRegular } from '@fortawesome/free-regular-svg-icons';
 
@@ -28,15 +29,23 @@ interface MultipleChoiceProps {
   value: string[];
   onChange: (value: string[]) => void;
   maxSelections?: number;
+  onNextClick?: () => void;
 }
 
 const MultipleChoice: React.FC<MultipleChoiceProps> = ({ 
   options, 
   value = [], 
   onChange,
-  maxSelections
+  maxSelections,
+  onNextClick
 }) => {
   const [error, setError] = useState<string | null>(null);
+  const [isNextEnabled, setIsNextEnabled] = useState(false);
+  
+  // Check if at least 2 options are selected to enable Next button
+  useEffect(() => {
+    setIsNextEnabled(value.length >= 2);
+  }, [value]);
 
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
@@ -126,6 +135,26 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           {error}
         </p>
       )}
+      
+      {/* Next button visible with multiple selection */}
+      <div className="mt-8">
+        <button
+          type="button"
+          onClick={onNextClick}
+          disabled={!isNextEnabled}
+          className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
+            isNextEnabled 
+              ? 'bg-[#71b8bc] text-white' 
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
+        >
+          <span>Avanti</span>
+          <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
+        </button>
+        <p className="text-center text-sm text-gray-500 mt-2">
+          {!isNextEnabled ? 'Seleziona almeno 2 opzioni per continuare' : ''}
+        </p>
+      </div>
     </div>
   );
 };
