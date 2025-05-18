@@ -92,12 +92,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>20%</span>
               </div>
               <div className="relative w-full">
-                <Progress value={20} className={cn("h-2 bg-gray-200")} />
-                <style jsx>{`
-                  .progress[data-state="loading"] > div {
-                    background-color: #71b8bc;
-                  }
-                `}</style>
+                <Progress value={20} className="h-2 bg-gray-200" 
+                  style={{
+                    "--tw-progress-color": "#71b8bc"
+                  } as React.CSSProperties} 
+                />
               </div>
             </div>
             <div>
@@ -106,12 +105,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>40%</span>
               </div>
               <div className="relative w-full">
-                <Progress value={40} className={cn("h-2 bg-gray-200")} />
-                <style jsx>{`
-                  .progress[data-state="loading"] > div {
-                    background-color: #88c2aa;
-                  }
-                `}</style>
+                <Progress value={40} className="h-2 bg-gray-200"
+                  style={{
+                    "--tw-progress-color": "#88c2aa"
+                  } as React.CSSProperties}
+                />
               </div>
             </div>
             <div>
@@ -120,12 +118,11 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>60%</span>
               </div>
               <div className="relative w-full">
-                <Progress value={60} className={cn("h-2 bg-gray-200")} />
-                <style jsx>{`
-                  .progress[data-state="loading"] > div {
-                    background-color: #71b8bc;
-                  }
-                `}</style>
+                <Progress value={60} className="h-2 bg-gray-200"
+                  style={{
+                    "--tw-progress-color": "#71b8bc"
+                  } as React.CSSProperties}
+                />
               </div>
             </div>
           </div>
