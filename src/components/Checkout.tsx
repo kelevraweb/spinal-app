@@ -1,6 +1,7 @@
-
 import React, { useState, useEffect } from 'react';
 import { Rating } from './Rating';
+import { useCheckout } from '@/hooks/use-checkout';
+import { useToast } from '@/hooks/use-toast';
 
 interface CheckoutProps {
   onPurchase: () => void;
@@ -9,6 +10,8 @@ interface CheckoutProps {
 const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('monthly');
   const [activeTestimonial, setActiveTestimonial] = useState(0);
+  const { initiateCheckout, isLoading } = useCheckout();
+  const { toast } = useToast();
   
   const plans = {
     trial: {
@@ -92,8 +95,17 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
     'Resilienza emotiva'
   ];
 
-  const handlePurchase = () => {
-    onPurchase();
+  const handlePurchase = async () => {
+    const success = await initiateCheckout(selectedPlan);
+    if (success) {
+      toast({
+        title: "Checkout iniziato",
+        description: "Ti abbiamo reindirizzato al nostro sistema di pagamento sicuro."
+      });
+      // We still call onPurchase to maintain compatibility with existing code
+      // The actual redirect happens in the useCheckout hook
+      onPurchase();
+    }
   };
 
   return (
@@ -126,7 +138,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
       <div className="grid grid-cols-2 md:grid-cols-3 gap-5 my-8">
         {benefits.map((benefit, index) => (
           <div key={index} className="flex items-center p-3 bg-gray-50 rounded-lg border border-gray-100">
-            <div className="flex-shrink-0 h-10 w-10 mr-3 bg-brand-primary bg-opacity-10 rounded-full flex items-center justify-center">
+            <div className="flex-shrink-0 h-10 w-10 mr-3 bg-brand-primary bg-opacity-10 rounded-full">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-brand-primary">
                 <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
                 <polyline points="22 4 12 14.01 9 11.01"></polyline>
@@ -309,9 +321,10 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
       <div className="mt-8 text-center">
         <button
           onClick={handlePurchase}
-          className="btn-primary py-4 w-full max-w-lg text-lg"
+          disabled={isLoading}
+          className={`btn-primary py-4 w-full max-w-lg text-lg ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          OTTIENI IL TUO PIANO
+          {isLoading ? 'ELABORAZIONE...' : 'OTTIENI IL TUO PIANO'}
         </button>
         
         <div className="mt-2 text-xs text-gray-500 max-w-lg mx-auto">
@@ -392,9 +405,10 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase }) => {
         
         <button
           onClick={handlePurchase}
-          className="btn-primary py-4 px-8 text-lg"
+          disabled={isLoading}
+          className={`btn-primary py-4 px-8 text-lg ${isLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
         >
-          OTTIENI IL TUO PIANO ORA
+          {isLoading ? 'ELABORAZIONE...' : 'OTTIENI IL TUO PIANO ORA'}
         </button>
       </div>
       

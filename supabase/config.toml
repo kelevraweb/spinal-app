@@ -1,1 +1,6 @@
+
 project_id = "smizbfjsujlnfpcwfaty"
+
+[functions.create-checkout]
+
+[functions.verify-payment]
