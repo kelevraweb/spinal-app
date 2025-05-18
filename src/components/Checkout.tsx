@@ -4,7 +4,7 @@ import { Rating } from './Rating';
 import { useCheckout } from '@/hooks/use-checkout';
 import { useToast } from '@/hooks/use-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faCheck, faShieldCheck, faCreditCard } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCheck, faShield, faCreditCard } from '@fortawesome/free-solid-svg-icons';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
