@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -149,65 +150,38 @@ const Pricing: React.FC = () => {
         </div>
       </div>
 
-      {/* Objectives Section */}
+      {/* Statistics Section with Circular Stats */}
       <div className="mb-12">
-        <h2 className="text-xl md:text-2xl font-bold text-center mb-6">I NOSTRI OBIETTIVI PER IL TUO BENESSERE FISICO</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Ti svegli con meno rigidità e più scioltezza nei movimenti</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Non vivi più giornate segnate dal mal di schiena o da fastidi continui</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Ti muovi con più fluidità, sicurezza e controllo</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Migliori la tua postura, anche quando lavori o stai seduto a lungo</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Recuperi energia fisica grazie a un corpo che si muove meglio</p>
-          </div>
-          <div className="bg-gray-50 p-4 rounded-lg flex items-start">
-            <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-            <p>Riscopri il piacere di fare gesti semplici senza dolore o sforzo</p>
-          </div>
-        </div>
-      </div>
-
-      {/* Methodology Section */}
-      <div className="mb-12 text-center">
-        <p className="mb-2">Il nostro programma si basa sulla metodologia</p>
-        <p>Come descritto in</p>
-        <div className="flex justify-center mt-4 space-x-4">
-          <div className="w-16 h-8 bg-gray-200 rounded"></div>
-          <div className="w-16 h-8 bg-gray-200 rounded"></div>
-          <div className="w-16 h-8 bg-gray-200 rounded"></div>
-        </div>
-      </div>
-
-      {/* Statistics Section */}
-      <div className="mb-12">
-        <h2 className="text-xl font-bold text-center mb-6">Persone come te hanno ottenuto risultati straordinari grazie al nostro piano personalizzato di benessere posturale!</h2>
+        <h2 className="text-xl font-bold text-center mb-8">Persone come te hanno ottenuto risultati straordinari!</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-primary mb-2">83%</div>
-            <p>degli utenti è riuscito a migliorare il proprio benessere dopo sole 6 settimane</p>
+        <div className="flex flex-wrap justify-center gap-8 mb-6">
+          <div className="relative flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png"
+              alt="83% degli utenti" 
+              className="w-40 h-40"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <p className="text-sm text-gray-600">degli utenti è riuscito a migliorare dopo</p>
+              <p className="text-sm font-bold text-brand-primary">sole 6 settimane</p>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-primary mb-2">77%</div>
-            <p>degli utenti hanno iniziato con dolori simili ai tuoi</p>
+          
+          <div className="relative flex items-center justify-center">
+            <img 
+              src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png"
+              alt="77% degli utenti" 
+              className="w-40 h-40"
+            />
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+              <p className="text-sm text-gray-600">degli utenti hanno iniziato con</p>
+              <p className="text-sm font-bold text-brand-primary">dolori simili ai tuoi</p>
+            </div>
           </div>
-          <div className="text-center">
-            <div className="text-4xl font-bold text-brand-primary mb-2">45%</div>
-            <p>degli utenti soffre degli stessi problemi tuoi</p>
-          </div>
+        </div>
+
+        <div className="text-center">
+          <p className="text-lg font-medium text-brand-primary">Il 45% degli utenti soffre degli stessi problemi tuoi</p>
         </div>
       </div>
 
@@ -330,7 +304,7 @@ const Pricing: React.FC = () => {
         <p className="text-center mb-6">Ecco cosa raccontano le persone che lo hanno provato:</p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="border p-4 rounded-lg">
+          <div className="border border-gray-200 p-4 rounded-lg bg-white shadow-sm">
             <div className="flex text-yellow-400 mb-2">
               <Rating rating={5} />
             </div>
@@ -339,7 +313,7 @@ const Pricing: React.FC = () => {
             <p>Avevo dolori alla zona lombare da mesi, soprattutto al mattino. Dopo solo una settimana, riesco ad alzarmi dal letto senza fatica. Gli esercizi sono semplici, brevi e molto efficaci.</p>
           </div>
           
-          <div className="border p-4 rounded-lg">
+          <div className="border border-gray-200 p-4 rounded-lg bg-white shadow-sm">
             <div className="flex text-yellow-400 mb-2">
               <Rating rating={5} />
             </div>
@@ -348,7 +322,7 @@ const Pricing: React.FC = () => {
             <p>Lavoro 8 ore al computer e avevo sempre collo e spalle rigidi. Il piano mi ha aiutato a migliorare la postura e a scaricare la tensione. Lo seguo ogni sera prima di cena.</p>
           </div>
           
-          <div className="border p-4 rounded-lg">
+          <div className="border border-gray-200 p-4 rounded-lg bg-white shadow-sm">
             <div className="flex text-yellow-400 mb-2">
               <Rating rating={5} />
             </div>
@@ -357,7 +331,7 @@ const Pricing: React.FC = () => {
             <p>Ho provato mille cose, ma questa è l'unica che ho continuato. Niente attrezzi, niente stress. Inizio a sentirmi di nuovo libera nei movimenti.</p>
           </div>
           
-          <div className="border p-4 rounded-lg">
+          <div className="border border-gray-200 p-4 rounded-lg bg-white shadow-sm">
             <div className="flex text-yellow-400 mb-2">
               <Rating rating={5} />
             </div>
@@ -369,12 +343,22 @@ const Pricing: React.FC = () => {
       </div>
 
       {/* Money Back Guarantee */}
-      <div className="mb-12 bg-green-50 p-6 rounded-lg">
-        <h2 className="text-xl font-bold mb-3">Garanzia Soddisfatti o Rimborsati – 30 Giorni</h2>
-        <p className="mb-3">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
-        <p className="mb-3">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
-        <p className="mb-3"><span className="font-medium">👉 Se seguirai il piano come indicato e non noterai alcun miglioramento fisico percepibile (meno dolore, più mobilità, miglior postura), potrai richiedere il rimborso senza spiegazioni complicate.</span></p>
-        <p>📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
+      <div className="mb-12 bg-brand-light p-6 rounded-lg border border-brand-primary/30">
+        <div className="flex flex-wrap items-center gap-6">
+          <img 
+            src="/lovable-uploads/8416fbc2-1a9c-4811-b5e7-3f97afd4ef1a.png"
+            alt="Garanzia Soddisfatti o Rimborsati" 
+            className="w-24 h-24 object-contain mx-auto md:mx-0"
+          />
+          
+          <div className="flex-1">
+            <h2 className="text-xl font-bold mb-3">Garanzia Soddisfatti o Rimborsati – 30 Giorni</h2>
+            <p className="mb-3">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
+            <p className="mb-3">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
+            <p className="mb-3"><span className="font-medium">👉 Se seguirai il piano come indicato e non noterai alcun miglioramento fisico percepibile (meno dolore, più mobilità, miglior postura), potrai richiedere il rimborso senza spiegazioni complicate.</span></p>
+            <p>📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
+          </div>
+        </div>
       </div>
 
       {/* Payment Dialog with ONLY the payment form */}
