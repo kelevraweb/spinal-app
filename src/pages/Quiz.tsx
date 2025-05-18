@@ -40,7 +40,8 @@ const Quiz: React.FC = () => {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
-  const [debugMessage, setDebugMessage] = useState<string>(''); // For debugging purposes
+  const [debugMessage, setDebugMessage] = useState<string>('');
+  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -89,6 +90,9 @@ const Quiz: React.FC = () => {
       setCurrentAnswer('');
       setIsNextEnabled(false);
     }
+    
+    // Check if we're on the gender question (first question)
+    setShouldAutoAdvance(state.currentQuestion?.id === 'gender');
 
     // For debug purposes - add information about current step and question
     if (state.currentQuestion) {
@@ -108,6 +112,12 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(false);
     } else {
       setIsNextEnabled(true);
+      
+      // If we're on gender question and auto advance is enabled
+      if (shouldAutoAdvance && state.currentQuestion?.id === 'gender') {
+        // Add a slight delay to make the selection visible before advancing
+        setTimeout(() => handleNext(), 300);
+      }
     }
   };
 
@@ -450,6 +460,7 @@ const Quiz: React.FC = () => {
             onChange={handleAnswerChange}
             useImages={state.currentQuestion.id === 'gender'}
             questionId={state.currentQuestion.id}
+            autoAdvance={state.currentQuestion.id === 'gender'}
           />
         );
         
@@ -529,7 +540,7 @@ const Quiz: React.FC = () => {
           {/* Question content based on type */}
           {renderQuestionContent()}
           
-          {/* Navigation buttons */}
+          {/* Navigation buttons - hide for gender question */}
           <div className="flex justify-between mt-8">
             {state.currentStep > 0 ? (
               <button 
@@ -544,14 +555,17 @@ const Quiz: React.FC = () => {
               <div></div> /* Empty div to maintain layout */
             )}
             
-            <button
-              type="button"
-              className="btn-primary"
-              onClick={handleNext}
-              disabled={!isNextEnabled || isAnimating}
-            >
-              {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
-            </button>
+            {/* Only show Next button if not on gender question */}
+            {state.currentQuestion?.id !== 'gender' && (
+              <button
+                type="button"
+                className="btn-primary"
+                onClick={handleNext}
+                disabled={!isNextEnabled || isAnimating}
+              >
+                {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
+              </button>
+            )}
           </div>
           
           {/* Debug info - remove in production */}
