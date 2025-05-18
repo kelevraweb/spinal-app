@@ -91,21 +91,42 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
                 <span>Benessere posturale attuale</span>
                 <span>20%</span>
               </div>
-              <Progress value={20} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#71b8bc]" />
+              <div className="relative w-full">
+                <Progress value={20} className={cn("h-2 bg-gray-200")} />
+                <style jsx>{`
+                  .progress[data-state="loading"] > div {
+                    background-color: #71b8bc;
+                  }
+                `}</style>
+              </div>
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Dopo 1 mese</span>
                 <span>40%</span>
               </div>
-              <Progress value={40} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#88c2aa]" />
+              <div className="relative w-full">
+                <Progress value={40} className={cn("h-2 bg-gray-200")} />
+                <style jsx>{`
+                  .progress[data-state="loading"] > div {
+                    background-color: #88c2aa;
+                  }
+                `}</style>
+              </div>
             </div>
             <div>
               <div className="flex justify-between text-sm text-gray-600 mb-1">
                 <span>Obiettivo finale</span>
                 <span>60%</span>
               </div>
-              <Progress value={60} className={cn("h-2 bg-gray-200")} indicatorClassName="bg-[#71b8bc]" />
+              <div className="relative w-full">
+                <Progress value={60} className={cn("h-2 bg-gray-200")} />
+                <style jsx>{`
+                  .progress[data-state="loading"] > div {
+                    background-color: #71b8bc;
+                  }
+                `}</style>
+              </div>
             </div>
           </div>
         </div>
