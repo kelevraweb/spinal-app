@@ -15,9 +15,9 @@ import {
   faStar, 
   faWalking,
   faRunning,
-  faYoga,
-  faPerson,
-  faSpine,
+  faPersonWalking,
+  faUserNinja,
+  faSpinner,
   faChartLine
 } from '@fortawesome/free-solid-svg-icons';
 
@@ -50,9 +50,9 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     'star': faStar,
     'walking': faWalking,
     'running': faRunning,
-    'yoga': faYoga,
-    'body': faPerson,
-    'spine': faSpine, // Might need to use a different icon if this isn't available
+    'yoga': faPersonWalking, // Changed from faYoga to faPersonWalking
+    'body': faUserNinja,     // Changed from faPerson to faUserNinja
+    'spine': faSpinner,      // Changed from faSpine to faSpinner
     'chart': faChartLine
   };
   

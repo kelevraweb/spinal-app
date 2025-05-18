@@ -84,7 +84,7 @@ export const quizQuestions: QuizQuestion[] = [
     options: [
       { text: "Lavoro sedentario", iconName: "body" },
       { text: "Troppi sforzi fisici", iconName: "dumbbell" },
-      { text: "Postura scorretta", iconName: "spine" },
+      { text: "Postura scorretta", iconName: "chart" },
       { text: "Stress e tensione", iconName: "frown" },
       { text: "Nessuna idea precisa", iconName: "meh" }
     ],

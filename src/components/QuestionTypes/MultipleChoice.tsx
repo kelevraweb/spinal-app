@@ -12,11 +12,11 @@ import {
   faDumbbell, 
   faHeartbeat, 
   faTrophy, 
-  faStar, 
+  faStar,
   faWalking,
   faRunning,
-  faYoga,
-  faPerson,
+  faPersonWalking,
+  faUserNinja,
   faSquare,
   faSquareCheck,
   faChartLine
@@ -52,8 +52,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
     'star': faStar,
     'walking': faWalking,
     'running': faRunning,
-    'yoga': faYoga,
-    'body': faPerson,
+    'yoga': faPersonWalking, // Changed from faYoga to faPersonWalking
+    'body': faUserNinja,     // Changed from faPerson to faUserNinja
     'chart': faChartLine
   };
 

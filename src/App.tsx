@@ -22,7 +22,14 @@ import {
   faHeartbeat,
   faTrophy,
   faStar,
-  faChartLine
+  faChartLine,
+  faWalking,
+  faRunning,
+  faPersonWalking,
+  faUserNinja,
+  faSpinner,
+  faSquare,
+  faSquareCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 // Add icons to the library
@@ -37,7 +44,14 @@ library.add(
   faHeartbeat, 
   faTrophy, 
   faStar,
-  faChartLine
+  faChartLine,
+  faWalking,
+  faRunning,
+  faPersonWalking,
+  faUserNinja,
+  faSpinner,
+  faSquare,
+  faSquareCheck
 );
 
 const queryClient = new QueryClient();
