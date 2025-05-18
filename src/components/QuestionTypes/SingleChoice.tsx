@@ -101,84 +101,84 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     );
   }
 
-  // Show image cards for daily_activity question
+  // Show image cards for daily_activity question - vertical layout with image on right
   if (questionId === 'daily_activity') {
     return (
-      <div className="grid grid-cols-2 gap-4 mt-6">
+      <div className="flex flex-col space-y-4 mt-6">
         <button
           type="button"
-          className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
+          className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
             value === 'Quasi nulla' 
               ? 'border-brand-primary bg-brand-primary/10' 
               : 'border-gray-300 hover:border-gray-400'
           }`}
           onClick={() => onChange('Quasi nulla')}
         >
-          <div className="w-full h-32 rounded-lg overflow-hidden mb-3">
+          <span className="font-medium text-lg text-left">Quasi nulla</span>
+          <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
               src="/lovable-uploads/16876eab-c5be-4f65-91e0-e35ebcf6a05f.png" 
               alt="Quasi nulla" 
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-medium text-lg">Quasi nulla</span>
         </button>
         
         <button
           type="button"
-          className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
+          className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
             value === 'Solo camminate leggere' 
               ? 'border-brand-primary bg-brand-primary/10' 
               : 'border-gray-300 hover:border-gray-400'
           }`}
           onClick={() => onChange('Solo camminate leggere')}
         >
-          <div className="w-full h-32 rounded-lg overflow-hidden mb-3">
+          <span className="font-medium text-lg text-left">Solo camminate leggere</span>
+          <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
               src="/lovable-uploads/41d1066f-6aa1-414c-99ec-e3ed8c16b5c2.png" 
               alt="Solo camminate leggere" 
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-medium text-lg">Solo camminate leggere</span>
         </button>
         
         <button
           type="button"
-          className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
+          className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
             value === 'Faccio sport o esercizi regolari' 
               ? 'border-brand-primary bg-brand-primary/10' 
               : 'border-gray-300 hover:border-gray-400'
           }`}
           onClick={() => onChange('Faccio sport o esercizi regolari')}
         >
-          <div className="w-full h-32 rounded-lg overflow-hidden mb-3">
+          <span className="font-medium text-lg text-left">Faccio sport o esercizi regolari</span>
+          <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
               src="/lovable-uploads/f9761bc7-1b3c-41d4-b369-f7b90c8b429b.png" 
               alt="Faccio sport" 
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-medium text-lg">Faccio sport o esercizi regolari</span>
         </button>
         
         <button
           type="button"
-          className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
+          className={`flex items-center justify-between p-4 rounded-lg border-2 transition-all ${
             value === 'Alterno periodi attivi e sedentari' 
               ? 'border-brand-primary bg-brand-primary/10' 
               : 'border-gray-300 hover:border-gray-400'
           }`}
           onClick={() => onChange('Alterno periodi attivi e sedentari')}
         >
-          <div className="w-full h-32 rounded-lg overflow-hidden mb-3">
+          <span className="font-medium text-lg text-left">Alterno periodi attivi e sedentari</span>
+          <div className="w-24 h-24 rounded-lg overflow-hidden ml-4">
             <img 
               src="/lovable-uploads/7acf66fc-31a1-4a02-b3dc-31dcfe0dbb00.png" 
               alt="Alterno periodi" 
               className="w-full h-full object-cover"
             />
           </div>
-          <span className="font-medium text-lg">Alterno periodi attivi e sedentari</span>
         </button>
       </div>
     );
