@@ -9,6 +9,23 @@ import Quiz from "./pages/Quiz";
 import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
 
+// Import all the icons we're using
+import {
+  Frown,
+  Meh,
+  Smile,
+  Clock,
+  Timer,
+  Calendar,
+  Award,
+  Trophy,
+  Star,
+  Dumbbell,
+  Walking,
+  Running,
+  Yoga
+} from 'lucide-react';
+
 const queryClient = new QueryClient();
 
 const App = () => (

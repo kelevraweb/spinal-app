@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { QuizState, QuizAnswer } from '../types/quiz';
+import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
 import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
 import TopNavBar from '../components/TopNavBar';
 
@@ -39,6 +39,11 @@ const Quiz: React.FC = () => {
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | number>('');
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
+
+  // Helper function to get the text value of an option
+  const getOptionText = (option: string | QuizOption): string => {
+    return typeof option === 'string' ? option : option.text;
+  };
 
   // Handle automatic transitions between special pages
   useEffect(() => {

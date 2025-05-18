@@ -1,4 +1,4 @@
-import { QuizQuestion } from '../types/quiz';
+import { QuizOption, QuizQuestion } from '../types/quiz';
 
 export const quizQuestions: QuizQuestion[] = [
   {
@@ -19,21 +19,39 @@ export const quizQuestions: QuizQuestion[] = [
     id: "back_pain_thoughts",
     question: "Negli ultimi mesi, quanto spesso hai pensato che il tuo dolore alla schiena potrebbe peggiorare?",
     type: "single",
-    options: ["Spesso, ho paura che diventi cronico", "Qualche volta, ma ci convivo", "Raramente, non mi preoccupo", "Non ho dolori, voglio solo migliorare la postura"],
+    options: [
+      { text: "Spesso, ho paura che diventi cronico", iconName: "frown" },
+      { text: "Qualche volta, ma ci convivo", iconName: "meh" },
+      { text: "Raramente, non mi preoccupo", iconName: "smile" },
+      { text: "Non ho dolori, voglio solo migliorare la postura", iconName: "spine" }
+    ],
     required: true
   },
   {
     id: "posture_evaluation",
     question: "Come valuti oggi la tua postura e il tuo stile di vita?",
     type: "single",
-    options: ["So di avere una postura scorretta", "Penso di avere una postura normale ma sedentaria", "Faccio già attività fisica ma sento rigidità", "Non saprei dire"],
+    options: [
+      { text: "So di avere una postura scorretta", iconName: "spine" },
+      { text: "Penso di avere una postura normale ma sedentaria", iconName: "body" },
+      { text: "Faccio già attività fisica ma sento rigidità", iconName: "walking" },
+      { text: "Non saprei dire", iconName: "meh" }
+    ],
     required: true
   },
   {
     id: "pain_locations",
     question: "Dove senti più spesso dolore o rigidità?",
     type: "multiple",
-    options: ["Collo e cervicale", "Parte alta della schiena", "Zona lombare", "Spalle", "Anche e bacino", "Gambe", "Nessun dolore, voglio solo prevenzione"],
+    options: [
+      { text: "Collo e cervicale", iconName: "spine" },
+      { text: "Parte alta della schiena", iconName: "spine" },
+      { text: "Zona lombare", iconName: "spine" },
+      { text: "Spalle", iconName: "body" },
+      { text: "Anche e bacino", iconName: "body" },
+      { text: "Gambe", iconName: "walking" },
+      { text: "Nessun dolore, voglio solo prevenzione", iconName: "smile" }
+    ],
     maxSelections: 3,
     required: true
   },
@@ -41,49 +59,87 @@ export const quizQuestions: QuizQuestion[] = [
     id: "pain_duration",
     question: "Da quanto tempo avverti questo fastidio?",
     type: "single",
-    options: ["Da pochi giorni", "Qualche settimana", "Mesi", "Più di un anno", "È un problema ricorrente"],
+    options: [
+      { text: "Da pochi giorni", iconName: "clock" },
+      { text: "Qualche settimana", iconName: "calendar" },
+      { text: "Mesi", iconName: "calendar" },
+      { text: "Più di un anno", iconName: "calendar" },
+      { text: "È un problema ricorrente", iconName: "timer" }
+    ],
     required: true
   },
   {
     id: "pain_cause",
     question: "Secondo te qual è la causa principale?",
     type: "single",
-    options: ["Lavoro sedentario", "Troppi sforzi fisici", "Postura scorretta", "Stress e tensione", "Nessuna idea precisa"],
+    options: [
+      { text: "Lavoro sedentario", iconName: "body" },
+      { text: "Troppi sforzi fisici", iconName: "dumbbell" },
+      { text: "Postura scorretta", iconName: "spine" },
+      { text: "Stress e tensione", iconName: "frown" },
+      { text: "Nessuna idea precisa", iconName: "meh" }
+    ],
     required: true
   },
   {
     id: "pain_impact",
     question: "Che impatto ha il dolore sulla tua giornata?",
     type: "single",
-    options: ["Mi limita nei movimenti", "Influisce sul mio umore", "Mi impedisce di fare sport o attività", "È solo fastidioso ma lo sopporto", "Non incide particolarmente"],
+    options: [
+      { text: "Mi limita nei movimenti", iconName: "body" },
+      { text: "Influisce sul mio umore", iconName: "frown" },
+      { text: "Mi impedisce di fare sport o attività", iconName: "dumbbell" },
+      { text: "È solo fastidioso ma lo sopporto", iconName: "meh" },
+      { text: "Non incide particolarmente", iconName: "smile" }
+    ],
     required: true
   },
   {
     id: "body_signals",
     question: "Ti capita di ignorare i segnali del tuo corpo finché il dolore diventa troppo forte?",
     type: "single",
-    options: ["Sì, me ne accorgo solo quando peggiora", "A volte, cerco di resistere", "Cerco di intervenire subito", "No, ascolto sempre il mio corpo"],
+    options: [
+      { text: "Sì, me ne accorgo solo quando peggiora", iconName: "frown" },
+      { text: "A volte, cerco di resistere", iconName: "meh" },
+      { text: "Cerco di intervenire subito", iconName: "smile" },
+      { text: "No, ascolto sempre il mio corpo", iconName: "body" }
+    ],
     required: true
   },
   {
     id: "pain_reaction",
     question: "Quando senti dolore o fastidio fisico, come reagisci di solito?",
     type: "single",
-    options: ["Stringo i denti e vado avanti", "Aspetto che passi da solo", "Cerco soluzioni rapide come antidolorifici", "Cerco esercizi o rimedi naturali"],
+    options: [
+      { text: "Stringo i denti e vado avanti", iconName: "frown" },
+      { text: "Aspetto che passi da solo", iconName: "meh" },
+      { text: "Cerco soluzioni rapide come antidolorifici", iconName: "timer" },
+      { text: "Cerco esercizi o rimedi naturali", iconName: "yoga" }
+    ],
     required: true
   },
   {
     id: "daily_wellness_time",
     question: "Quanto tempo puoi dedicare al tuo benessere ogni giorno?",
     type: "single",
-    options: ["5 minuti", "10 minuti", "15 minuti", "20+ minuti"],
+    options: [
+      { text: "5 minuti", iconName: "clock" },
+      { text: "10 minuti", iconName: "clock" },
+      { text: "15 minuti", iconName: "clock" },
+      { text: "20+ minuti", iconName: "clock" }
+    ],
     required: true
   },
   {
     id: "daily_activity",
     question: "Quanto ti muovi durante la giornata?",
     type: "single",
-    options: ["Quasi nulla", "Solo camminate leggere", "Faccio sport o esercizi regolari", "Alterno periodi attivi e sedentari"],
+    options: [
+      { text: "Quasi nulla", iconName: "body" },
+      { text: "Solo camminate leggere", iconName: "walking" },
+      { text: "Faccio sport o esercizi regolari", iconName: "dumbbell" },
+      { text: "Alterno periodi attivi e sedentari", iconName: "running" }
+    ],
     required: true
   },
   {
@@ -182,14 +238,24 @@ export const quizQuestions: QuizQuestion[] = [
     id: "daily_time_commitment",
     question: "Quanto tempo puoi dedicare al tuo benessere ogni giorno?",
     type: "single",
-    options: ["5 minuti", "10 minuti", "15 minuti", "20+ minuti"],
+    options: [
+      { text: "5 minuti", iconName: "clock" },
+      { text: "10 minuti", iconName: "clock" },
+      { text: "15 minuti", iconName: "clock" },
+      { text: "20+ minuti", iconName: "clock" }
+    ],
     required: true
   },
   {
     id: "posture_time_dedication",
     question: "Scegli quanto tempo vuoi dedicare ogni giorno al tuo benessere posturale e al miglioramento della tua mobilità.",
     type: "single",
-    options: ["5 minuti – Inizio leggero, ma costante", "10 minuti – Il giusto equilibrio tra tempo ed efficacia", "15 minuti – Per chi vuole risultati più rapidi", "20+ minuti – Sono pronto/a a cambiare davvero"],
+    options: [
+      { text: "5 minuti – Inizio leggero, ma costante", iconName: "clock" },
+      { text: "10 minuti – Il giusto equilibrio tra tempo ed efficacia", iconName: "clock" },
+      { text: "15 minuti – Per chi vuole risultati più rapidi", iconName: "clock" },
+      { text: "20+ minuti – Sono pronto/a a cambiare davvero", iconName: "clock" }
+    ],
     required: true
   },
   {
@@ -213,18 +279,27 @@ export const additionalQuestions = [
     id: "procrastination",
     question: "Ti capita spesso di procrastinare?",
     type: "single",
-    options: ["Sì", "No"],
+    options: [
+      { text: "Sì", iconName: "clock" },
+      { text: "No", iconName: "timer" }
+    ],
   },
   {
     id: "overwhelmed",
     question: "Ti senti sopraffatto/a dalle emozioni?",
     type: "single",
-    options: ["Sì", "No"],
+    options: [
+      { text: "Sì", iconName: "frown" }, 
+      { text: "No", iconName: "smile" }
+    ],
   },
   {
     id: "energy_depletion",
     question: "Ti senti spesso svuotato/a a fine giornata?",
     type: "single",
-    options: ["Sì", "No"],
+    options: [
+      { text: "Sì", iconName: "frown" },
+      { text: "No", iconName: "smile" }
+    ],
   }
 ];

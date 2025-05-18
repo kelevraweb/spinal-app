@@ -1,9 +1,14 @@
 
+export type QuizOption = {
+  text: string;
+  iconName?: string;
+};
+
 export type QuizQuestion = {
   id: string;
   question: string;
   type: 'single' | 'multiple' | 'text' | 'scale' | 'email' | 'color';
-  options?: string[];
+  options?: string[] | QuizOption[];
   required?: boolean;
   maxSelections?: number;
 };
