@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useCheckout } from '@/hooks/use-checkout';
 import { useToast } from '@/hooks/use-toast';
@@ -218,7 +219,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
         <img 
           src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
           alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
-          className="max-w-full h-auto max-h-8"
+          className="h-6 w-auto"
         />
       </div>
     </>

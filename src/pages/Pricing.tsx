@@ -144,7 +144,7 @@ const Pricing: React.FC = () => {
           <img 
             src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
             alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
-            className="max-w-full h-auto"
+            className="max-w-xs h-auto"
           />
         </div>
       </div>
