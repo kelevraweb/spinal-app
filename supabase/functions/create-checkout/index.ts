@@ -23,6 +23,11 @@ serve(async (req: Request) => {
     if (!stripeKey) {
       throw new Error("Missing STRIPE_SECRET_KEY");
     }
+    
+    // Verify that we're using test mode
+    if (!stripeKey.startsWith('sk_test_')) {
+      console.warn("Warning: Not using a test mode API key. For testing use a key that starts with 'sk_test_'");
+    }
 
     // Get plan type from request body
     const { planType }: CheckoutRequest = await req.json();
@@ -59,6 +64,12 @@ serve(async (req: Request) => {
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
+    } else {
+      // Create a new customer if one doesn't exist
+      const newCustomer = await stripe.customers.create({
+        email: userEmail,
+      });
+      customerId = newCustomer.id;
     }
 
     // Define plan details based on planType
@@ -79,32 +90,26 @@ serve(async (req: Request) => {
 
     const selectedPlan = planDetails[planType];
 
-    // Create a checkout session
-    const session = await stripe.checkout.sessions.create({
+    // Create a PaymentIntent for client-side payment collection
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: selectedPlan.price,
+      currency: "eur",
       customer: customerId,
-      customer_email: customerId ? undefined : userEmail,
-      line_items: [
-        {
-          price_data: {
-            currency: "eur",
-            product_data: {
-              name: selectedPlan.name,
-            },
-            unit_amount: selectedPlan.price,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      success_url: `${req.headers.get("origin")}/thank-you`,
-      cancel_url: `${req.headers.get("origin")}/quiz`,
+      description: `Pagamento per ${selectedPlan.name}`,
+      metadata: {
+        plan_type: planType,
+      },
+      // Enable the Payment Element
+      automatic_payment_methods: {
+        enabled: true,
+      },
     });
 
     // Save order information to Supabase
-    if (session.id) {
+    if (paymentIntent.id) {
       await supabaseClient.from("orders").insert({
         user_id: userId,
-        stripe_session_id: session.id,
+        stripe_session_id: paymentIntent.id,
         plan_type: planType,
         amount: selectedPlan.price,
         currency: "eur",
@@ -112,7 +117,11 @@ serve(async (req: Request) => {
       });
     }
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    // Return the client secret to the client
+    return new Response(JSON.stringify({ 
+      clientSecret: paymentIntent.client_secret,
+      publishableKey: Deno.env.get("STRIPE_PUBLISHABLE_KEY")
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
