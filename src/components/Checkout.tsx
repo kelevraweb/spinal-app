@@ -56,19 +56,22 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Process the payment in-page instead of redirecting to Stripe
     toast({
-      title: "Pagamento in elaborazione",
-      description: "Stiamo processando il tuo pagamento..."
+      title: "Reindirizzamento",
+      description: "Stai per essere reindirizzato al checkout sicuro di Stripe..."
     });
     
-    // Simulate payment processing
-    setTimeout(() => {
-      onPurchase();
-    }, 1500);
+    // Use the real checkout process instead of simulating
+    const success = await initiateCheckout(selectedPlan);
+    
+    // The redirect will happen automatically in the initiateCheckout function
+    // Only call onPurchase if there's an error and we stay on the page
+    if (!success) {
+      console.error('Checkout failed');
+    }
   };
 
   return (
