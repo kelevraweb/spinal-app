@@ -70,9 +70,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             type="button" 
             className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
-              value === 'Maschio' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+              value === 'Maschio' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
             }`} 
-            style={{ background: 'white !important' }}
+            style={{ 
+              background: 'white !important',
+              backgroundColor: 'white !important'
+            }}
             onClick={() => handleSelection('Maschio')}
           >
             <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
@@ -88,9 +91,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             type="button" 
             className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
-              value === 'Femmina' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+              value === 'Femmina' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
             }`} 
-            style={{ background: 'white !important' }}
+            style={{ 
+              background: 'white !important',
+              backgroundColor: 'white !important'
+            }}
             onClick={() => handleSelection('Femmina')}
           >
             <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
@@ -120,9 +126,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button 
           type="button" 
           className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Quasi nulla' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            value === 'Quasi nulla' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
           }`} 
-          style={{ background: 'white !important' }}
+          style={{ 
+            background: 'white !important',
+            backgroundColor: 'white !important'
+          }}
           onClick={() => handleSelection('Quasi nulla')}
         >
           <span className="font-medium text-base text-left">Quasi nulla</span>
@@ -138,9 +147,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button 
           type="button" 
           className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Solo camminate leggere' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            value === 'Solo camminate leggere' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
           }`} 
-          style={{ background: 'white !important' }}
+          style={{ 
+            background: 'white !important',
+            backgroundColor: 'white !important'
+          }}
           onClick={() => handleSelection('Solo camminate leggere')}
         >
           <span className="font-medium text-base text-left">Solo camminate leggere</span>
@@ -156,9 +168,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button 
           type="button" 
           className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
           }`} 
-          style={{ background: 'white !important' }}
+          style={{ 
+            background: 'white !important',
+            backgroundColor: 'white !important'
+          }}
           onClick={() => handleSelection('Faccio sport o esercizi regolari')}
         >
           <span className="font-medium text-base text-left">Faccio sport o esercizi regolari</span>
@@ -174,9 +189,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <button 
           type="button" 
           className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
           }`} 
-          style={{ background: 'white !important' }}
+          style={{ 
+            background: 'white !important',
+            backgroundColor: 'white !important'
+          }}
           onClick={() => handleSelection('Alterno periodi attivi e sedentari')}
         >
           <span className="font-medium text-base text-left">Alterno periodi attivi e sedentari</span>
@@ -204,12 +222,20 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             key={index} 
             type="button" 
-            className={`option-btn ${value === optionText ? 'selected' : ''}`} 
-            style={{ background: 'white !important', color: '#374151 !important', border: '2px solid #e5e7eb !important' }}
+            className={`w-full p-4 border-2 rounded-xl transition-all mb-3 text-left font-medium flex items-center ${
+              value === optionText ? 'border-gray-400' : 'border-gray-300 hover:border-gray-400'
+            }`}
+            style={{ 
+              background: 'white !important',
+              backgroundColor: 'white !important',
+              color: '#374151 !important'
+            }}
             onClick={() => handleSelection(optionText)}
           >
             <div className="flex items-center w-full">
-              <div className={`icon-circle ${value === optionText ? 'bg-[#88c2aa]/30' : 'bg-gray-100'}`}>
+              <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
+                value === optionText ? 'bg-gray-100' : 'bg-gray-100'
+              }`}>
                 <FontAwesomeIcon 
                   icon={icon} 
                   className={value === optionText ? 'text-[#71b8bc]' : 'text-gray-500'} 
