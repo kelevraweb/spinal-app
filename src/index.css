@@ -89,7 +89,7 @@
   }
   
   .quiz-card {
-    @apply rounded-2xl shadow-lg p-6 sm:p-8 w-full max-w-3xl mx-auto transition-all duration-300 animate-fade-in;
+    @apply w-full max-w-3xl mx-auto transition-all duration-300 animate-fade-in;
     background: transparent;
   }
   
@@ -106,19 +106,19 @@
   }
   
   .btn-primary {
-    @apply bg-brand-primary hover:bg-[#5dadb2] text-white font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#71b8bc] shadow-md;
+    @apply bg-white hover:bg-gray-100 text-gray-800 font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 shadow-md border border-gray-200;
   }
 
   .btn-secondary {
-    @apply bg-white border-2 border-brand-accent text-brand-accent font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 hover:bg-[#f0f8f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#88c2aa] shadow-sm;
+    @apply bg-white border-2 border-gray-300 text-gray-800 font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 shadow-sm;
   }
 
   .option-btn {
-    @apply bg-white border-2 border-gray-200 hover:border-brand-primary text-gray-800 font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 w-full text-left hover:shadow-md flex items-center justify-between;
+    @apply bg-white border-2 border-gray-200 hover:border-gray-400 text-gray-800 font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 w-full text-left hover:shadow-md flex items-center justify-between;
   }
   
   .option-btn.selected {
-    @apply bg-brand-light border-brand-primary text-gray-900 shadow-md;
+    @apply bg-gray-100 border-gray-400 text-gray-900 shadow-md;
   }
 
   .progress-container {
@@ -126,11 +126,11 @@
   }
   
   .progress-bar {
-    @apply h-full bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full transition-all duration-300 ease-out;
+    @apply h-full bg-gradient-to-r from-gray-400 to-gray-600 rounded-full transition-all duration-300 ease-out;
   }
 
   .testimonial-card {
-    @apply bg-white rounded-xl shadow-md p-6 my-4 border-l-4 border-brand-accent;
+    @apply bg-white rounded-xl shadow-md p-6 my-4 border-l-4 border-gray-400;
   }
   
   .rating-stars {
@@ -138,7 +138,7 @@
   }
   
   .trust-badge {
-    @apply flex items-center justify-center gap-2 bg-brand-light rounded-full px-4 py-2 text-sm font-medium text-gray-700;
+    @apply flex items-center justify-center gap-2 bg-gray-100 rounded-full px-4 py-2 text-sm font-medium text-gray-700;
   }
 
   .brain-icon {
@@ -336,17 +336,18 @@
   top: 5px;
   bottom: 5px;
   padding: 0 15px;
-  background: #F7685B;
-  border: none;
+  background: white;
+  border: 2px solid #e0e0e0;
   border-radius: 9999px;
-  color: white;
+  color: #333;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .email-button:hover {
-  background: #e65a4d;
+  background: #f5f5f5;
+  border-color: #ccc;
 }
 
 /* Sinusoidal graph styling */
