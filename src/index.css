@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -81,6 +80,35 @@
     @apply bg-background text-foreground font-sans antialiased;
     background: transparent;
   }
+}
+
+/* SUPER SPECIFIC CSS FOR WHITE BUTTONS - MAXIMUM PRIORITY */
+.force-white-button,
+button.force-white-button,
+div button.force-white-button,
+div.space-y-3 button.force-white-button,
+div.grid button.force-white-button,
+div.flex button.force-white-button {
+  background: white !important;
+  background-color: white !important;
+  color: #374151 !important;
+}
+
+.force-white-button:hover,
+button.force-white-button:hover,
+div button.force-white-button:hover,
+div.space-y-3 button.force-white-button:hover,
+div.grid button.force-white-button:hover,
+div.flex button.force-white-button:hover {
+  background: #f9fafb !important;
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+}
+
+.force-white-button span,
+button.force-white-button span,
+div button.force-white-button span {
+  color: #374151 !important;
 }
 
 @layer components {
@@ -417,4 +445,29 @@
   to {
     stroke-dashoffset: 0;
   }
+}
+
+/* FORCE WHITE BUTTONS WITH MAXIMUM SPECIFICITY */
+html body div.quiz-container div button.force-white-button,
+html body div button.force-white-button,
+html body button.force-white-button {
+  background: white !important;
+  background-color: white !important;
+  color: #374151 !important;
+  border-color: #d1d5db !important;
+}
+
+html body div.quiz-container div button.force-white-button:hover,
+html body div button.force-white-button:hover,
+html body button.force-white-button:hover {
+  background: #f9fafb !important;
+  background-color: #f9fafb !important;
+  color: #374151 !important;
+  border-color: #9ca3af !important;
+}
+
+html body div.quiz-container div button.force-white-button span,
+html body div button.force-white-button span,
+html body button.force-white-button span {
+  color: #374151 !important;
 }

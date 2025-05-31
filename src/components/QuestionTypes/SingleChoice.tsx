@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -19,7 +18,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   onChange,
   useImages = false,
   questionId,
-  autoAdvance = true // Enable auto-advance by default
+  autoAdvance = true
 }) => {
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
@@ -69,12 +68,13 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <div className="grid grid-cols-2 gap-4 mt-6">
           <button 
             type="button" 
-            className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
-              value === 'Maschio' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
+            className={`force-white-button flex flex-col items-center p-4 rounded-lg transition-all ${
+              value === 'Maschio' ? 'border-[#71b8bc]' : 'hover:border-gray-400'
             }`} 
             style={{ 
               background: 'white !important',
-              backgroundColor: 'white !important'
+              backgroundColor: 'white !important',
+              border: value === 'Maschio' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
             }}
             onClick={() => handleSelection('Maschio')}
           >
@@ -85,17 +85,18 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
                 className="w-full h-full object-cover" 
               />
             </div>
-            <span className="font-medium text-lg">Maschio</span>
+            <span className="font-medium text-lg" style={{color: '#374151 !important'}}>Maschio</span>
           </button>
           
           <button 
             type="button" 
-            className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all ${
-              value === 'Femmina' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
+            className={`force-white-button flex flex-col items-center p-4 rounded-lg transition-all ${
+              value === 'Femmina' ? 'border-[#71b8bc]' : 'hover:border-gray-400'
             }`} 
             style={{ 
               background: 'white !important',
-              backgroundColor: 'white !important'
+              backgroundColor: 'white !important',
+              border: value === 'Femmina' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
             }}
             onClick={() => handleSelection('Femmina')}
           >
@@ -106,7 +107,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
                 className="w-full h-full object-cover" 
               />
             </div>
-            <span className="font-medium text-lg">Femmina</span>
+            <span className="font-medium text-lg" style={{color: '#374151 !important'}}>Femmina</span>
           </button>
         </div>
         
@@ -125,16 +126,15 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
       <div className="flex flex-col space-y-3 mt-6">
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Quasi nulla' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
-          }`} 
+          className="force-white-button flex items-center justify-between p-3 rounded-lg transition-all" 
           style={{ 
             background: 'white !important',
-            backgroundColor: 'white !important'
+            backgroundColor: 'white !important',
+            border: value === 'Quasi nulla' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
           }}
           onClick={() => handleSelection('Quasi nulla')}
         >
-          <span className="font-medium text-base text-left">Quasi nulla</span>
+          <span className="font-medium text-base text-left" style={{color: '#374151 !important'}}>Quasi nulla</span>
           <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
             <img 
               src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" 
@@ -146,16 +146,15 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Solo camminate leggere' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
-          }`} 
+          className="force-white-button flex items-center justify-between p-3 rounded-lg transition-all" 
           style={{ 
             background: 'white !important',
-            backgroundColor: 'white !important'
+            backgroundColor: 'white !important',
+            border: value === 'Solo camminate leggere' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
           }}
           onClick={() => handleSelection('Solo camminate leggere')}
         >
-          <span className="font-medium text-base text-left">Solo camminate leggere</span>
+          <span className="font-medium text-base text-left" style={{color: '#374151 !important'}}>Solo camminate leggere</span>
           <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
             <img 
               src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png" 
@@ -167,16 +166,15 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
-          }`} 
+          className="force-white-button flex items-center justify-between p-3 rounded-lg transition-all" 
           style={{ 
             background: 'white !important',
-            backgroundColor: 'white !important'
+            backgroundColor: 'white !important',
+            border: value === 'Faccio sport o esercizi regolari' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
           }}
           onClick={() => handleSelection('Faccio sport o esercizi regolari')}
         >
-          <span className="font-medium text-base text-left">Faccio sport o esercizi regolari</span>
+          <span className="font-medium text-base text-left" style={{color: '#374151 !important'}}>Faccio sport o esercizi regolari</span>
           <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
             <img 
               src="/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png" 
@@ -188,16 +186,15 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all ${
-            value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc]' : 'border-gray-300 hover:border-gray-400'
-          }`} 
+          className="force-white-button flex items-center justify-between p-3 rounded-lg transition-all" 
           style={{ 
             background: 'white !important',
-            backgroundColor: 'white !important'
+            backgroundColor: 'white !important',
+            border: value === 'Alterno periodi attivi e sedentari' ? '2px solid #71b8bc !important' : '2px solid #d1d5db !important'
           }}
           onClick={() => handleSelection('Alterno periodi attivi e sedentari')}
         >
-          <span className="font-medium text-base text-left">Alterno periodi attivi e sedentari</span>
+          <span className="font-medium text-base text-left" style={{color: '#374151 !important'}}>Alterno periodi attivi e sedentari</span>
           <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
             <img 
               src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" 
@@ -222,27 +219,24 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             key={index} 
             type="button" 
-            className={`w-full p-4 border-2 rounded-xl transition-all mb-3 text-left font-medium flex items-center ${
-              value === optionText ? 'border-gray-400' : 'border-gray-300 hover:border-gray-400'
-            }`}
+            className="force-white-button w-full p-4 rounded-xl transition-all mb-3 text-left font-medium flex items-center"
             style={{ 
               background: 'white !important',
               backgroundColor: 'white !important',
-              color: '#374151 !important'
+              color: '#374151 !important',
+              border: value === optionText ? '2px solid #9ca3af !important' : '2px solid #d1d5db !important'
             }}
             onClick={() => handleSelection(optionText)}
           >
             <div className="flex items-center w-full">
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center mr-3 ${
-                value === optionText ? 'bg-gray-100' : 'bg-gray-100'
-              }`}>
+              <div className="w-10 h-10 rounded-full flex items-center justify-center mr-3" style={{backgroundColor: '#f3f4f6 !important'}}>
                 <FontAwesomeIcon 
                   icon={icon} 
                   className={value === optionText ? 'text-[#71b8bc]' : 'text-gray-500'} 
                   size="lg" 
                 />
               </div>
-              <span>{optionText}</span>
+              <span style={{color: '#374151 !important'}}>{optionText}</span>
             </div>
           </button>
         );
