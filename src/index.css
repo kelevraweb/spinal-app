@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -80,27 +79,6 @@
   body {
     @apply bg-background text-foreground font-sans antialiased;
   }
-}
-
-/* Force white backgrounds on quiz buttons - super specific CSS */
-.space-y-3 button[type="button"],
-.grid.grid-cols-2 button[type="button"],
-.flex.flex-col.space-y-3 button[type="button"],
-div[class*="space-y"] button[type="button"] {
-  background-color: #FFF !important;
-  background: #FFF !important;
-}
-
-/* Additional specificity for gender buttons */
-.grid.grid-cols-2.gap-4 button.flex.flex-col.items-center {
-  background-color: #FFF !important;
-  background: #FFF !important;
-}
-
-/* Additional specificity for daily activity buttons */
-.flex.flex-col.space-y-3 button.flex.items-center.justify-between {
-  background-color: #FFF !important;
-  background: #FFF !important;
 }
 
 @layer components {

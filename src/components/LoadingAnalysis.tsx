@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { Progress } from '@/components/ui/progress';
 
 interface LoadingAnalysisProps {
   onComplete: () => void;
@@ -18,21 +19,21 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     { 
       name: 'Analisi posturale', 
       progress: 0, 
-      color: '#71b8bc', 
+      color: 'bg-white', 
       question: 'Ti senti spesso bloccato/a nei movimenti?',
       answered: false
     },
     { 
       name: 'Analisi mobilità', 
       progress: 0, 
-      color: '#88c2aa',
+      color: 'bg-white',
       question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?',
       answered: false
     },
     { 
       name: 'Analisi benessere fisico', 
       progress: 0, 
-      color: '#a3d977',
+      color: 'bg-white',
       question: 'Ti senti spesso rigido/a quando ti svegli al mattino?',
       answered: false
     }
@@ -63,6 +64,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   ];
 
   useEffect(() => {
+    // Rotate testimonials
     const testimonialInterval = setInterval(() => {
       setTestimonialIndex(prev => (prev + 1) % testimonials.length);
     }, 3000);
@@ -77,6 +79,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       setBars(prevBars => {
         const newBars = [...prevBars];
         
+        // If we've reached 50% and haven't answered the question yet
         if (newBars[currentBarIndex].progress >= 50 && !newBars[currentBarIndex].answered && !animationPaused) {
           setAnimationPaused(true);
           setActiveBarIndex(currentBarIndex);
@@ -84,23 +87,26 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
           return newBars;
         }
         
+        // Continue bar progress
         if (newBars[currentBarIndex].progress < 100) {
           newBars[currentBarIndex] = {
             ...newBars[currentBarIndex],
-            progress: Math.min(newBars[currentBarIndex].progress + 3, 100)
+            progress: Math.min(newBars[currentBarIndex].progress + 2, 100)
           };
         } else {
+          // Bar is complete, move to next bar
           clearInterval(interval);
           if (currentBarIndex < bars.length - 1) {
             setCurrentBarIndex(prev => prev + 1);
           } else {
+            // All bars complete
             setTimeout(onComplete, 1000);
           }
         }
         
         return newBars;
       });
-    }, 80);
+    }, 50);
     
     return () => clearInterval(interval);
   }, [currentBarIndex, animationPaused, onComplete, bars.length]);
@@ -131,35 +137,32 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       <div className="space-y-8 mt-10">
         {bars.map((bar, index) => (
           <div key={index} className="relative">
-            <div className="flex justify-between items-center mb-3">
-              <div className="font-semibold text-white text-lg">{bar.name}</div>
-              <div className="text-lg font-bold text-[#71b8bc]">{Math.round(bar.progress)}%</div>
+            <div className="flex justify-between items-center mb-2">
+              <div className="font-medium text-white">{bar.name}</div>
+              <div className="text-sm text-gray-300">{Math.round(bar.progress)}%</div>
             </div>
             
-            <div className="w-full bg-gray-700 rounded-full h-4 shadow-inner">
+            <div className="w-full bg-gray-700 rounded-full h-3">
               <div 
-                className="h-4 rounded-full transition-all duration-500 ease-out shadow-sm"
-                style={{ 
-                  width: `${bar.progress}%`,
-                  backgroundColor: bar.color,
-                  boxShadow: `0 0 10px ${bar.color}40`
-                }}
+                className="bg-white h-3 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${bar.progress}%` }}
               />
             </div>
             
+            {/* Question popup when bar reaches 50% - now centered */}
             {activeBarIndex === index && (
-              <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-xl shadow-2xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
-                <h4 className="font-semibold mb-4 text-gray-800">{bar.question}</h4>
+              <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
+                <h4 className="font-medium mb-3">{bar.question}</h4>
                 <div className="flex gap-4">
                   <button 
                     onClick={() => handleAnswer(index, true)}
-                    className="flex-1 bg-[#71b8bc] hover:bg-[#5da0a4] text-white rounded-full px-4 py-3 text-sm font-medium transition-colors"
+                    className="flex-1 bg-[#71b8bc] text-white rounded-full px-4 py-2 text-sm"
                   >
                     Sì
                   </button>
                   <button 
                     onClick={() => handleAnswer(index, false)}
-                    className="flex-1 border-2 border-gray-300 hover:border-gray-400 rounded-full px-4 py-3 text-sm font-medium transition-colors"
+                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm"
                   >
                     No
                   </button>
@@ -170,9 +173,10 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
         ))}
       </div>
       
-      <div className="mt-16 bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#71b8bc] animate-fade-in">
-        <p className="italic mb-3 text-gray-700">"{testimonials[testimonialIndex].text}"</p>
-        <p className="text-right font-semibold text-[#71b8bc]">— {testimonials[testimonialIndex].name}</p>
+      {/* Testimonials */}
+      <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
+        <p className="italic mb-2">"{testimonials[testimonialIndex].text}"</p>
+        <p className="text-right font-semibold">— {testimonials[testimonialIndex].name}</p>
       </div>
     </div>
   );
