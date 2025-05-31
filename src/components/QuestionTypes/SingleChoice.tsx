@@ -210,7 +210,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           >
             <div className="flex items-center w-full">
               <div className={`icon-circle ${value === optionText ? 'bg-[#88c2aa]/30' : 'bg-gray-100'}`}>
-                <FontAwesome 
+                <FontAwesomeIcon 
                   icon={icon} 
                   className={value === optionText ? 'text-[#71b8bc]' : 'text-gray-500'} 
                   size="lg" 
