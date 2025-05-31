@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -117,86 +118,89 @@ const Pricing: React.FC = () => {
   };
 
   const PricingSection = ({ compact = false }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-2xl mx-auto px-4`}>
-      {!compact && (
-        <div className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
-            ✨ Piano Personalizzato Pronto
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[600px] mx-auto px-4`}>
+      {/* Boxed container wrapper */}
+      <div className="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        {!compact && (
+          <div className="text-center mb-12">
+            <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
+              ✨ Piano Personalizzato Pronto
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+              Il tuo piano personalizzato per la salute della schiena è pronto!
+            </h1>
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Il tuo piano personalizzato per la salute della schiena è pronto!
-          </h1>
-        </div>
-      )}
-      
-      <div className="space-y-4">
-        {Object.entries(plans).map(([key, plan]) => (
-          <div key={key} className="relative">
-            {plan.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-green-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center">
-                  <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
-                  MOST POPULAR
+        )}
+        
+        <div className="space-y-4">
+          {Object.entries(plans).map(([key, plan]) => (
+            <div key={key} className="relative">
+              {plan.popular && (
+                <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                  <div className="bg-green-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center">
+                    <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
+                    MOST POPULAR
+                  </div>
                 </div>
-              </div>
-            )}
-            
-            <div 
-              onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')}
-              className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
-                selectedPlan === key 
-                  ? 'border-green-500 bg-white shadow-lg' 
-                  : 'border-gray-200 hover:border-gray-300 bg-white'
-              }`}
-            >
-              <div className="flex items-center justify-between">
-                {/* Left side: Radio button + Plan content */}
-                <div className="flex items-center flex-1">
-                  <div className="mr-4">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      selectedPlan === key 
-                        ? 'border-green-500 bg-green-500' 
-                        : 'border-gray-300'
-                    }`}>
-                      {selectedPlan === key && (
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                      )}
+              )}
+              
+              <div 
+                onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')}
+                className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
+                  selectedPlan === key 
+                    ? 'border-green-500 bg-white shadow-lg' 
+                    : 'border-gray-200 hover:border-gray-300 bg-white'
+                }`}
+              >
+                <div className="flex items-center justify-between">
+                  {/* Left side: Radio button + Plan content */}
+                  <div className="flex items-center flex-1">
+                    <div className="mr-4">
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                        selectedPlan === key 
+                          ? 'border-green-500 bg-green-500' 
+                          : 'border-gray-300'
+                      }`}>
+                        {selectedPlan === key && (
+                          <div className="w-2 h-2 bg-white rounded-full"></div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div>
+                      {/* Plan title */}
+                      <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
+                      
+                      {/* Small total price */}
+                      <div className="text-sm text-gray-600">€{plan.price}</div>
                     </div>
                   </div>
-                  
-                  <div>
-                    {/* Plan title */}
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    
-                    {/* Small total price */}
-                    <div className="text-sm text-gray-600">€{plan.price}</div>
-                  </div>
-                </div>
 
-                {/* Right side: Grey container with daily price */}
-                <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
-                  <div className="text-xl font-bold text-gray-900">
-                    €{plan.dailyPrice.toFixed(2)}
+                  {/* Right side: Grey container with daily price */}
+                  <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
+                    <div className="text-xl font-bold text-gray-900">
+                      €{plan.dailyPrice.toFixed(2)}
+                    </div>
+                    <div className="text-xs text-gray-600">per day</div>
                   </div>
-                  <div className="text-xs text-gray-600">per day</div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
 
-      <div className="text-center mt-8">
-        <Button 
-          onClick={handleSelectPlan} 
-          className="w-full bg-[#71b8bc] hover:bg-[#5a9599] text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg"
-        >
-          GET MY PLAN
-        </Button>
-      </div>
+        <div className="text-center mt-8">
+          <Button 
+            onClick={handleSelectPlan} 
+            className="w-full bg-[#71b8bc] hover:bg-[#5a9599] text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg"
+          >
+            GET MY PLAN
+          </Button>
+        </div>
 
-      <div className="text-center mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-        <p>{disclaimers[selectedPlan]}</p>
+        <div className="text-center mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+          <p>{disclaimers[selectedPlan]}</p>
+        </div>
       </div>
     </div>
   );
