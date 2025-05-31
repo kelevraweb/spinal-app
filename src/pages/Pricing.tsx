@@ -6,6 +6,8 @@ import { Rating } from '@/components/Rating';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 
@@ -16,35 +18,43 @@ const Pricing: React.FC = () => {
 
   const plans = {
     trial: {
-      title: 'Prova',
-      price: 0.99,
-      period: 'settimana',
+      title: '7 giorni',
+      price: 49.99,
+      period: 'totale',
       duration: '7 giorni',
+      dailyPrice: 7.14,
       billingText: 'Pagamento unico'
     },
     monthly: {
-      title: 'Mensile',
-      price: 7.99,
-      period: 'mese',
+      title: '30 giorni',
+      price: 49.99,
+      period: 'totale',
       duration: '1 mese',
-      billingText: 'Fatturazione mensile'
+      dailyPrice: 1.66,
+      billingText: 'Fatturazione mensile',
+      popular: true
     },
     quarterly: {
-      title: 'Trimestrale',
-      price: 19.99,
-      period: '3 mesi',
+      title: '90 giorni',
+      price: 99.99,
+      period: 'totale',
       duration: '3 mesi',
+      dailyPrice: 1.11,
       billingText: 'Fatturazione trimestrale'
     }
   };
 
-  const handleSelectPlan = (plan: 'trial' | 'monthly' | 'quarterly') => {
-    setSelectedPlan(plan);
+  const disclaimers = {
+    trial: "Cliccando su 'Ottieni il Mio Piano', accetti una prova di 1 settimana a €49,99, che si convertirà in un abbonamento con rinnovo automatico a €49,99/mese se non annullato (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli.",
+    monthly: "Cliccando su 'Ottieni il Mio Piano', accetti il rinnovo automatico dell'abbonamento. Il primo mese costa €49,99, poi €49,99/mese (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli.",
+    quarterly: "Cliccando su 'Ottieni il Mio Piano', accetti il rinnovo automatico dell'abbonamento. I primi tre mesi costano €99,99, poi €99,99 ogni tre mesi (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli."
+  };
+
+  const handleSelectPlan = () => {
     setShowCheckoutDialog(true);
   };
 
   const handlePurchase = () => {
-    // Here you would integrate with Stripe
     console.log('Elaborazione acquisto...');
     navigate('/thank-you');
   };
@@ -59,82 +69,95 @@ const Pricing: React.FC = () => {
         <h1 className="text-2xl md:text-3xl font-bold mb-4">Il tuo piano personalizzato per la salute della schiena è pronto!</h1>
       </div>
 
-      {/* Pricing Table */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-        {/* Trial Plan */}
-        <Card className="border-2 hover:shadow-lg transition-shadow">
-          <CardHeader className="bg-gray-50">
-            <CardTitle className="text-xl text-center">{plans.trial.title}</CardTitle>
-            <div className="text-center">
-              <span className="text-3xl font-bold">€{plans.trial.price}</span>
-              <span className="text-sm">/{plans.trial.period}</span>
-            </div>
-            <p className="text-center text-sm text-gray-500">{plans.trial.billingText}</p>
-            <p className="text-center text-sm">{plans.trial.duration}</p>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Accesso completo per 7 giorni</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Esercizi personalizzati</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Supporto base</li>
-            </ul>
-            <Button onClick={() => handleSelectPlan('trial')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-          </CardContent>
-        </Card>
+      {/* Pricing Selection */}
+      <div className="mb-8">
+        <RadioGroup 
+          value={selectedPlan} 
+          onValueChange={(value) => setSelectedPlan(value as 'trial' | 'monthly' | 'quarterly')}
+          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+        >
+          {/* Trial Plan */}
+          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
+            selectedPlan === 'trial' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          }`}>
+            <RadioGroupItem value="trial" id="trial" className="absolute top-4 right-4" />
+            <Label htmlFor="trial" className="cursor-pointer">
+              <div className="text-center">
+                <h3 className="text-xl font-bold mb-2">{plans.trial.title}</h3>
+                <div className="mb-2">
+                  <span className="text-2xl font-bold">€{plans.trial.price}</span>
+                  <span className="text-sm text-gray-500"> {plans.trial.period}</span>
+                </div>
+                <div className="text-3xl font-bold text-brand-primary mb-2">
+                  €{plans.trial.dailyPrice.toFixed(2)} al giorno
+                </div>
+                <p className="text-sm text-gray-500">{plans.trial.duration}</p>
+              </div>
+            </Label>
+          </div>
 
-        {/* Monthly Plan */}
-        <Card className="border-2 border-brand-primary hover:shadow-lg transition-shadow">
-          <div className="bg-brand-primary text-white py-1 text-center text-sm font-medium">PIÙ POPOLARE</div>
-          <CardHeader className="bg-gray-50">
-            <CardTitle className="text-xl text-center">{plans.monthly.title}</CardTitle>
-            <div className="text-center">
-              <span className="text-3xl font-bold">€{plans.monthly.price}</span>
-              <span className="text-sm">/{plans.monthly.period}</span>
-            </div>
-            <p className="text-center text-sm text-gray-500">{plans.monthly.billingText}</p>
-            <p className="text-center text-sm">{plans.monthly.duration}</p>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Accesso completo illimitato</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Esercizi personalizzati</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Supporto prioritario</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Progressi monitorati</li>
-            </ul>
-            <Button onClick={() => handleSelectPlan('monthly')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-          </CardContent>
-        </Card>
+          {/* Monthly Plan */}
+          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
+            selectedPlan === 'monthly' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          }`}>
+            {plans.monthly.popular && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-brand-primary text-white px-4 py-1 rounded-full text-sm font-medium">
+                  PIÙ POPOLARE
+                </span>
+              </div>
+            )}
+            <RadioGroupItem value="monthly" id="monthly" className="absolute top-4 right-4" />
+            <Label htmlFor="monthly" className="cursor-pointer">
+              <div className="text-center">
+                <h3 className="text-xl font-bold mb-2">{plans.monthly.title}</h3>
+                <div className="mb-2">
+                  <span className="text-2xl font-bold">€{plans.monthly.price}</span>
+                  <span className="text-sm text-gray-500"> {plans.monthly.period}</span>
+                </div>
+                <div className="text-3xl font-bold text-brand-primary mb-2">
+                  €{plans.monthly.dailyPrice.toFixed(2)} al giorno
+                </div>
+                <p className="text-sm text-gray-500">{plans.monthly.duration}</p>
+              </div>
+            </Label>
+          </div>
 
-        {/* Quarterly Plan */}
-        <Card className="border-2 hover:shadow-lg transition-shadow">
-          <CardHeader className="bg-gray-50">
-            <CardTitle className="text-xl text-center">{plans.quarterly.title}</CardTitle>
-            <div className="text-center">
-              <span className="text-3xl font-bold">€{plans.quarterly.price}</span>
-              <span className="text-sm">/{plans.quarterly.period}</span>
-            </div>
-            <p className="text-center text-sm text-gray-500">{plans.quarterly.billingText}</p>
-            <p className="text-center text-sm">{plans.quarterly.duration}</p>
-          </CardHeader>
-          <CardContent className="pt-4">
-            <ul className="space-y-2 mb-6">
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Accesso completo illimitato</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Esercizi personalizzati</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Supporto prioritario</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Progressi monitorati</li>
-              <li className="flex items-center"><FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2" />Risparmi il 17%</li>
-            </ul>
-            <Button onClick={() => handleSelectPlan('quarterly')} className="w-full bg-brand-primary hover:bg-brand-primary/90">Seleziona</Button>
-          </CardContent>
-        </Card>
-      </div>
+          {/* Quarterly Plan */}
+          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
+            selectedPlan === 'quarterly' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          }`}>
+            <RadioGroupItem value="quarterly" id="quarterly" className="absolute top-4 right-4" />
+            <Label htmlFor="quarterly" className="cursor-pointer">
+              <div className="text-center">
+                <h3 className="text-xl font-bold mb-2">{plans.quarterly.title}</h3>
+                <div className="mb-2">
+                  <span className="text-2xl font-bold">€{plans.quarterly.price}</span>
+                  <span className="text-sm text-gray-500"> {plans.quarterly.period}</span>
+                </div>
+                <div className="text-3xl font-bold text-brand-primary mb-2">
+                  €{plans.quarterly.dailyPrice.toFixed(2)} al giorno
+                </div>
+                <p className="text-sm text-gray-500">{plans.quarterly.duration}</p>
+              </div>
+            </Label>
+          </div>
+        </RadioGroup>
 
-      <div className="text-center mb-10 text-sm text-gray-600">
-        <p>Cliccando su "Seleziona", accetti l'attivazione di un abbonamento con rinnovo automatico.</p>
-        <p>Il primo mese ha un costo di €49,99, poi €49,99/mese (IVA inclusa).</p>
-        <p>Puoi disdire in qualsiasi momento direttamente dall'app o scrivendo a:</p>
-        <p className="font-medium">📧 support@xxx.com</p>
-        <p>Consulta l'Informativa sull'abbonamento per tutti i dettagli.</p>
+        {/* Single Checkout Button */}
+        <div className="text-center mt-8">
+          <Button 
+            onClick={handleSelectPlan} 
+            className="w-full md:w-auto px-12 py-4 text-lg bg-brand-primary hover:bg-brand-primary/90"
+          >
+            OTTIENI IL MIO PIANO
+          </Button>
+        </div>
+
+        {/* Dynamic Disclaimer */}
+        <div className="text-center mt-6 text-sm text-gray-600 max-w-4xl mx-auto">
+          <p>{disclaimers[selectedPlan]}</p>
+        </div>
       </div>
 
       {/* Security Badge */}

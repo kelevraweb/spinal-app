@@ -72,19 +72,19 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
-    // Define plan details based on planType
+    // Define plan details based on planType with new pricing
     const planDetails = {
       trial: {
-        price: 99, // €0.99 in cents
-        name: "Prova 7 giorni",
+        price: 4999, // €49.99 in cents
+        name: "Piano 7 giorni",
       },
       monthly: {
-        price: 799, // €7.99 in cents
-        name: "Piano Mensile",
+        price: 4999, // €49.99 in cents
+        name: "Piano 30 giorni",
       },
       quarterly: {
-        price: 1999, // €19.99 in cents
-        name: "Piano Trimestrale",
+        price: 9999, // €99.99 in cents
+        name: "Piano 90 giorni",
       },
     };
 

@@ -70,8 +70,9 @@ const CheckoutForm = ({
             <p className="font-medium">{selectedPlanDetails.title}</p>
             <p className="text-sm text-gray-500">{selectedPlanDetails.billingText}</p>
             <p className="text-sm text-gray-500">{selectedPlanDetails.duration}</p>
+            <p className="text-lg font-bold text-brand-primary">€{selectedPlanDetails.dailyPrice.toFixed(2)} al giorno</p>
           </div>
-          <p className="font-bold">€{selectedPlanDetails.price}</p>
+          <p className="font-bold text-xl">€{selectedPlanDetails.price}</p>
         </div>
       </div>
       
@@ -105,24 +106,27 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'monthly
   
   const plans = {
     trial: {
-      title: 'Prova',
-      price: 0.99,
-      period: 'settimana',
+      title: '7 giorni',
+      price: 49.99,
+      period: 'totale',
       duration: '7 giorni',
+      dailyPrice: 7.14,
       billingText: 'Pagamento unico'
     },
     monthly: {
-      title: 'Mensile',
-      price: 7.99,
-      period: 'mese',
+      title: '30 giorni',
+      price: 49.99,
+      period: 'totale',
       duration: '1 mese',
+      dailyPrice: 1.66,
       billingText: 'Fatturazione mensile'
     },
     quarterly: {
-      title: 'Trimestrale',
-      price: 19.99,
-      period: '3 mesi',
+      title: '90 giorni',
+      price: 99.99,
+      period: 'totale',
       duration: '3 mesi',
+      dailyPrice: 1.11,
       billingText: 'Fatturazione trimestrale'
     }
   };
