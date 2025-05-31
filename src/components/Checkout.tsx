@@ -16,22 +16,22 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
   
   const plans = {
     trial: {
-      title: '7-DAY PLAN',
+      title: 'PIANO 7 GIORNI',
       price: 49.99,
       dailyPrice: 7.14,
-      description: 'Setup fee + Monthly subscription (starts after 7 days)'
+      description: 'Costo di attivazione + Abbonamento mensile (inizia dopo 7 giorni)'
     },
     monthly: {
-      title: '1-MONTH PLAN',
+      title: 'PIANO 1 MESE',
       price: 49.99,
       dailyPrice: 1.66,
-      description: 'Monthly billing'
+      description: 'Fatturazione mensile'
     },
     quarterly: {
-      title: '3-MONTH PLAN',
+      title: 'PIANO 3 MESI',
       price: 99.99,
       dailyPrice: 1.11,
-      description: 'Quarterly billing'
+      description: 'Fatturazione trimestrale'
     }
   };
 

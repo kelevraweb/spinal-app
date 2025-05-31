@@ -19,19 +19,19 @@ const Pricing: React.FC = () => {
 
   const plans = {
     trial: {
-      title: '7-DAY PLAN',
+      title: 'PIANO 7 GIORNI',
       price: 49.99,
       dailyPrice: 7.14,
       popular: false
     },
     monthly: {
-      title: '1-MONTH PLAN',
+      title: 'PIANO 1 MESE',
       price: 49.99,
       dailyPrice: 1.66,
       popular: true
     },
     quarterly: {
-      title: '3-MONTH PLAN',
+      title: 'PIANO 3 MESI',
       price: 99.99,
       dailyPrice: 1.11,
       popular: false
@@ -39,9 +39,9 @@ const Pricing: React.FC = () => {
   };
 
   const disclaimers = {
-    trial: "By clicking \"Get My Plan\", you agree to a 1-week trial at €49.99, converting to a €49.99/month auto-renewing subscription if not canceled (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details.",
-    monthly: "By clicking \"Get My Plan\", you agree to automatic subscription renewal. First month is €49.99, then €49.99/month (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details.",
-    quarterly: "By clicking \"Get My Plan\", you agree to automatic subscription renewal. First three months are €99.99, then €99.99 per three months (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details."
+    trial: "Cliccando \"Ottieni il Mio Piano\", accetti una prova di 1 settimana a €49,99, che si converte in un abbonamento auto-rinnovabile di €49,99/mese se non cancellato (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
+    monthly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese è €49,99, poi €49,99/mese (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
+    quarterly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. I primi tre mesi sono €99,99, poi €99,99 ogni tre mesi (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli."
   };
 
   const faqItems = [
@@ -136,7 +136,7 @@ const Pricing: React.FC = () => {
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
                 <div className="bg-green-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center">
                   <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
-                  MOST POPULAR
+                  PIÙ POPOLARE
                 </div>
               </div>
             )}
@@ -178,7 +178,7 @@ const Pricing: React.FC = () => {
                   <div className="text-xl font-bold text-gray-900">
                     €{plan.dailyPrice.toFixed(2)}
                   </div>
-                  <div className="text-xs text-gray-600">per day</div>
+                  <div className="text-xs text-gray-600">al giorno</div>
                 </div>
               </div>
             </div>
@@ -191,7 +191,7 @@ const Pricing: React.FC = () => {
           onClick={handleSelectPlan} 
           className="w-full bg-[#71b8bc] hover:bg-[#5a9599] text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg"
         >
-          GET MY PLAN
+          OTTIENI IL MIO PIANO
         </Button>
       </div>
 
