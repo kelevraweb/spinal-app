@@ -72,44 +72,107 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
-    // Define plan details based on planType with new pricing
+    // Define plan details based on planType with correct subscription logic
     const planDetails = {
       trial: {
-        price: 4999, // €49.99 in cents
-        name: "Piano 7 giorni",
+        price: 4999, // €49.99 in cents - Setup fee
+        name: "7-DAY PLAN",
+        mode: "subscription" as const,
+        recurring: {
+          interval: "month" as const,
+        },
+        trial_period_days: 7,
+        setup_fee: 4999, // Setup fee for immediate payment
       },
       monthly: {
         price: 4999, // €49.99 in cents
-        name: "Piano 30 giorni",
+        name: "1-MONTH PLAN",
+        mode: "subscription" as const,
+        recurring: {
+          interval: "month" as const,
+        },
       },
       quarterly: {
         price: 9999, // €99.99 in cents
-        name: "Piano 90 giorni",
+        name: "3-MONTH PLAN",
+        mode: "subscription" as const,
+        recurring: {
+          interval: "month" as const,
+          interval_count: 3,
+        },
       },
     };
 
     const selectedPlan = planDetails[planType];
 
-    // Create a PaymentIntent for client-side payment collection
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: selectedPlan.price,
-      currency: "eur",
+    let sessionConfig: any = {
       customer: customerId,
-      description: `Pagamento per ${selectedPlan.name}`,
-      metadata: {
-        plan_type: planType,
-      },
-      // Enable the Payment Element
-      automatic_payment_methods: {
+      mode: selectedPlan.mode,
+      success_url: `${req.headers.get("origin")}/thank-you`,
+      cancel_url: `${req.headers.get("origin")}/pricing`,
+    };
+
+    if (planType === 'trial') {
+      // For 7-DAY PLAN: Setup fee + subscription with trial
+      sessionConfig.line_items = [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: { 
+              name: selectedPlan.name,
+              description: "Setup fee + Monthly subscription (starts after 7 days)"
+            },
+            unit_amount: selectedPlan.price,
+            recurring: selectedPlan.recurring,
+          },
+          quantity: 1,
+        }
+      ];
+      sessionConfig.subscription_data = {
+        trial_period_days: selectedPlan.trial_period_days,
+        metadata: {
+          plan_type: planType,
+          setup_fee: selectedPlan.setup_fee.toString(),
+        }
+      };
+      // Add setup fee as one-time payment
+      sessionConfig.invoice_creation = {
         enabled: true,
-      },
-    });
+        invoice_data: {
+          description: `Setup fee for ${selectedPlan.name}`,
+          metadata: {
+            plan_type: planType,
+          }
+        }
+      };
+    } else {
+      // For regular subscriptions
+      sessionConfig.line_items = [
+        {
+          price_data: {
+            currency: "eur",
+            product_data: { name: selectedPlan.name },
+            unit_amount: selectedPlan.price,
+            recurring: selectedPlan.recurring,
+          },
+          quantity: 1,
+        }
+      ];
+      sessionConfig.subscription_data = {
+        metadata: {
+          plan_type: planType,
+        }
+      };
+    }
+
+    // Create the checkout session
+    const session = await stripe.checkout.sessions.create(sessionConfig);
 
     // Save order information to Supabase
-    if (paymentIntent.id) {
+    if (session.id) {
       await supabaseClient.from("orders").insert({
         user_id: userId,
-        stripe_session_id: paymentIntent.id,
+        stripe_session_id: session.id,
         plan_type: planType,
         amount: selectedPlan.price,
         currency: "eur",
@@ -117,10 +180,10 @@ serve(async (req: Request) => {
       });
     }
 
-    // Return the client secret to the client
+    // Return the session URL to redirect user to Stripe Checkout
     return new Response(JSON.stringify({ 
-      clientSecret: paymentIntent.client_secret,
-      publishableKey: Deno.env.get("STRIPE_PUBLISHABLE_KEY")
+      url: session.url,
+      sessionId: session.id
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

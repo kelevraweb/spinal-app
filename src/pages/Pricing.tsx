@@ -2,13 +2,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faStar, faShieldAlt, faRocket, faCrown, faGift } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faStar, faShieldAlt, faRocket, faCrown, faGift, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '@/components/Rating';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
 import Checkout from '@/components/Checkout';
@@ -17,46 +15,37 @@ import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 const Pricing: React.FC = () => {
   const navigate = useNavigate();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly'); // Default: 3-MONTH PLAN
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
 
   const plans = {
     trial: {
-      title: '7 giorni',
+      title: '7-DAY PLAN',
       price: 49.99,
-      period: 'totale',
-      duration: '7 giorni',
       dailyPrice: 7.14,
       icon: faGift,
-      badge: 'PROVA',
       popular: false
     },
     monthly: {
-      title: '30 giorni',
+      title: '1-MONTH PLAN',
       price: 49.99,
-      period: 'totale',
-      duration: '1 mese',
       dailyPrice: 1.66,
       popular: true,
-      icon: faRocket,
-      badge: 'PIÙ POPOLARE'
+      icon: faRocket
     },
     quarterly: {
-      title: '90 giorni',
+      title: '3-MONTH PLAN',
       price: 99.99,
-      period: 'totale',
-      duration: '3 mesi',
       dailyPrice: 1.11,
       icon: faCrown,
-      badge: 'MIGLIOR VALORE',
       popular: false
     }
   };
 
   const disclaimers = {
-    trial: "Cliccando su 'Ottieni il Mio Piano', accetti una prova di 1 settimana a €49,99, che si convertirà in un abbonamento con rinnovo automatico a €49,99/mese se non annullato (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli.",
-    monthly: "Cliccando su 'Ottieni il Mio Piano', accetti il rinnovo automatico dell'abbonamento. Il primo mese costa €49,99, poi €49,99/mese (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli.",
-    quarterly: "Cliccando su 'Ottieni il Mio Piano', accetti il rinnovo automatico dell'abbonamento. I primi tre mesi costano €99,99, poi €99,99 ogni tre mesi (prezzi IVA inclusa). Annulla tramite l'app o via email: support@theliven.com. Consulta la Politica di Abbonamento per i dettagli."
+    trial: "By clicking \"Get My Plan\", you agree to a 1-week trial at €49.99, converting to a €49.99/month auto-renewing subscription if not canceled (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details.",
+    monthly: "By clicking \"Get My Plan\", you agree to automatic subscription renewal. First month is €49.99, then €49.99/month (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details.",
+    quarterly: "By clicking \"Get My Plan\", you agree to automatic subscription renewal. First three months are €99.99, then €99.99 per three months (prices incl. VAT). Cancel via the app or email: support@theliven.com. See Subscription Policy for details."
   };
 
   const faqItems = [
@@ -132,7 +121,7 @@ const Pricing: React.FC = () => {
   };
 
   const PricingSection = ({ compact = false }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-4xl mx-auto px-4`}>
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-2xl mx-auto px-4`}>
       {!compact && (
         <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
@@ -144,70 +133,70 @@ const Pricing: React.FC = () => {
         </div>
       )}
       
-      <RadioGroup 
-        value={selectedPlan} 
-        onValueChange={(value) => setSelectedPlan(value as 'trial' | 'monthly' | 'quarterly')}
-        className="space-y-4"
-      >
+      <div className="space-y-4">
         {Object.entries(plans).map(([key, plan]) => (
-          <div 
-            key={key}
-            className={`relative border-2 rounded-xl p-4 md:p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
-              selectedPlan === key 
-                ? 'border-[#71b8bc] bg-gradient-to-br from-[#71b8bc]/10 to-[#88c2aa]/5 shadow-xl' 
-                : 'border-gray-200 hover:border-gray-300 hover:shadow-lg bg-white'
-            }`}
-          >
+          <div key={key} className="relative">
             {plan.popular && (
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-4 py-1 rounded-full text-sm font-bold flex items-center shadow-lg whitespace-nowrap">
+                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-4 py-1 rounded-full text-sm font-bold flex items-center shadow-lg">
                   <FontAwesomeIcon icon={faStar} className="mr-2" />
-                  {plan.badge}
+                  MOST POPULAR
                 </div>
               </div>
             )}
             
-            <Label htmlFor={key} className="cursor-pointer flex items-center justify-between w-full">
-              <div className="flex items-center">
-                <RadioGroupItem value={key} id={key} className="mr-3 md:mr-4" />
-                <div className="flex items-center mr-3 md:mr-4">
-                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mr-3 md:mr-4 ${
+            <div 
+              onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')}
+              className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
+                selectedPlan === key 
+                  ? 'border-[#71b8bc] bg-gradient-to-br from-[#71b8bc]/10 to-[#88c2aa]/5 shadow-xl' 
+                  : 'border-gray-200 hover:border-gray-300 hover:shadow-lg bg-white'
+              }`}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${
                     selectedPlan === key ? 'bg-[#71b8bc] text-white' : 'bg-gray-100 text-gray-600'
                   }`}>
-                    <FontAwesomeIcon icon={plan.icon} className="text-sm md:text-lg" />
+                    <FontAwesomeIcon icon={plan.icon} className="text-lg" />
                   </div>
                   <div>
-                    <h3 className="text-lg md:text-xl font-bold">{plan.title}</h3>
-                    <p className="text-sm text-gray-600">{plan.duration}</p>
-                    {!plan.popular && plan.badge && !compact && (
-                      <span className="inline-block bg-[#71b8bc] text-white px-2 py-1 rounded text-xs font-medium mt-1">
-                        {plan.badge}
-                      </span>
+                    <h3 className="text-xl font-bold">{plan.title}</h3>
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <div className="text-right mr-4">
+                    <div className="text-3xl font-bold text-[#71b8bc]">
+                      €{plan.price}
+                    </div>
+                  </div>
+                  
+                  <div className="bg-[#71b8bc] text-white px-3 py-2 rounded-lg text-sm font-medium transform rotate-12">
+                    €{plan.dailyPrice.toFixed(2)} per day
+                  </div>
+                  
+                  <div className="ml-4">
+                    {selectedPlan === key ? (
+                      <FontAwesomeIcon icon={faCheckCircle} className="text-[#71b8bc] text-xl" />
+                    ) : (
+                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
                     )}
                   </div>
                 </div>
               </div>
-              <div className="text-right">
-                <div className="text-3xl md:text-4xl font-bold text-[#71b8bc] mb-1">
-                  €{plan.dailyPrice.toFixed(2).replace('.', '⁰').replace(/(\d+)⁰(\d+)/, '$1$2')}
-                </div>
-                <div className="text-xs text-gray-500 mb-2">al giorno</div>
-                <div className="text-sm text-gray-400">
-                  €{plan.price} {plan.period}
-                </div>
-              </div>
-            </Label>
+            </div>
           </div>
         ))}
-      </RadioGroup>
+      </div>
 
       <div className="text-center mt-8">
         <Button 
           onClick={handleSelectPlan} 
-          className="w-full md:w-auto bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5a9599] hover:to-[#7bb198] text-white font-bold py-4 px-8 md:px-12 rounded-full text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="w-full bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5a9599] hover:to-[#7bb198] text-white font-bold py-4 px-8 rounded-full text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <FontAwesomeIcon icon={faRocket} className="mr-2" />
-          OTTIENI IL TUO PIANO
+          GET MY PLAN
         </Button>
       </div>
 
@@ -339,7 +328,7 @@ const Pricing: React.FC = () => {
           </div>
         </div>
 
-        {/* Second Pricing Section (Compact) - MOVED BEFORE GUARANTEE */}
+        {/* Second Pricing Section (Compact) - BEFORE GUARANTEE */}
         <div className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-6 md:p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800">

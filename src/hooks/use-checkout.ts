@@ -5,21 +5,15 @@ import { supabase } from '@/integrations/supabase/client';
 
 type PlanType = 'trial' | 'monthly' | 'quarterly';
 
-interface CheckoutData {
-  clientSecret: string;
-  publishableKey: string;
-}
-
 export function useCheckout() {
   const [isLoading, setIsLoading] = useState(false);
-  const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null);
   const { toast } = useToast();
 
   const initiateCheckout = async (planType: PlanType) => {
     setIsLoading(true);
     
     try {
-      // Call the Supabase edge function to create a Stripe payment intent
+      // Call the Supabase edge function to create a Stripe checkout session
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { planType },
       });
@@ -28,15 +22,12 @@ export function useCheckout() {
         throw new Error(error.message);
       }
 
-      if (data?.clientSecret && data?.publishableKey) {
-        // Store the checkout data for use in the Stripe Elements
-        setCheckoutData({
-          clientSecret: data.clientSecret,
-          publishableKey: data.publishableKey
-        });
+      if (data?.url) {
+        // Redirect to Stripe Checkout in a new tab
+        window.open(data.url, '_blank');
         return true;
       } else {
-        throw new Error('No client secret or publishable key returned');
+        throw new Error('No checkout URL returned');
       }
     } catch (error) {
       console.error('Checkout error:', error);
@@ -53,7 +44,6 @@ export function useCheckout() {
   
   return {
     initiateCheckout,
-    isLoading,
-    checkoutData
+    isLoading
   };
 }
