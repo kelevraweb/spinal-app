@@ -141,9 +141,10 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           disabled={!isNextEnabled}
           className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
             isNextEnabled 
-              ? 'bg-[#70b8bc] text-white' 
+              ? 'text-white' 
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
+          style={isNextEnabled ? { backgroundColor: '#70b8bc' } : {}}
         >
           <span>Avanti</span>
           <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
