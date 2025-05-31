@@ -496,14 +496,6 @@ const Quiz: React.FC = () => {
               : 'translate-x-0 opacity-100'
           }`}
         >
-          {/* Progress bar */}
-          <div className="progress-container">
-            <div 
-              className="progress-bar"
-              style={{ width: `${(state.currentStep / state.totalSteps) * 100}%` }}
-            ></div>
-          </div>
-          
           {/* Question */}
           <h2 className="question-title">
             {state.currentQuestion?.question || 'Loading...'}
