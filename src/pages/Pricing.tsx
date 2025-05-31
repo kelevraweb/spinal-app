@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -15,7 +14,7 @@ import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 const Pricing: React.FC = () => {
   const navigate = useNavigate();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly'); // Default: 3-MONTH PLAN
+  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
 
   const plans = {
@@ -137,9 +136,9 @@ const Pricing: React.FC = () => {
         {Object.entries(plans).map(([key, plan]) => (
           <div key={key} className="relative">
             {plan.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-4 py-1 rounded-full text-sm font-bold flex items-center shadow-lg">
-                  <FontAwesomeIcon icon={faStar} className="mr-2" />
+              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-[#71b8bc] text-white px-3 py-1 rounded-md text-xs font-medium flex items-center">
+                  <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
                   MOST POPULAR
                 </div>
               </div>
@@ -147,42 +146,33 @@ const Pricing: React.FC = () => {
             
             <div 
               onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')}
-              className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
+              className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all duration-200 ${
                 selectedPlan === key 
-                  ? 'border-[#71b8bc] bg-gradient-to-br from-[#71b8bc]/10 to-[#88c2aa]/5 shadow-xl' 
-                  : 'border-gray-200 hover:border-gray-300 hover:shadow-lg bg-white'
+                  ? 'border-[#71b8bc] bg-white shadow-md' 
+                  : 'border-gray-200 hover:border-gray-300 bg-white'
               }`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${
-                    selectedPlan === key ? 'bg-[#71b8bc] text-white' : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    <FontAwesomeIcon icon={plan.icon} className="text-lg" />
+                  <div className="mr-4">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPlan === key 
+                        ? 'border-[#71b8bc] bg-[#71b8bc]' 
+                        : 'border-gray-300'
+                    }`}>
+                      {selectedPlan === key && (
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      )}
+                    </div>
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold">{plan.title}</h3>
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
+                    <div className="text-2xl font-bold text-gray-900">€{plan.price}</div>
                   </div>
                 </div>
                 
-                <div className="flex items-center">
-                  <div className="text-right mr-4">
-                    <div className="text-3xl font-bold text-[#71b8bc]">
-                      €{plan.price}
-                    </div>
-                  </div>
-                  
-                  <div className="bg-[#71b8bc] text-white px-3 py-2 rounded-lg text-sm font-medium transform rotate-12">
-                    €{plan.dailyPrice.toFixed(2)} per day
-                  </div>
-                  
-                  <div className="ml-4">
-                    {selectedPlan === key ? (
-                      <FontAwesomeIcon icon={faCheckCircle} className="text-[#71b8bc] text-xl" />
-                    ) : (
-                      <div className="w-5 h-5 border-2 border-gray-300 rounded-full"></div>
-                    )}
-                  </div>
+                <div className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm font-medium">
+                  €{plan.dailyPrice.toFixed(2)} per day
                 </div>
               </div>
             </div>
@@ -193,9 +183,8 @@ const Pricing: React.FC = () => {
       <div className="text-center mt-8">
         <Button 
           onClick={handleSelectPlan} 
-          className="w-full bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5a9599] hover:to-[#7bb198] text-white font-bold py-4 px-8 rounded-full text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="w-full bg-[#71b8bc] hover:bg-[#5a9599] text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg"
         >
-          <FontAwesomeIcon icon={faRocket} className="mr-2" />
           GET MY PLAN
         </Button>
       </div>
