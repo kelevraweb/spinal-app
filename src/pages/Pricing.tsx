@@ -27,9 +27,9 @@ const Pricing: React.FC = () => {
       period: 'totale',
       duration: '7 giorni',
       dailyPrice: 7.14,
-      billingText: 'Pagamento unico',
       icon: faGift,
-      badge: 'PROVA'
+      badge: 'PROVA',
+      popular: false
     },
     monthly: {
       title: '30 giorni',
@@ -37,7 +37,6 @@ const Pricing: React.FC = () => {
       period: 'totale',
       duration: '1 mese',
       dailyPrice: 1.66,
-      billingText: 'Fatturazione mensile',
       popular: true,
       icon: faRocket,
       badge: 'PIÙ POPOLARE'
@@ -48,9 +47,9 @@ const Pricing: React.FC = () => {
       period: 'totale',
       duration: '3 mesi',
       dailyPrice: 1.11,
-      billingText: 'Fatturazione trimestrale',
       icon: faCrown,
-      badge: 'MIGLIOR VALORE'
+      badge: 'MIGLIOR VALORE',
+      popular: false
     }
   };
 
@@ -133,7 +132,7 @@ const Pricing: React.FC = () => {
   };
 
   const PricingSection = ({ compact = false }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-4xl mx-auto`}>
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-4xl mx-auto px-4`}>
       {!compact && (
         <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
@@ -153,15 +152,15 @@ const Pricing: React.FC = () => {
         {Object.entries(plans).map(([key, plan]) => (
           <div 
             key={key}
-            className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
+            className={`relative border-2 rounded-xl p-4 md:p-6 cursor-pointer transition-all duration-300 hover:scale-[1.02] ${
               selectedPlan === key 
                 ? 'border-[#71b8bc] bg-gradient-to-br from-[#71b8bc]/10 to-[#88c2aa]/5 shadow-xl' 
                 : 'border-gray-200 hover:border-gray-300 hover:shadow-lg bg-white'
             }`}
           >
-            {plan.popular && !compact && (
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-bold flex items-center shadow-lg">
+            {plan.popular && (
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-4 py-1 rounded-full text-sm font-bold flex items-center shadow-lg whitespace-nowrap">
                   <FontAwesomeIcon icon={faStar} className="mr-2" />
                   {plan.badge}
                 </div>
@@ -170,17 +169,17 @@ const Pricing: React.FC = () => {
             
             <Label htmlFor={key} className="cursor-pointer flex items-center justify-between w-full">
               <div className="flex items-center">
-                <RadioGroupItem value={key} id={key} className="mr-4" />
-                <div className="flex items-center mr-4">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center mr-4 ${
+                <RadioGroupItem value={key} id={key} className="mr-3 md:mr-4" />
+                <div className="flex items-center mr-3 md:mr-4">
+                  <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center mr-3 md:mr-4 ${
                     selectedPlan === key ? 'bg-[#71b8bc] text-white' : 'bg-gray-100 text-gray-600'
                   }`}>
-                    <FontAwesomeIcon icon={plan.icon} className="text-lg" />
+                    <FontAwesomeIcon icon={plan.icon} className="text-sm md:text-lg" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold">{plan.title}</h3>
-                    <p className="text-gray-600">{plan.billingText}</p>
-                    {plan.popular && compact && (
+                    <h3 className="text-lg md:text-xl font-bold">{plan.title}</h3>
+                    <p className="text-sm text-gray-600">{plan.duration}</p>
+                    {!plan.popular && plan.badge && !compact && (
                       <span className="inline-block bg-[#71b8bc] text-white px-2 py-1 rounded text-xs font-medium mt-1">
                         {plan.badge}
                       </span>
@@ -189,12 +188,12 @@ const Pricing: React.FC = () => {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-bold text-[#71b8bc] mb-1">
-                  €{plan.price}
+                <div className="text-3xl md:text-4xl font-bold text-[#71b8bc] mb-1">
+                  €{plan.dailyPrice.toFixed(2).replace('.', '⁰').replace(/(\d+)⁰(\d+)/, '$1$2')}
                 </div>
-                <div className="text-sm text-gray-500 mb-2">{plan.period}</div>
-                <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-3 py-1 rounded-full text-sm font-medium">
-                  €{plan.dailyPrice.toFixed(2)}/giorno
+                <div className="text-xs text-gray-500 mb-2">al giorno</div>
+                <div className="text-sm text-gray-400">
+                  €{plan.price} {plan.period}
                 </div>
               </div>
             </Label>
@@ -205,14 +204,14 @@ const Pricing: React.FC = () => {
       <div className="text-center mt-8">
         <Button 
           onClick={handleSelectPlan} 
-          className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5a9599] hover:to-[#7bb198] text-white font-bold py-4 px-12 rounded-full text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
+          className="w-full md:w-auto bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5a9599] hover:to-[#7bb198] text-white font-bold py-4 px-8 md:px-12 rounded-full text-lg shadow-xl transform hover:scale-105 transition-all duration-300"
         >
           <FontAwesomeIcon icon={faRocket} className="mr-2" />
           OTTIENI IL TUO PIANO
         </Button>
       </div>
 
-      <div className="text-center mt-6 text-sm text-gray-600 max-w-4xl mx-auto bg-gray-50 p-4 rounded-lg">
+      <div className="text-center mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
         <p>{disclaimers[selectedPlan]}</p>
       </div>
     </div>
@@ -220,7 +219,7 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto p-4">
+      <div className="max-w-6xl mx-auto px-4">
         {/* Before-After Comparison Section */}
         <BeforeAfterComparison />
         
@@ -273,7 +272,7 @@ const Pricing: React.FC = () => {
 
         {/* Statistics Section */}
         <div className="mb-16">
-          <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-3xl p-12 text-white text-center">
+          <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-3xl p-8 md:p-12 text-white text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-8">
               Persone come te hanno ottenuto risultati straordinari!
             </h2>
@@ -285,7 +284,7 @@ const Pricing: React.FC = () => {
                 { percentage: "45%", text: "degli utenti soffre degli stessi problemi tuoi" }
               ].map((stat, index) => (
                 <div key={index} className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                  <div className="text-5xl font-bold mb-4">{stat.percentage}</div>
+                  <div className="text-4xl md:text-5xl font-bold mb-4">{stat.percentage}</div>
                   <p className="text-white/90">{stat.text}</p>
                 </div>
               ))}
@@ -296,8 +295,8 @@ const Pricing: React.FC = () => {
         {/* Without Our Plan vs With Our Plan Sections */}
         <div className="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Without Our Plan */}
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-8">
-            <h2 className="text-2xl font-bold text-center mb-8 text-red-800">
+          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-6 md:p-8">
+            <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-red-800">
               Senza il nostro piano
             </h2>
             <div className="space-y-4">
@@ -311,15 +310,15 @@ const Pricing: React.FC = () => {
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg p-4 flex items-start shadow-sm">
                   <FontAwesomeIcon icon={faCheck} className="text-red-500 mr-3 mt-1" />
-                  <p className="text-gray-700">{item}</p>
+                  <p className="text-gray-700 text-sm md:text-base">{item}</p>
                 </div>
               ))}
             </div>
           </div>
 
           {/* With Our Plan */}
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-8">
-            <h2 className="text-2xl font-bold text-center mb-8 text-green-800">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-6 md:p-8">
+            <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-green-800">
               Con il nostro piano "Schiena Libera"
             </h2>
             <div className="space-y-4">
@@ -333,15 +332,15 @@ const Pricing: React.FC = () => {
               ].map((item, index) => (
                 <div key={index} className="bg-white rounded-lg p-4 flex items-start shadow-sm">
                   <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-                  <p className="text-gray-700">{item}</p>
+                  <p className="text-gray-700 text-sm md:text-base">{item}</p>
                 </div>
               ))}
             </div>
           </div>
         </div>
 
-        {/* Second Pricing Section (Compact) */}
-        <div className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-8">
+        {/* Second Pricing Section (Compact) - MOVED BEFORE GUARANTEE */}
+        <div className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-6 md:p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800">
               Non aspettare oltre - inizia oggi stesso!
@@ -349,6 +348,30 @@ const Pricing: React.FC = () => {
             <p className="text-gray-600 text-lg">Scegli il piano più adatto a te</p>
           </div>
           <PricingSection compact={true} />
+        </div>
+
+        {/* Money Back Guarantee */}
+        <div className="mb-16">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-6 md:p-8 border-2 border-green-200">
+            <div className="text-center mb-6">
+              <div className="inline-block bg-green-500 text-white p-4 rounded-full mb-4">
+                <FontAwesomeIcon icon={faShieldAlt} className="text-2xl" />
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-green-800">
+                Garanzia Soddisfatti o Rimborsati – 30 Giorni
+              </h2>
+            </div>
+            <div className="max-w-4xl mx-auto space-y-4 text-gray-700">
+              <p className="text-lg">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
+              <p className="text-lg">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
+              <div className="bg-white rounded-xl p-6 border-l-4 border-green-500">
+                <p className="font-medium text-lg">
+                  👉 Se seguirai il piano come indicato e non noterai alcun miglioramento fisico percepibile (meno dolore, più mobilità, miglior postura), potrai richiedere il rimborso senza spiegazioni complicate.
+                </p>
+              </div>
+              <p className="text-center">📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
+            </div>
+          </div>
         </div>
 
         {/* FAQ Section */}
@@ -407,7 +430,7 @@ const Pricing: React.FC = () => {
                 text: "Dopo anni di rigidità e fastidi alla schiena, riesco a camminare a lungo senza fermarmi. Questo piano mi ha dato più risultati di fisioterapie molto più costose."
               }
             ].map((testimonial, index) => (
-              <div key={index} className="bg-white rounded-2xl shadow-xl p-8 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <div key={index} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="flex text-yellow-400 mb-4">
                   <Rating rating={5} />
                 </div>
@@ -416,30 +439,6 @@ const Pricing: React.FC = () => {
                 <p className="text-gray-700 leading-relaxed">{testimonial.text}</p>
               </div>
             ))}
-          </div>
-        </div>
-
-        {/* Money Back Guarantee */}
-        <div className="mb-16">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-8 border-2 border-green-200">
-            <div className="text-center mb-6">
-              <div className="inline-block bg-green-500 text-white p-4 rounded-full mb-4">
-                <FontAwesomeIcon icon={faShieldAlt} className="text-2xl" />
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-green-800">
-                Garanzia Soddisfatti o Rimborsati – 30 Giorni
-              </h2>
-            </div>
-            <div className="max-w-4xl mx-auto space-y-4 text-gray-700">
-              <p className="text-lg">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
-              <p className="text-lg">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
-              <div className="bg-white rounded-xl p-6 border-l-4 border-green-500">
-                <p className="font-medium text-lg">
-                  👉 Se seguirai il piano come indicato e non noterai alcun miglioramento fisico percepibile (meno dolore, più mobilità, miglior postura), potrai richiedere il rimborso senza spiegazioni complicate.
-                </p>
-              </div>
-              <p className="text-center">📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
-            </div>
           </div>
         </div>
 
