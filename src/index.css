@@ -78,48 +78,16 @@
 
   body {
     @apply bg-background text-foreground font-sans antialiased;
-    background: transparent;
   }
-}
-
-/* SUPER SPECIFIC CSS FOR WHITE BUTTONS - MAXIMUM PRIORITY */
-.force-white-button,
-button.force-white-button,
-div button.force-white-button,
-div.space-y-3 button.force-white-button,
-div.grid button.force-white-button,
-div.flex button.force-white-button {
-  background: white !important;
-  background-color: white !important;
-  color: #374151 !important;
-}
-
-.force-white-button:hover,
-button.force-white-button:hover,
-div button.force-white-button:hover,
-div.space-y-3 button.force-white-button:hover,
-div.grid button.force-white-button:hover,
-div.flex button.force-white-button:hover {
-  background: #f9fafb !important;
-  background-color: #f9fafb !important;
-  color: #374151 !important;
-}
-
-.force-white-button span,
-button.force-white-button span,
-div button.force-white-button span {
-  color: #374151 !important;
 }
 
 @layer components {
   .quiz-container {
-    @apply max-w-4xl mx-auto px-4 sm:px-6 py-4 min-h-screen flex flex-col items-center justify-center;
-    background: transparent;
+    @apply max-w-4xl mx-auto px-4 sm:px-6 py-8 min-h-screen flex flex-col items-center justify-center;
   }
   
   .quiz-card {
-    @apply w-full max-w-3xl mx-auto transition-all duration-300 animate-fade-in;
-    background: transparent;
+    @apply bg-white rounded-2xl shadow-lg p-6 sm:p-8 w-full max-w-3xl mx-auto transition-all duration-300 animate-fade-in;
   }
   
   .quiz-title {
@@ -135,45 +103,19 @@ div button.force-white-button span {
   }
   
   .btn-primary {
-    @apply font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-md border border-gray-200;
-    background: white !important;
-    color: #374151 !important;
-    border-color: #d1d5db !important;
-  }
-
-  .btn-primary:hover {
-    background: #f9fafb !important;
-    border-color: #9ca3af !important;
+    @apply bg-brand-primary hover:bg-[#5dadb2] text-white font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#71b8bc] shadow-md;
   }
 
   .btn-secondary {
-    @apply font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 shadow-sm;
-    background: white !important;
-    color: #374151 !important;
-    border: 2px solid #d1d5db !important;
-  }
-
-  .btn-secondary:hover {
-    background: #f9fafb !important;
-    border-color: #9ca3af !important;
+    @apply bg-white border-2 border-brand-accent text-brand-accent font-medium py-3 px-6 rounded-full transition-all duration-200 transform hover:scale-105 hover:bg-[#f0f8f5] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#88c2aa] shadow-sm;
   }
 
   .option-btn {
-    @apply font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 w-full text-left hover:shadow-md flex items-center justify-between;
-    background: white !important;
-    border: 2px solid #e5e7eb !important;
-    color: #374151 !important;
-  }
-
-  .option-btn:hover {
-    border-color: #9ca3af !important;
-    background: #f9fafb !important;
+    @apply bg-white border-2 border-gray-200 hover:border-brand-primary text-gray-800 font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 w-full text-left hover:shadow-md flex items-center justify-between;
   }
   
   .option-btn.selected {
-    background: #f3f4f6 !important;
-    border-color: #9ca3af !important;
-    color: #374151 !important;
+    @apply bg-brand-light border-brand-primary text-gray-900 shadow-md;
   }
 
   .progress-container {
@@ -181,11 +123,11 @@ div button.force-white-button span {
   }
   
   .progress-bar {
-    @apply h-full bg-gradient-to-r from-gray-400 to-gray-600 rounded-full transition-all duration-300 ease-out;
+    @apply h-full bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full transition-all duration-300 ease-out;
   }
 
   .testimonial-card {
-    @apply bg-white rounded-xl shadow-md p-6 my-4 border-l-4 border-gray-400;
+    @apply bg-white rounded-xl shadow-md p-6 my-4 border-l-4 border-brand-accent;
   }
   
   .rating-stars {
@@ -193,7 +135,7 @@ div button.force-white-button span {
   }
   
   .trust-badge {
-    @apply flex items-center justify-center gap-2 bg-gray-100 rounded-full px-4 py-2 text-sm font-medium text-gray-700;
+    @apply flex items-center justify-center gap-2 bg-brand-light rounded-full px-4 py-2 text-sm font-medium text-gray-700;
   }
 
   .brain-icon {
@@ -372,14 +314,12 @@ div button.force-white-button span {
   border-radius: 9999px;
   font-size: 16px;
   transition: all 0.3s;
-  background: white !important;
 }
 
 .email-input:focus {
   border-color: #47B881;
   box-shadow: 0 0 0 3px rgba(71, 184, 129, 0.2);
   outline: none;
-  background: white !important;
 }
 
 .email-error {
@@ -393,22 +333,21 @@ div button.force-white-button span {
   top: 5px;
   bottom: 5px;
   padding: 0 15px;
-  background: white !important;
-  border: 2px solid #e0e0e0 !important;
+  background: #F7685B;
+  border: none;
   border-radius: 9999px;
-  color: #333 !important;
+  color: white;
   font-weight: bold;
   cursor: pointer;
   transition: all 0.3s;
 }
 
 .email-button:hover {
-  background: #f5f5f5 !important;
-  border-color: #ccc !important;
+  background: #e65a4d;
 }
 
-/* Compound growth graph styling */
-.compound-graph {
+/* Sinusoidal graph styling */
+.sinusoidal-graph {
   position: relative;
   width: 100%;
   height: 200px;
@@ -445,29 +384,4 @@ div button.force-white-button span {
   to {
     stroke-dashoffset: 0;
   }
-}
-
-/* FORCE WHITE BUTTONS WITH MAXIMUM SPECIFICITY */
-html body div.quiz-container div button.force-white-button,
-html body div button.force-white-button,
-html body button.force-white-button {
-  background: white !important;
-  background-color: white !important;
-  color: #374151 !important;
-  border-color: #d1d5db !important;
-}
-
-html body div.quiz-container div button.force-white-button:hover,
-html body div button.force-white-button:hover,
-html body button.force-white-button:hover {
-  background: #f9fafb !important;
-  background-color: #f9fafb !important;
-  color: #374151 !important;
-  border-color: #9ca3af !important;
-}
-
-html body div.quiz-container div button.force-white-button span,
-html body div button.force-white-button span,
-html body button.force-white-button span {
-  color: #374151 !important;
 }

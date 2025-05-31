@@ -126,8 +126,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4 pt-16 bg-white min-h-screen">
-      <h2 className="text-2xl font-bold text-center mb-3 text-gray-800">
+    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
+      <h2 className="text-2xl font-bold text-center mb-3 text-white">
         Creazione del tuo
       </h2>
       <h2 className="text-2xl font-bold text-center text-[#71b8bc] mb-6">
@@ -138,13 +138,13 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
         {bars.map((bar, index) => (
           <div key={index} className="relative">
             <div className="flex justify-between items-center mb-2">
-              <div className="font-medium text-gray-800">{bar.name}</div>
-              <div className="text-sm text-gray-600">{Math.round(bar.progress)}%</div>
+              <div className="font-medium text-white">{bar.name}</div>
+              <div className="text-sm text-gray-300">{Math.round(bar.progress)}%</div>
             </div>
             
-            <div className="w-full bg-gray-200 rounded-full h-3">
+            <div className="w-full bg-gray-700 rounded-full h-3">
               <div 
-                className="bg-[#71b8bc] h-3 rounded-full transition-all duration-300 ease-out"
+                className="bg-white h-3 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${bar.progress}%` }}
               />
             </div>
@@ -157,14 +157,12 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
                   <button 
                     onClick={() => handleAnswer(index, true)}
                     className="flex-1 bg-[#71b8bc] text-white rounded-full px-4 py-2 text-sm"
-                    style={{ background: '#71b8bc !important', color: 'white !important' }}
                   >
                     Sì
                   </button>
                   <button 
                     onClick={() => handleAnswer(index, false)}
                     className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm"
-                    style={{ background: 'white !important', color: '#374151 !important' }}
                   >
                     No
                   </button>
@@ -177,8 +175,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       
       {/* Testimonials */}
       <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
-        <p className="italic mb-2 text-gray-700">"{testimonials[testimonialIndex].text}"</p>
-        <p className="text-right font-semibold text-gray-800">— {testimonials[testimonialIndex].name}</p>
+        <p className="italic mb-2">"{testimonials[testimonialIndex].text}"</p>
+        <p className="text-right font-semibold">— {testimonials[testimonialIndex].name}</p>
       </div>
     </div>
   );

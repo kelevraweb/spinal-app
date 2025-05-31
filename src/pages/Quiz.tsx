@@ -357,7 +357,7 @@ const Quiz: React.FC = () => {
         
       case 'loadingAnalysis':
         return (
-          <div className="max-w-[480px] mx-auto px-4">
+          <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -487,7 +487,7 @@ const Quiz: React.FC = () => {
         onBack={handleBack}
         canGoBack={state.currentStep > 0}
       />
-      <div className="quiz-container pt-8">
+      <div className="quiz-container pt-24">
         <div 
           className={`quiz-card transform transition-all duration-200 ${
             isAnimating 
@@ -515,14 +515,9 @@ const Quiz: React.FC = () => {
                 disabled={!isNextEnabled}
                 className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
                   isNextEnabled 
-                    ? 'bg-white text-gray-800 border-2 border-gray-300' 
+                    ? 'bg-[#71b8bc] text-white' 
                     : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                 }`}
-                style={{ 
-                  background: isNextEnabled ? 'white !important' : '#e5e7eb !important',
-                  color: isNextEnabled ? '#374151 !important' : '#9ca3af !important',
-                  border: isNextEnabled ? '2px solid #d1d5db !important' : '2px solid #e5e7eb !important'
-                }}
               >
                 <span>Avanti</span>
               </button>
