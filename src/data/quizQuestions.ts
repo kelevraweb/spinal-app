@@ -1,3 +1,4 @@
+
 import { QuizOption, QuizQuestion } from '../types/quiz';
 
 export const quizQuestions: QuizQuestion[] = [
@@ -332,7 +333,7 @@ export const quizQuestions: QuizQuestion[] = [
   },
   {
     id: "posture_knowledge",
-    question: "Quanto ne sai sugli allenamenti posturali?",
+    question: "Cosa sai riguardo gli allenamenti posturali?",
     type: "single",
     options: [
       { text: "Nulla", iconName: "frown" },

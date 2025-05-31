@@ -21,8 +21,6 @@ import WellbeingLevelIndicator from '../components/WellbeingLevelIndicator';
 import EmailCapture from '../components/EmailCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
@@ -42,8 +40,7 @@ const Quiz: React.FC = () => {
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
-  const [debugMessage, setDebugMessage] = useState<string>('');
-  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false); // Set to false by default
+  const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -54,17 +51,13 @@ const Quiz: React.FC = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
     
-    // Handle automatic transitions based on current special page
     if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
         state.showSpecialPage === 'expert' || state.showSpecialPage === 'worldMap') {
-      // Create a timer to auto-advance these screens after 5 seconds
       timer = setTimeout(() => {
         if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
             state.showSpecialPage === 'expert') {
-          // Move to next question - use handleSpecialPageComplete to ensure proper state updates
           handleSpecialPageComplete();
         } else if (state.showSpecialPage === 'worldMap') {
-          // After world map go to wellbeing level
           setState(prevState => ({
             ...prevState,
             showSpecialPage: 'wellbeingLevel'
@@ -73,14 +66,12 @@ const Quiz: React.FC = () => {
       }, 5000);
     }
     
-    // Cleanup function to clear any timers when the component unmounts or state changes
     return () => {
       if (timer) clearTimeout(timer);
     };
   }, [state.showSpecialPage]);
 
   useEffect(() => {
-    // Check if current question has been answered before
     const existingAnswer = state.answers.find(
       answer => answer.questionId === state.currentQuestion?.id
     );
@@ -93,19 +84,24 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(false);
     }
     
-    // Auto advance is disabled by default
-    setShouldAutoAdvance(false);
-
-    // For debug purposes - add information about current step and question
-    if (state.currentQuestion) {
-      setDebugMessage(`Step: ${state.currentStep}, Question ID: ${state.currentQuestion.id}`);
-    }
+    // Enable auto-advance for single choice questions
+    setShouldAutoAdvance(state.currentQuestion?.type === 'single');
   }, [state.currentStep, state.currentQuestion]);
+
+  // Auto-advance for single choice questions
+  useEffect(() => {
+    if (shouldAutoAdvance && currentAnswer && state.currentQuestion?.type === 'single') {
+      const timer = setTimeout(() => {
+        handleNext();
+      }, 800); // Small delay for better UX
+      
+      return () => clearTimeout(timer);
+    }
+  }, [currentAnswer, shouldAutoAdvance]);
 
   const handleAnswerChange = (answer: string | string[] | number) => {
     setCurrentAnswer(answer);
     
-    // Empty answers should not enable next button
     if (
       (Array.isArray(answer) && answer.length === 0) ||
       (typeof answer === 'string' && answer.trim() === '') ||
@@ -120,7 +116,6 @@ const Quiz: React.FC = () => {
   const handleNext = () => {
     if (!isNextEnabled || isAnimating) return;
     
-    // Save current answer
     const updatedAnswers = [...state.answers];
     const existingAnswerIndex = updatedAnswers.findIndex(
       answer => answer.questionId === state.currentQuestion?.id
@@ -137,41 +132,32 @@ const Quiz: React.FC = () => {
       updatedAnswers.push(newAnswer);
     }
     
-    // Set transition direction
     setTransitionDirection('next');
     
-    // Special pages triggers
     let showSpecialPage = undefined;
     
-    // After question 2 (demographic data) show trust map
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
     
-    // After question 23 show universities
     if (state.currentStep === 23) {
       showSpecialPage = 'universities';
     }
     
-    // After question 26 show expert
     if (state.currentStep === 26) {
       showSpecialPage = 'expert';
     }
 
-    // After expert screen show world map
     if (state.showSpecialPage === 'expert') {
       showSpecialPage = 'worldMap';
     }
     
-    // After question 30 show wellbeing level
     if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
     
-    // Calculate next step
     let nextStep = state.currentStep + 1;
     
-    // Check if quiz is completed
     if (nextStep >= state.totalSteps) {
       setState({
         ...state,
@@ -184,18 +170,13 @@ const Quiz: React.FC = () => {
     
     setIsAnimating(true);
     
-    // First update answers
     setState(prevState => ({
       ...prevState,
       answers: updatedAnswers,
-      // Only update special page status but keep other state intact
       showSpecialPage
     }));
     
-    // If showing a special page, don't immediately change the current question
-    // Instead, let the special page complete and trigger handleSpecialPageComplete
     if (!showSpecialPage) {
-      // For normal transitions, change to next question after animation
       setTimeout(() => {
         setState(prevState => ({
           ...prevState,
@@ -206,8 +187,6 @@ const Quiz: React.FC = () => {
         setIsAnimating(false);
       }, 200);
     } else {
-      // For special pages, just finish the animation for current question
-      // The special page transition will be handled in handleSpecialPageComplete
       setTimeout(() => {
         setIsAnimating(false);
       }, 200);
@@ -234,13 +213,10 @@ const Quiz: React.FC = () => {
   };
 
   const handleSpecialPageComplete = () => {
-    // Move to the next step after a special page is shown
     const nextStep = state.currentStep + 1;
     
-    // Ensure we're not animating when transitioning from special page
     setIsAnimating(false);
     
-    // Use the functional setState to ensure we have the latest state
     setState(prevState => ({
       ...prevState,
       currentStep: nextStep,
@@ -250,7 +226,6 @@ const Quiz: React.FC = () => {
   };
 
   const handleWellbeingLevelComplete = () => {
-    // After wellbeingLevel is shown, show loadingAnalysis
     setState({
       ...state,
       showSpecialPage: 'loadingAnalysis'
@@ -258,7 +233,6 @@ const Quiz: React.FC = () => {
   };
 
   const handleLoadingAnalysisComplete = () => {
-    // Dopo il caricamento mostra il grafico di progresso
     setState({
       ...state,
       showSpecialPage: 'progressChart'
@@ -266,7 +240,6 @@ const Quiz: React.FC = () => {
   };
 
   const handleProgressChartComplete = () => {
-    // After progress chart is shown, show email capture
     setState({
       ...state,
       showSpecialPage: 'emailCapture'
@@ -274,7 +247,6 @@ const Quiz: React.FC = () => {
   };
 
   const handleEmailCapture = (email: string) => {
-    // Update user profile with email
     const updatedProfile = {
       ...state.userProfile,
       email
@@ -288,7 +260,6 @@ const Quiz: React.FC = () => {
   };
 
   const handleSinusoidalComplete = () => {
-    // Navigate to the Pricing page instead of showing the checkout component
     navigate('/pricing');
   };
 
@@ -435,7 +406,7 @@ const Quiz: React.FC = () => {
             onChange={handleAnswerChange}
             useImages={state.currentQuestion.id === 'gender'}
             questionId={state.currentQuestion.id}
-            autoAdvance={false} // Always disable auto-advance
+            autoAdvance={true}
           />
         );
         
@@ -446,7 +417,7 @@ const Quiz: React.FC = () => {
             value={currentAnswer as string[]}
             onChange={handleAnswerChange}
             maxSelections={state.currentQuestion.maxSelections}
-            onNextClick={handleNext} // Add Next button functionality
+            onNextClick={handleNext}
           />
         );
         
@@ -498,15 +469,17 @@ const Quiz: React.FC = () => {
           }`}
         >
           {/* Question */}
-          <h2 className="question-title">
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
             {state.currentQuestion?.question || 'Loading...'}
           </h2>
           
           {/* Question content based on type */}
           {renderQuestionContent()}
           
-          {/* Show next button for single choice questions */}
-          {state.currentQuestion && state.currentQuestion.type === 'single' && (
+          {/* Show next button only for non-single choice questions */}
+          {state.currentQuestion && 
+           state.currentQuestion.type !== 'single' && 
+           state.currentQuestion.type !== 'multiple' && (
             <div className="mt-8">
               <button
                 onClick={handleNext}
@@ -518,7 +491,6 @@ const Quiz: React.FC = () => {
                 }`}
               >
                 <span>Avanti</span>
-                <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
               </button>
             </div>
           )}

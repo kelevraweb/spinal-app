@@ -42,9 +42,9 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   const [error, setError] = useState<string | null>(null);
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   
-  // Check if at least 2 options are selected to enable Next button
+  // Check if at least 1 option is selected to enable Next button
   useEffect(() => {
-    setIsNextEnabled(value.length >= 2);
+    setIsNextEnabled(value.length >= 1);
   }, [value]);
 
   // Map of FontAwesome icons
@@ -94,11 +94,8 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
       )}
       
       {options.map((option, index) => {
-        // Handle both string options and QuizOption objects
         const optionText = typeof option === 'string' ? option : option.text;
         const optionIconName = typeof option === 'string' ? null : option.iconName;
-        
-        // Default icon if none provided
         const iconOption = optionIconName ? iconMap[optionIconName.toLowerCase()] || faChartLine : faChartLine;
         const isSelected = value.includes(optionText);
         
@@ -152,7 +149,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           <FontAwesomeIcon icon={faArrowRight} className="ml-2" />
         </button>
         <p className="text-center text-sm text-gray-500 mt-2">
-          {!isNextEnabled ? 'Seleziona almeno 2 opzioni per continuare' : ''}
+          {!isNextEnabled ? 'Seleziona almeno 1 opzione per continuare' : ''}
         </p>
       </div>
     </div>
