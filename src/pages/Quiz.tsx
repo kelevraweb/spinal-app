@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -16,9 +15,11 @@ import ColorSelection from '../components/QuestionTypes/ColorSelection';
 import TrustMapAnimation from '../components/TrustMapAnimation';
 import UniversityLogos from '../components/UniversityLogos';
 import ExpertReview from '../components/ExpertReview';
+import WorldCommunity from '../components/WorldCommunity';
 import ProgressChart from '../components/ProgressChart';
 import WellbeingLevelIndicator from '../components/WellbeingLevelIndicator';
 import EmailCapture from '../components/EmailCapture';
+import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
 
@@ -149,7 +150,7 @@ const Quiz: React.FC = () => {
     }
 
     if (state.showSpecialPage === 'expert') {
-      showSpecialPage = 'worldMap';
+      showSpecialPage = 'worldCommunity';
     }
     
     if (state.currentStep === 29) {
@@ -225,6 +226,13 @@ const Quiz: React.FC = () => {
     }));
   };
 
+  const handleWorldCommunityComplete = () => {
+    setState(prevState => ({
+      ...prevState,
+      showSpecialPage: 'wellbeingLevel'
+    }));
+  };
+
   const handleWellbeingLevelComplete = () => {
     setState({
       ...state,
@@ -255,12 +263,25 @@ const Quiz: React.FC = () => {
     setState({
       ...state,
       userProfile: updatedProfile,
+      showSpecialPage: 'nameCapture'
+    });
+  };
+
+  const handleNameCapture = (name: string) => {
+    const updatedProfile = {
+      ...state.userProfile,
+      name
+    };
+    
+    setState({
+      ...state,
+      userProfile: updatedProfile,
       showSpecialPage: 'sinusoidalGraph'
     });
   };
 
   const handleSinusoidalComplete = () => {
-    navigate('/pricing');
+    navigate('/pricing-discounted');
   };
 
   // Render special pages based on current state
@@ -305,7 +326,7 @@ const Quiz: React.FC = () => {
           </div>
         );
 
-      case 'worldMap':
+      case 'worldCommunity':
         return (
           <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
@@ -314,12 +335,7 @@ const Quiz: React.FC = () => {
               onBack={handleBack}
               canGoBack={false}
             />
-            <TrustMapAnimation worldMap={true} onContinue={() => {
-              setState(prevState => ({
-                ...prevState,
-                showSpecialPage: 'wellbeingLevel'
-              }));
-            }} />
+            <WorldCommunity onContinue={handleWorldCommunityComplete} />
           </div>
         );
         
@@ -341,7 +357,7 @@ const Quiz: React.FC = () => {
         
       case 'loadingAnalysis':
         return (
-          <div className="max-w-[480px] mx-auto px-4">
+          <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -375,6 +391,19 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <EmailCapture onSubmit={handleEmailCapture} />
+          </div>
+        );
+
+      case 'nameCapture':
+        return (
+          <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar 
+              currentStep={state.currentStep} 
+              totalSteps={state.totalSteps}
+              onBack={handleBack}
+              canGoBack={false}
+            />
+            <NameCapture onSubmit={handleNameCapture} />
           </div>
         );
         

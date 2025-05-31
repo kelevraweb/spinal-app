@@ -30,13 +30,13 @@
   }
 }
 
-/* Option button styling */
+/* Option button styling - transparent background */
 .option-btn {
   width: 100%;
   padding: 1rem;
   border: 2px solid #e5e7eb;
   border-radius: 0.75rem;
-  background: white;
+  background: transparent;
   text-align: left;
   font-weight: 500;
   color: #374151;
@@ -100,4 +100,9 @@
   90% {
     transform: translateY(-3px);
   }
+}
+
+/* Dark theme for loading analysis */
+.bg-gray-900 {
+  background-color: #111827;
 }

@@ -19,26 +19,27 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     { 
       name: 'Analisi posturale', 
       progress: 0, 
-      color: 'bg-blue-500', 
+      color: 'bg-white', 
       question: 'Ti senti spesso bloccato/a nei movimenti?',
       answered: false
     },
     { 
       name: 'Analisi mobilità', 
       progress: 0, 
-      color: 'bg-green-500',
+      color: 'bg-white',
       question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?',
       answered: false
     },
     { 
       name: 'Analisi benessere fisico', 
       progress: 0, 
-      color: 'bg-purple-500',
+      color: 'bg-white',
       question: 'Ti senti spesso rigido/a quando ti svegli al mattino?',
       answered: false
     }
   ]);
   
+  const [currentBarIndex, setCurrentBarIndex] = useState(0);
   const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [animationPaused, setAnimationPaused] = useState(false);
@@ -72,61 +73,43 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   }, []);
 
   useEffect(() => {
-    let activeIntervals: NodeJS.Timeout[] = [];
-    
-    // Process bars sequentially
-    const processBar = (index: number) => {
-      if (index >= bars.length) {
-        // All bars are complete
-        setTimeout(onComplete, 1000);
-        return;
-      }
-      
-      const interval = setInterval(() => {
-        setBars(prevBars => {
-          const newBars = [...prevBars];
-          
-          // If we've reached 50% and haven't answered the question yet
-          if (newBars[index].progress >= 50 && !newBars[index].answered && !animationPaused) {
-            setAnimationPaused(true);
-            setActiveBarIndex(index);
-            clearInterval(interval);
-            
-            return newBars;
-          }
-          
-          // Continue bar progress if not paused
-          if (!animationPaused) {
-            if (newBars[index].progress < 100) {
-              newBars[index] = {
-                ...newBars[index],
-                progress: Math.min(newBars[index].progress + 1, 100)
-              };
-            } else {
-              // Bar is complete, move to next bar
-              clearInterval(interval);
-              if (index < bars.length - 1) {
-                processBar(index + 1);
-              } else {
-                setTimeout(onComplete, 1000);
-              }
-            }
-          }
-          
+    if (animationPaused) return;
+
+    const interval = setInterval(() => {
+      setBars(prevBars => {
+        const newBars = [...prevBars];
+        
+        // If we've reached 50% and haven't answered the question yet
+        if (newBars[currentBarIndex].progress >= 50 && !newBars[currentBarIndex].answered && !animationPaused) {
+          setAnimationPaused(true);
+          setActiveBarIndex(currentBarIndex);
+          clearInterval(interval);
           return newBars;
-        });
-      }, 50);
-      
-      activeIntervals.push(interval);
-    };
+        }
+        
+        // Continue bar progress
+        if (newBars[currentBarIndex].progress < 100) {
+          newBars[currentBarIndex] = {
+            ...newBars[currentBarIndex],
+            progress: Math.min(newBars[currentBarIndex].progress + 2, 100)
+          };
+        } else {
+          // Bar is complete, move to next bar
+          clearInterval(interval);
+          if (currentBarIndex < bars.length - 1) {
+            setCurrentBarIndex(prev => prev + 1);
+          } else {
+            // All bars complete
+            setTimeout(onComplete, 1000);
+          }
+        }
+        
+        return newBars;
+      });
+    }, 50);
     
-    // Start with the first bar
-    processBar(0);
-    
-    return () => {
-      activeIntervals.forEach(interval => clearInterval(interval));
-    };
-  }, [bars.length, animationPaused, onComplete]);
+    return () => clearInterval(interval);
+  }, [currentBarIndex, animationPaused, onComplete, bars.length]);
   
   const handleAnswer = (index: number, answer: boolean) => {
     setBars(prevBars => {
@@ -144,10 +127,10 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
 
   return (
     <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
-      <h2 className="text-2xl font-bold text-center mb-3">
+      <h2 className="text-2xl font-bold text-center mb-3 text-white">
         Creazione del tuo
       </h2>
-      <h2 className="text-2xl font-bold text-center text-brand-primary mb-6">
+      <h2 className="text-2xl font-bold text-center text-[#71b8bc] mb-6">
         piano posturale personalizzato
       </h2>
       
@@ -155,14 +138,16 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
         {bars.map((bar, index) => (
           <div key={index} className="relative">
             <div className="flex justify-between items-center mb-2">
-              <div className="font-medium">{bar.name}</div>
-              <div className="text-sm text-gray-500">{bar.progress}%</div>
+              <div className="font-medium text-white">{bar.name}</div>
+              <div className="text-sm text-gray-300">{Math.round(bar.progress)}%</div>
             </div>
             
-            <Progress
-              value={bar.progress}
-              className="h-3"
-            />
+            <div className="w-full bg-gray-700 rounded-full h-3">
+              <div 
+                className="bg-white h-3 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${bar.progress}%` }}
+              />
+            </div>
             
             {/* Question popup when bar reaches 50% - now centered */}
             {activeBarIndex === index && (
@@ -171,7 +156,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
                 <div className="flex gap-4">
                   <button 
                     onClick={() => handleAnswer(index, true)}
-                    className="flex-1 bg-brand-primary text-white rounded-full px-4 py-2 text-sm"
+                    className="flex-1 bg-[#71b8bc] text-white rounded-full px-4 py-2 text-sm"
                   >
                     Sì
                   </button>
@@ -189,7 +174,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       </div>
       
       {/* Testimonials */}
-      <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-brand-accent animate-fade-in">
+      <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
         <p className="italic mb-2">"{testimonials[testimonialIndex].text}"</p>
         <p className="text-right font-semibold">— {testimonials[testimonialIndex].name}</p>
       </div>

@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { ProgressChartData } from '../types/quiz';
 import { Button } from './ui/button';
 import { Progress } from './ui/progress';
-import { cn } from '@/lib/utils';
 
 interface ProgressChartProps {
   initialData?: ProgressChartData[];
@@ -11,17 +10,38 @@ interface ProgressChartProps {
 }
 
 const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }) => {
-  const [chartData, setChartData] = useState<ProgressChartData[]>([
-    { month: 'Aprile', value: 20, color: '#71b8bc', label: 'Inizio' },
-    { month: 'Maggio', value: 40, color: '#88c2aa', label: 'Progresso' },
-    { month: 'Giugno', value: 60, color: '#71b8bc', isGoal: true, label: 'Obiettivo' }
-  ]);
+  const [chartData, setChartData] = useState<ProgressChartData[]>([]);
   const [animated, setAnimated] = useState(false);
 
-  useEffect(() => {
-    if (initialData) {
-      setChartData(initialData);
+  // Get current month and calculate next months dynamically
+  const getCurrentMonthData = () => {
+    const currentDate = new Date();
+    const monthNames = [
+      'Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno',
+      'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'
+    ];
+
+    const data = [];
+    for (let i = 0; i < 3; i++) {
+      const futureDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 1);
+      const monthName = monthNames[futureDate.getMonth()];
+      const year = futureDate.getFullYear();
+      
+      data.push({
+        month: `${monthName} ${year}`,
+        value: i === 0 ? 20 : i === 1 ? 40 : 60,
+        color: i === 1 ? '#88c2aa' : '#71b8bc',
+        label: i === 0 ? 'Inizio' : i === 1 ? 'Progresso' : 'Obiettivo',
+        isGoal: i === 2
+      });
     }
+    
+    return data;
+  };
+
+  useEffect(() => {
+    const data = initialData || getCurrentMonthData();
+    setChartData(data);
 
     const timer = setTimeout(() => {
       setAnimated(true);
@@ -40,7 +60,7 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
         In base alle tue risposte, prevediamo che migliorerai la tua postura e ridurrai il dolore entro
       </p>
       
-      <h3 className="text-2xl font-bold text-center mb-8">Giugno 2025</h3>
+      <h3 className="text-2xl font-bold text-center mb-8">{chartData[2]?.month || 'Prossimi mesi'}</h3>
       
       <div className="relative bg-white rounded-lg shadow-lg p-8 mb-10">
         <div className="flex justify-between mb-16">
@@ -86,45 +106,22 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
         <div className="mt-10">
           <h4 className="font-semibold text-lg mb-2">Il tuo progresso previsto</h4>
           <div className="space-y-4">
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Benessere posturale attuale</span>
-                <span>20%</span>
+            {chartData.map((data, index) => (
+              <div key={index}>
+                <div className="flex justify-between text-sm text-gray-600 mb-1">
+                  <span>{data.label}</span>
+                  <span>{data.value}%</span>
+                </div>
+                <div className="relative w-full">
+                  <Progress value={animated ? data.value : 0} className="h-2 bg-gray-200" 
+                    style={{
+                      "--tw-progress-color": data.color,
+                      transition: `all 1s ease ${index * 0.3}s`
+                    } as React.CSSProperties} 
+                  />
+                </div>
               </div>
-              <div className="relative w-full">
-                <Progress value={20} className="h-2 bg-gray-200" 
-                  style={{
-                    "--tw-progress-color": "#71b8bc"
-                  } as React.CSSProperties} 
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Dopo 1 mese</span>
-                <span>40%</span>
-              </div>
-              <div className="relative w-full">
-                <Progress value={40} className="h-2 bg-gray-200"
-                  style={{
-                    "--tw-progress-color": "#88c2aa"
-                  } as React.CSSProperties}
-                />
-              </div>
-            </div>
-            <div>
-              <div className="flex justify-between text-sm text-gray-600 mb-1">
-                <span>Obiettivo finale</span>
-                <span>60%</span>
-              </div>
-              <div className="relative w-full">
-                <Progress value={60} className="h-2 bg-gray-200"
-                  style={{
-                    "--tw-progress-color": "#71b8bc"
-                  } as React.CSSProperties}
-                />
-              </div>
-            </div>
+            ))}
           </div>
         </div>
 

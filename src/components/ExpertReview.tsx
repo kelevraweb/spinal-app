@@ -63,19 +63,15 @@ const ExpertReview: React.FC = () => {
           <div className="flex items-center justify-around mx-auto w-64 mb-8">
             <div className="text-center">
               <div className="mb-2 text-sm font-medium">Postura</div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-600">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M12 16v-4"></path>
-                <path d="M12 8h.01"></path>
-              </svg>
+              <div className="w-16 h-16 bg-[#71b8bc]/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl">🧍</span>
+              </div>
             </div>
             
             <div className="relative text-center">
               <div className="mb-2 text-sm font-medium">Movimento</div>
               <div className="w-24 h-24 rounded-full border-2 border-[#71b8bc] flex items-center justify-center bg-white shadow-md">
-                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className="text-[#71b8bc]">
-                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                </svg>
+                <span className="text-3xl">🏃</span>
               </div>
               <div className="absolute -top-1 -right-1 w-6 h-6 bg-[#88c2aa] rounded-full border-2 border-white flex items-center justify-center text-white text-xs font-bold animate-pulse">
                 +
@@ -84,9 +80,9 @@ const ExpertReview: React.FC = () => {
             
             <div className="text-center">
               <div className="mb-2 text-sm font-medium">Benessere</div>
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mx-auto text-gray-600">
-                <path d="M22 12h-4l-3 9L9 3l-3 9H2"></path>
-              </svg>
+              <div className="w-16 h-16 bg-[#88c2aa]/10 rounded-full flex items-center justify-center">
+                <span className="text-2xl">💚</span>
+              </div>
             </div>
           </div>
           
