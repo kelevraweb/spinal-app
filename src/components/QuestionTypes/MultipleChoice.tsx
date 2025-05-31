@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -141,7 +140,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           disabled={!isNextEnabled}
           className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
             isNextEnabled 
-              ? 'bg-[#71b8bc] text-white' 
+              ? 'bg-[#70b8bc] text-white' 
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           }`}
         >
