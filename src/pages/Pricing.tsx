@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faStar } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '@/components/Rating';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -69,76 +70,80 @@ const Pricing: React.FC = () => {
         <h1 className="text-2xl md:text-3xl font-bold mb-4">Il tuo piano personalizzato per la salute della schiena è pronto!</h1>
       </div>
 
-      {/* Pricing Selection */}
-      <div className="mb-8">
+      {/* New Pricing Section - Vertical Layout */}
+      <div className="mb-8 max-w-2xl mx-auto">
         <RadioGroup 
           value={selectedPlan} 
           onValueChange={(value) => setSelectedPlan(value as 'trial' | 'monthly' | 'quarterly')}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4"
+          className="space-y-4"
         >
           {/* Trial Plan */}
-          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
-            selectedPlan === 'trial' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          <div className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all ${
+            selectedPlan === 'trial' ? 'border-[#71b8bc] bg-[#71b8bc]/5' : 'border-gray-200 hover:border-gray-300'
           }`}>
-            <RadioGroupItem value="trial" id="trial" className="absolute top-4 right-4" />
-            <Label htmlFor="trial" className="cursor-pointer">
-              <div className="text-center">
-                <h3 className="text-xl font-bold mb-2">{plans.trial.title}</h3>
-                <div className="mb-2">
-                  <span className="text-2xl font-bold">€{plans.trial.price}</span>
-                  <span className="text-sm text-gray-500"> {plans.trial.period}</span>
+            <Label htmlFor="trial" className="cursor-pointer flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <RadioGroupItem value="trial" id="trial" className="mr-4" />
+                <div>
+                  <h3 className="text-lg font-semibold">{plans.trial.title}</h3>
+                  <p className="text-gray-600">€{plans.trial.price} {plans.trial.period}</p>
                 </div>
-                <div className="text-3xl font-bold text-brand-primary mb-2">
-                  €{plans.trial.dailyPrice.toFixed(2)} al giorno
+              </div>
+              <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="text-xl font-bold text-[#71b8bc]">
+                  €{plans.trial.dailyPrice.toFixed(2)}
                 </div>
-                <p className="text-sm text-gray-500">{plans.trial.duration}</p>
+                <div className="text-sm text-gray-600">al giorno</div>
               </div>
             </Label>
           </div>
 
-          {/* Monthly Plan */}
-          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
-            selectedPlan === 'monthly' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          {/* Monthly Plan - Most Popular */}
+          <div className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all ${
+            selectedPlan === 'monthly' ? 'border-[#71b8bc] bg-[#71b8bc]/5' : 'border-gray-200 hover:border-gray-300'
           }`}>
             {plans.monthly.popular && (
-              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                <span className="bg-brand-primary text-white px-4 py-1 rounded-full text-sm font-medium">
-                  PIÙ POPOLARE
+              <div className="absolute -top-3 left-4">
+                <span className="bg-[#28a745] text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                  <FontAwesomeIcon icon={faStar} className="mr-1" />
+                  MOST POPULAR
                 </span>
               </div>
             )}
-            <RadioGroupItem value="monthly" id="monthly" className="absolute top-4 right-4" />
-            <Label htmlFor="monthly" className="cursor-pointer">
-              <div className="text-center">
-                <h3 className="text-xl font-bold mb-2">{plans.monthly.title}</h3>
-                <div className="mb-2">
-                  <span className="text-2xl font-bold">€{plans.monthly.price}</span>
-                  <span className="text-sm text-gray-500"> {plans.monthly.period}</span>
+            <Label htmlFor="monthly" className="cursor-pointer flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <RadioGroupItem value="monthly" id="monthly" className="mr-4" />
+                <div>
+                  <h3 className="text-lg font-semibold">{plans.monthly.title}</h3>
+                  <p className="text-gray-600">€{plans.monthly.price} {plans.monthly.period}</p>
                 </div>
-                <div className="text-3xl font-bold text-brand-primary mb-2">
-                  €{plans.monthly.dailyPrice.toFixed(2)} al giorno
+              </div>
+              <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="text-xl font-bold text-[#71b8bc]">
+                  €{plans.monthly.dailyPrice.toFixed(2)}
                 </div>
-                <p className="text-sm text-gray-500">{plans.monthly.duration}</p>
+                <div className="text-sm text-gray-600">al giorno</div>
               </div>
             </Label>
           </div>
 
           {/* Quarterly Plan */}
-          <div className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all ${
-            selectedPlan === 'quarterly' ? 'border-brand-primary bg-brand-primary/5' : 'border-gray-200 hover:border-gray-300'
+          <div className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all ${
+            selectedPlan === 'quarterly' ? 'border-[#71b8bc] bg-[#71b8bc]/5' : 'border-gray-200 hover:border-gray-300'
           }`}>
-            <RadioGroupItem value="quarterly" id="quarterly" className="absolute top-4 right-4" />
-            <Label htmlFor="quarterly" className="cursor-pointer">
-              <div className="text-center">
-                <h3 className="text-xl font-bold mb-2">{plans.quarterly.title}</h3>
-                <div className="mb-2">
-                  <span className="text-2xl font-bold">€{plans.quarterly.price}</span>
-                  <span className="text-sm text-gray-500"> {plans.quarterly.period}</span>
+            <Label htmlFor="quarterly" className="cursor-pointer flex items-center justify-between w-full">
+              <div className="flex items-center">
+                <RadioGroupItem value="quarterly" id="quarterly" className="mr-4" />
+                <div>
+                  <h3 className="text-lg font-semibold">{plans.quarterly.title}</h3>
+                  <p className="text-gray-600">€{plans.quarterly.price} {plans.quarterly.period}</p>
                 </div>
-                <div className="text-3xl font-bold text-brand-primary mb-2">
-                  €{plans.quarterly.dailyPrice.toFixed(2)} al giorno
+              </div>
+              <div className="bg-gray-100 px-4 py-2 rounded-lg">
+                <div className="text-xl font-bold text-[#71b8bc]">
+                  €{plans.quarterly.dailyPrice.toFixed(2)}
                 </div>
-                <p className="text-sm text-gray-500">{plans.quarterly.duration}</p>
+                <div className="text-sm text-gray-600">al giorno</div>
               </div>
             </Label>
           </div>
@@ -148,9 +153,9 @@ const Pricing: React.FC = () => {
         <div className="text-center mt-8">
           <Button 
             onClick={handleSelectPlan} 
-            className="w-full md:w-auto px-12 py-4 text-lg bg-brand-primary hover:bg-brand-primary/90"
+            className="w-full md:w-auto px-12 py-4 text-lg bg-[#28a745] hover:bg-[#1e7e34] text-white font-bold"
           >
-            OTTIENI IL MIO PIANO
+            GET MY PLAN
           </Button>
         </div>
 
@@ -160,9 +165,12 @@ const Pricing: React.FC = () => {
         </div>
       </div>
 
-      {/* Security Badge */}
+      {/* Pay Safe & Secure Section */}
       <div className="text-center mb-12">
-        <p className="font-medium mb-2">Paga in modo sicuro e protetto</p>
+        <div className="flex items-center justify-center mb-2">
+          <FontAwesomeIcon icon={faCheck} className="text-[#28a745] mr-2" />
+          <p className="font-medium">Pay Safe & Secure</p>
+        </div>
         <div className="flex justify-center items-center">
           <img 
             src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
