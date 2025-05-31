@@ -22,6 +22,7 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
+
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -311,10 +312,12 @@ const Quiz: React.FC = () => {
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
         <div className="">
-          {/* Question */}
-          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
-            {state.currentQuestion?.question || 'Loading...'}
-          </h2>
+          {/* Question - hide only for gender question */}
+          {state.currentQuestion?.id !== 'gender' && (
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
+              {state.currentQuestion?.question || 'Loading...'}
+            </h2>
+          )}
           
           {/* Question content based on type */}
           {renderQuestionContent()}
@@ -329,4 +332,5 @@ const Quiz: React.FC = () => {
       </div>
     </div>;
 };
+
 export default Quiz;
