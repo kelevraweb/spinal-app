@@ -104,9 +104,9 @@ const Pricing: React.FC = () => {
           }`}>
             {plans.monthly.popular && (
               <div className="absolute -top-3 left-4">
-                <span className="bg-[#28a745] text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
+                <span className="bg-[#71b8bc] text-white px-3 py-1 rounded-full text-sm font-medium flex items-center">
                   <FontAwesomeIcon icon={faStar} className="mr-1" />
-                  MOST POPULAR
+                  PIÙ POPOLARE
                 </span>
               </div>
             )}
@@ -153,9 +153,9 @@ const Pricing: React.FC = () => {
         <div className="text-center mt-8">
           <Button 
             onClick={handleSelectPlan} 
-            className="w-full md:w-auto px-12 py-4 text-lg bg-[#28a745] hover:bg-[#1e7e34] text-white font-bold"
+            className="w-full md:w-auto px-12 py-4 text-lg bg-[#71b8bc] hover:bg-[#5a9599] text-white font-bold"
           >
-            GET MY PLAN
+            OTTIENI IL TUO PIANO
           </Button>
         </div>
 
