@@ -23,6 +23,7 @@ export type UserProfile = {
   age?: string;
   answers: QuizAnswer[];
   email?: string;
+  name?: string;
   wellbeingScore?: number;
   completedAt?: Date;
 };
@@ -36,7 +37,7 @@ export type QuizState = {
   isCompleted: boolean;
   userProfile: UserProfile;
   wellbeingScore?: number;
-  showSpecialPage?: 'trustMap' | 'universities' | 'expert' | 'progressChart' | 'wellbeingLevel' | 'emailCapture' | 'sinusoidalGraph' | 'checkout' | 'worldMap' | 'loadingAnalysis';
+  showSpecialPage?: 'trustMap' | 'universities' | 'expert' | 'progressChart' | 'wellbeingLevel' | 'emailCapture' | 'nameCapture' | 'sinusoidalGraph' | 'checkout' | 'worldMap' | 'worldCommunity' | 'loadingAnalysis';
 };
 
 export type ProgressChartData = {
