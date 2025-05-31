@@ -149,32 +149,36 @@ const Pricing: React.FC = () => {
                   : 'border-gray-200 hover:border-gray-300 bg-white'
               }`}
             >
-              <div className="flex items-center">
-                {/* Radio button */}
-                <div className="mr-4">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                    selectedPlan === key 
-                      ? 'border-green-500 bg-green-500' 
-                      : 'border-gray-300'
-                  }`}>
-                    {selectedPlan === key && (
-                      <div className="w-2 h-2 bg-white rounded-full"></div>
-                    )}
+              <div className="flex items-center justify-between">
+                {/* Left side: Radio button + Plan content */}
+                <div className="flex items-center flex-1">
+                  <div className="mr-4">
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                      selectedPlan === key 
+                        ? 'border-green-500 bg-green-500' 
+                        : 'border-gray-300'
+                    }`}>
+                      {selectedPlan === key && (
+                        <div className="w-2 h-2 bg-white rounded-full"></div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div>
+                    {/* Plan title */}
+                    <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
+                    
+                    {/* Small total price */}
+                    <div className="text-sm text-gray-600">€{plan.price}</div>
                   </div>
                 </div>
-                
-                {/* Plan content */}
-                <div className="flex-1">
-                  {/* Plan title */}
-                  <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                  
-                  {/* Small total price */}
-                  <div className="text-sm text-gray-600 mb-3">€{plan.price}</div>
-                  
-                  {/* Large daily price - PROTAGONIST */}
-                  <div className="text-3xl font-bold text-gray-900">
-                    €{plan.dailyPrice.toFixed(2)} <span className="text-base font-normal text-gray-600">per day</span>
+
+                {/* Right side: Grey container with daily price */}
+                <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
+                  <div className="text-xl font-bold text-gray-900">
+                    €{plan.dailyPrice.toFixed(2)}
                   </div>
+                  <div className="text-xs text-gray-600">per day</div>
                 </div>
               </div>
             </div>
