@@ -22,7 +22,6 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -36,7 +35,6 @@ const Quiz: React.FC = () => {
       answers: []
     }
   });
-
   const [currentAnswer, setCurrentAnswer] = useState<string | string[] | number>('');
   const [isNextEnabled, setIsNextEnabled] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -51,12 +49,9 @@ const Quiz: React.FC = () => {
   // Handle automatic transitions between special pages
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
-    
-    if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
-        state.showSpecialPage === 'expert' || state.showSpecialPage === 'worldMap') {
+    if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || state.showSpecialPage === 'expert' || state.showSpecialPage === 'worldMap') {
       timer = setTimeout(() => {
-        if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || 
-            state.showSpecialPage === 'expert') {
+        if (state.showSpecialPage === 'trustMap' || state.showSpecialPage === 'universities' || state.showSpecialPage === 'expert') {
           handleSpecialPageComplete();
         } else if (state.showSpecialPage === 'worldMap') {
           setState(prevState => ({
@@ -66,17 +61,12 @@ const Quiz: React.FC = () => {
         }
       }, 5000);
     }
-    
     return () => {
       if (timer) clearTimeout(timer);
     };
   }, [state.showSpecialPage]);
-
   useEffect(() => {
-    const existingAnswer = state.answers.find(
-      answer => answer.questionId === state.currentQuestion?.id
-    );
-    
+    const existingAnswer = state.answers.find(answer => answer.questionId === state.currentQuestion?.id);
     if (existingAnswer) {
       setCurrentAnswer(existingAnswer.answer);
       setIsNextEnabled(true);
@@ -84,7 +74,7 @@ const Quiz: React.FC = () => {
       setCurrentAnswer('');
       setIsNextEnabled(false);
     }
-    
+
     // Enable auto-advance for single choice questions
     setShouldAutoAdvance(state.currentQuestion?.type === 'single');
   }, [state.currentStep, state.currentQuestion]);
@@ -95,70 +85,49 @@ const Quiz: React.FC = () => {
       const timer = setTimeout(() => {
         handleNext();
       }, 800); // Small delay for better UX
-      
+
       return () => clearTimeout(timer);
     }
   }, [currentAnswer, shouldAutoAdvance]);
-
   const handleAnswerChange = (answer: string | string[] | number) => {
     setCurrentAnswer(answer);
-    
-    if (
-      (Array.isArray(answer) && answer.length === 0) ||
-      (typeof answer === 'string' && answer.trim() === '') ||
-      answer === undefined
-    ) {
+    if (Array.isArray(answer) && answer.length === 0 || typeof answer === 'string' && answer.trim() === '' || answer === undefined) {
       setIsNextEnabled(false);
     } else {
       setIsNextEnabled(true);
     }
   };
-
   const handleNext = () => {
     if (!isNextEnabled || isAnimating) return;
-    
     const updatedAnswers = [...state.answers];
-    const existingAnswerIndex = updatedAnswers.findIndex(
-      answer => answer.questionId === state.currentQuestion?.id
-    );
-    
+    const existingAnswerIndex = updatedAnswers.findIndex(answer => answer.questionId === state.currentQuestion?.id);
     const newAnswer: QuizAnswer = {
       questionId: state.currentQuestion?.id || '',
       answer: currentAnswer
     };
-    
     if (existingAnswerIndex >= 0) {
       updatedAnswers[existingAnswerIndex] = newAnswer;
     } else {
       updatedAnswers.push(newAnswer);
     }
-    
     setTransitionDirection('next');
-    
     let showSpecialPage = undefined;
-    
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
-    
     if (state.currentStep === 23) {
       showSpecialPage = 'universities';
     }
-    
     if (state.currentStep === 26) {
       showSpecialPage = 'expert';
     }
-
     if (state.showSpecialPage === 'expert') {
       showSpecialPage = 'worldCommunity';
     }
-    
     if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
-    
     let nextStep = state.currentStep + 1;
-    
     if (nextStep >= state.totalSteps) {
       setState({
         ...state,
@@ -168,23 +137,19 @@ const Quiz: React.FC = () => {
       });
       return;
     }
-    
     setIsAnimating(true);
-    
     setState(prevState => ({
       ...prevState,
       answers: updatedAnswers,
       showSpecialPage
     }));
-    
     if (!showSpecialPage) {
       setTimeout(() => {
         setState(prevState => ({
           ...prevState,
           currentStep: nextStep,
-          currentQuestion: quizQuestions[nextStep],
+          currentQuestion: quizQuestions[nextStep]
         }));
-        
         setIsAnimating(false);
       }, 200);
     } else {
@@ -193,13 +158,10 @@ const Quiz: React.FC = () => {
       }, 200);
     }
   };
-
   const handleBack = () => {
     if (state.currentStep <= 0 || isAnimating) return;
-    
     setIsAnimating(true);
     setTransitionDirection('prev');
-    
     setTimeout(() => {
       const prevStep = state.currentStep - 1;
       setState({
@@ -208,16 +170,12 @@ const Quiz: React.FC = () => {
         currentQuestion: quizQuestions[prevStep],
         showSpecialPage: undefined
       });
-      
       setIsAnimating(false);
     }, 200);
   };
-
   const handleSpecialPageComplete = () => {
     const nextStep = state.currentStep + 1;
-    
     setIsAnimating(false);
-    
     setState(prevState => ({
       ...prevState,
       currentStep: nextStep,
@@ -225,281 +183,137 @@ const Quiz: React.FC = () => {
       showSpecialPage: undefined
     }));
   };
-
   const handleWorldCommunityComplete = () => {
     setState(prevState => ({
       ...prevState,
       showSpecialPage: 'wellbeingLevel'
     }));
   };
-
   const handleWellbeingLevelComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'loadingAnalysis'
     });
   };
-
   const handleLoadingAnalysisComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'progressChart'
     });
   };
-
   const handleProgressChartComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'emailCapture'
     });
   };
-
   const handleEmailCapture = (email: string) => {
     const updatedProfile = {
       ...state.userProfile,
       email
     };
-    
     setState({
       ...state,
       userProfile: updatedProfile,
       showSpecialPage: 'nameCapture'
     });
   };
-
   const handleNameCapture = (name: string) => {
     const updatedProfile = {
       ...state.userProfile,
       name
     };
-    
     setState({
       ...state,
       userProfile: updatedProfile,
       showSpecialPage: 'sinusoidalGraph'
     });
   };
-
   const handleSinusoidalComplete = () => {
     navigate('/pricing-discounted');
   };
 
   // Render special pages based on current state
   if (state.showSpecialPage) {
-    switch(state.showSpecialPage) {
+    switch (state.showSpecialPage) {
       case 'trustMap':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <TrustMapAnimation onContinue={handleSpecialPageComplete} />
-          </div>
-        );
-        
+          </div>;
       case 'universities':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <UniversityLogos />
-          </div>
-        );
-        
+          </div>;
       case 'expert':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ExpertReview />
-          </div>
-        );
-
+          </div>;
       case 'worldCommunity':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <WorldCommunity onContinue={handleWorldCommunityComplete} />
-          </div>
-        );
-        
+          </div>;
       case 'wellbeingLevel':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
-            <WellbeingLevelIndicator 
-              level="Medium" 
-              onContinue={handleWellbeingLevelComplete}
-            />
-          </div>
-        );
-        
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
+            <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} />
+          </div>;
       case 'loadingAnalysis':
-        return (
-          <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
-          </div>
-        );
-        
+          </div>;
       case 'progressChart':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ProgressChart onContinue={handleProgressChartComplete} />
-          </div>
-        );
-        
+          </div>;
       case 'emailCapture':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <EmailCapture onSubmit={handleEmailCapture} />
-          </div>
-        );
-
+          </div>;
       case 'nameCapture':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <NameCapture onSubmit={handleNameCapture} />
-          </div>
-        );
-        
+          </div>;
       case 'sinusoidalGraph':
-        return (
-          <div className="max-w-[480px] mx-auto px-4">
-            <TopNavBar 
-              currentStep={state.currentStep} 
-              totalSteps={state.totalSteps}
-              onBack={handleBack}
-              canGoBack={false}
-            />
+        return <div className="max-w-[480px] mx-auto px-4">
+            <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
-          </div>
-        );
+          </div>;
     }
   }
 
   // Render current quiz question
   const renderQuestionContent = () => {
     if (!state.currentQuestion) return null;
-    
-    switch(state.currentQuestion.type) {
+    switch (state.currentQuestion.type) {
       case 'single':
-        return (
-          <SingleChoice
-            options={state.currentQuestion.options || []}
-            value={currentAnswer as string}
-            onChange={handleAnswerChange}
-            useImages={state.currentQuestion.id === 'gender'}
-            questionId={state.currentQuestion.id}
-            autoAdvance={true}
-          />
-        );
-        
+        return <SingleChoice options={state.currentQuestion.options || []} value={currentAnswer as string} onChange={handleAnswerChange} useImages={state.currentQuestion.id === 'gender'} questionId={state.currentQuestion.id} autoAdvance={true} />;
       case 'multiple':
-        return (
-          <MultipleChoice
-            options={state.currentQuestion.options || []}
-            value={currentAnswer as string[]}
-            onChange={handleAnswerChange}
-            maxSelections={state.currentQuestion.maxSelections}
-            onNextClick={handleNext}
-          />
-        );
-        
+        return <MultipleChoice options={state.currentQuestion.options || []} value={currentAnswer as string[]} onChange={handleAnswerChange} maxSelections={state.currentQuestion.maxSelections} onNextClick={handleNext} />;
       case 'text':
-        return (
-          <TextInput
-            value={currentAnswer as string}
-            onChange={handleAnswerChange}
-          />
-        );
-        
+        return <TextInput value={currentAnswer as string} onChange={handleAnswerChange} />;
       case 'scale':
-        return (
-          <ScaleInput
-            value={currentAnswer as number || 5}
-            onChange={handleAnswerChange}
-          />
-        );
-        
+        return <ScaleInput value={currentAnswer as number || 5} onChange={handleAnswerChange} />;
       case 'color':
-        return (
-          <ColorSelection
-            value={currentAnswer as string[]}
-            onChange={handleAnswerChange}
-          />
-        );
-        
+        return <ColorSelection value={currentAnswer as string[]} onChange={handleAnswerChange} />;
       default:
         return <p>Tipo di domanda non supportato</p>;
     }
   };
-
-  return (
-    <div className="max-w-[480px] mx-auto px-4">
-      <TopNavBar 
-        currentStep={state.currentStep} 
-        totalSteps={state.totalSteps} 
-        onBack={handleBack}
-        canGoBack={state.currentStep > 0}
-      />
+  return <div className="max-w-[480px] mx-auto px-4">
+      <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
-        <div 
-          className={`quiz-card transform transition-all duration-200 ${
-            isAnimating 
-              ? transitionDirection === 'next' 
-                ? 'translate-x-4 opacity-0' 
-                : '-translate-x-4 opacity-0' 
-              : 'translate-x-0 opacity-100'
-          }`}
-        >
+        <div className={`quiz-card transform transition-all duration-200 ${isAnimating ? transitionDirection === 'next' ? 'translate-x-4 opacity-0' : '-translate-x-4 opacity-0' : 'translate-x-0 opacity-100'}`}>
           {/* Quiz di tre minuti header */}
           <div className="text-center mb-4">
-            <p className="text-sm text-gray-600">Quiz di tre minuti</p>
+            
           </div>
           
           {/* Question title */}
@@ -511,27 +325,13 @@ const Quiz: React.FC = () => {
           {renderQuestionContent()}
           
           {/* Show next button only for non-single choice questions */}
-          {state.currentQuestion && 
-           state.currentQuestion.type !== 'single' && 
-           state.currentQuestion.type !== 'multiple' && (
-            <div className="mt-8">
-              <button
-                onClick={handleNext}
-                disabled={!isNextEnabled}
-                className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
-                  isNextEnabled 
-                    ? 'bg-[#71b8bc] text-white' 
-                    : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                }`}
-              >
+          {state.currentQuestion && state.currentQuestion.type !== 'single' && state.currentQuestion.type !== 'multiple' && <div className="mt-8">
+              <button onClick={handleNext} disabled={!isNextEnabled} className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${isNextEnabled ? 'bg-[#71b8bc] text-white' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
                 <span>Avanti</span>
               </button>
-            </div>
-          )}
+            </div>}
         </div>
       </div>
-    </div>
-  );
+    </div>;
 };
-
 export default Quiz;
