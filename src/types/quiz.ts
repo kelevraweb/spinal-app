@@ -36,7 +36,7 @@ export type QuizState = {
   isCompleted: boolean;
   userProfile: UserProfile;
   wellbeingScore?: number;
-  showSpecialPage?: 'trustMap' | 'universities' | 'expert' | 'progressChart' | 'wellbeingLevel' | 'emailCapture' | 'sinusoidalGraph' | 'checkout' | 'worldMap' | 'loadingAnalysis';
+  showSpecialPage?: 'trustMap' | 'universities' | 'expert' | 'progressChart' | 'wellbeingLevel' | 'emailCapture' | 'sinusoidalGraph' | 'checkout' | 'worldMap' | 'loadingAnalysis' | 'nameCapture' | 'worldCommunity';
 };
 
 export type ProgressChartData = {
