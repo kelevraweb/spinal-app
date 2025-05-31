@@ -117,7 +117,7 @@ const Pricing: React.FC = () => {
   };
 
   const PricingSection = ({ compact = false }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-2xl mx-auto px-4`}>
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[480px] mx-auto px-4`}>
       {!compact && (
         <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
@@ -203,7 +203,7 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-6xl mx-auto px-4">
+      <div className="max-w-[480px] mx-auto px-4">
         {/* Before-After Comparison Section */}
         <BeforeAfterComparison />
         
@@ -233,7 +233,7 @@ const Pricing: React.FC = () => {
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] mx-auto rounded-full"></div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6">
             {[
               "Ti svegli con meno rigidità e più scioltezza nei movimenti",
               "Non vivi più giornate segnate dal mal di schiena o da fastidi continui",
@@ -261,7 +261,7 @@ const Pricing: React.FC = () => {
               Persone come te hanno ottenuto risultati straordinari!
             </h2>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8">
               {[
                 { percentage: "83%", text: "degli utenti è riuscito a migliorare il proprio benessere dopo sole 6 settimane" },
                 { percentage: "77%", text: "degli utenti hanno iniziato con dolori simili ai tuoi" },
@@ -277,7 +277,7 @@ const Pricing: React.FC = () => {
         </div>
 
         {/* Without Our Plan vs With Our Plan Sections */}
-        <div className="mb-16 grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <div className="mb-16 grid grid-cols-1 gap-8">
           {/* Without Our Plan */}
           <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-6 md:p-8">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-red-800">
@@ -364,7 +364,7 @@ const Pricing: React.FC = () => {
             Le persone spesso chiedono:
           </h2>
           
-          <div className="max-w-4xl mx-auto space-y-4">
+          <div className="max-w-[480px] mx-auto space-y-4">
             {faqItems.map((faq) => (
               <Collapsible key={faq.id} open={openFAQ === faq.id} onOpenChange={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
                 <CollapsibleTrigger className="w-full">
@@ -391,7 +391,7 @@ const Pricing: React.FC = () => {
             Gli utenti adorano il nostro piano "Schiena Libera"
           </h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 gap-8">
             {[
               {
                 name: "Laura M., 45 anni",

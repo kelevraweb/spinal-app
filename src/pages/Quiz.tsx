@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -296,7 +297,7 @@ const Quiz: React.FC = () => {
     switch(state.showSpecialPage) {
       case 'trustMap':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -304,12 +305,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <TrustMapAnimation onContinue={handleSpecialPageComplete} />
-          </>
+          </div>
         );
         
       case 'universities':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -317,12 +318,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <UniversityLogos />
-          </>
+          </div>
         );
         
       case 'expert':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -330,12 +331,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <ExpertReview />
-          </>
+          </div>
         );
 
       case 'worldMap':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -348,12 +349,12 @@ const Quiz: React.FC = () => {
                 showSpecialPage: 'wellbeingLevel'
               }));
             }} />
-          </>
+          </div>
         );
         
       case 'wellbeingLevel':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -364,12 +365,12 @@ const Quiz: React.FC = () => {
               level="Medium" 
               onContinue={handleWellbeingLevelComplete}
             />
-          </>
+          </div>
         );
         
       case 'loadingAnalysis':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -377,12 +378,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
-          </>
+          </div>
         );
         
       case 'progressChart':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -390,12 +391,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <ProgressChart onContinue={handleProgressChartComplete} />
-          </>
+          </div>
         );
         
       case 'emailCapture':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -403,12 +404,12 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <EmailCapture onSubmit={handleEmailCapture} />
-          </>
+          </div>
         );
         
       case 'sinusoidalGraph':
         return (
-          <>
+          <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar 
               currentStep={state.currentStep} 
               totalSteps={state.totalSteps}
@@ -416,7 +417,7 @@ const Quiz: React.FC = () => {
               canGoBack={false}
             />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
-          </>
+          </div>
         );
     }
   }
@@ -479,7 +480,7 @@ const Quiz: React.FC = () => {
   };
 
   return (
-    <>
+    <div className="max-w-[480px] mx-auto px-4">
       <TopNavBar 
         currentStep={state.currentStep} 
         totalSteps={state.totalSteps} 
@@ -523,7 +524,7 @@ const Quiz: React.FC = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
