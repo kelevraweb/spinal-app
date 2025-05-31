@@ -50,8 +50,8 @@
 }
 
 .option-btn.selected {
-  border-color: #71b8bc;
-  background-color: rgba(113, 184, 188, 0.1);
+  border-color: #70b8bc;
+  background-color: rgba(112, 184, 188, 0.1);
   color: #374151;
 }
 
