@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faStar, faShieldAlt, faRocket, faCrown, faGift, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faStar, faShieldAlt, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '@/components/Rating';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,21 +22,18 @@ const Pricing: React.FC = () => {
       title: '7-DAY PLAN',
       price: 49.99,
       dailyPrice: 7.14,
-      icon: faGift,
       popular: false
     },
     monthly: {
       title: '1-MONTH PLAN',
       price: 49.99,
       dailyPrice: 1.66,
-      popular: true,
-      icon: faRocket
+      popular: true
     },
     quarterly: {
       title: '3-MONTH PLAN',
       price: 99.99,
       dailyPrice: 1.11,
-      icon: faCrown,
       popular: false
     }
   };
@@ -136,8 +133,8 @@ const Pricing: React.FC = () => {
         {Object.entries(plans).map(([key, plan]) => (
           <div key={key} className="relative">
             {plan.popular && (
-              <div className="absolute -top-2 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-[#71b8bc] text-white px-3 py-1 rounded-md text-xs font-medium flex items-center">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                <div className="bg-green-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center">
                   <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
                   MOST POPULAR
                 </div>
@@ -146,33 +143,38 @@ const Pricing: React.FC = () => {
             
             <div 
               onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')}
-              className={`relative border-2 rounded-lg p-6 cursor-pointer transition-all duration-200 ${
+              className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${
                 selectedPlan === key 
-                  ? 'border-[#71b8bc] bg-white shadow-md' 
+                  ? 'border-green-500 bg-white shadow-lg' 
                   : 'border-gray-200 hover:border-gray-300 bg-white'
               }`}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="mr-4">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
-                      selectedPlan === key 
-                        ? 'border-[#71b8bc] bg-[#71b8bc]' 
-                        : 'border-gray-300'
-                    }`}>
-                      {selectedPlan === key && (
-                        <div className="w-2 h-2 bg-white rounded-full"></div>
-                      )}
-                    </div>
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    <div className="text-2xl font-bold text-gray-900">€{plan.price}</div>
+              <div className="flex items-center">
+                {/* Radio button */}
+                <div className="mr-4">
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                    selectedPlan === key 
+                      ? 'border-green-500 bg-green-500' 
+                      : 'border-gray-300'
+                  }`}>
+                    {selectedPlan === key && (
+                      <div className="w-2 h-2 bg-white rounded-full"></div>
+                    )}
                   </div>
                 </div>
                 
-                <div className="bg-gray-100 text-gray-700 px-3 py-1 rounded text-sm font-medium">
-                  €{plan.dailyPrice.toFixed(2)} per day
+                {/* Plan content */}
+                <div className="flex-1">
+                  {/* Plan title */}
+                  <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
+                  
+                  {/* Small total price */}
+                  <div className="text-sm text-gray-600 mb-3">€{plan.price}</div>
+                  
+                  {/* Large daily price - PROTAGONIST */}
+                  <div className="text-3xl font-bold text-gray-900">
+                    €{plan.dailyPrice.toFixed(2)} <span className="text-base font-normal text-gray-600">per day</span>
+                  </div>
                 </div>
               </div>
             </div>
