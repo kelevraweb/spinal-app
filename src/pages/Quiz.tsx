@@ -497,7 +497,12 @@ const Quiz: React.FC = () => {
               : 'translate-x-0 opacity-100'
           }`}
         >
-          {/* Question */}
+          {/* Quiz di tre minuti header */}
+          <div className="text-center mb-4">
+            <p className="text-sm text-gray-600">Quiz di tre minuti</p>
+          </div>
+          
+          {/* Question title */}
           <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
             {state.currentQuestion?.question || 'Loading...'}
           </h2>
