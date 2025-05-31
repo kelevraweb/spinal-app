@@ -486,7 +486,7 @@ const Quiz: React.FC = () => {
         onBack={handleBack}
         canGoBack={state.currentStep > 0}
       />
-      <div className="quiz-container pt-16">
+      <div className="quiz-container pt-24">
         <div 
           className={`quiz-card transform transition-all duration-200 ${
             isAnimating 
