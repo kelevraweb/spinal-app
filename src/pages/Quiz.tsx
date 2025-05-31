@@ -310,7 +310,7 @@ const Quiz: React.FC = () => {
   return <div className="max-w-[480px] mx-auto px-4">
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
-        <div className={`quiz-card transform transition-all duration-200 ${isAnimating ? transitionDirection === 'next' ? 'translate-x-4 opacity-0' : '-translate-x-4 opacity-0' : 'translate-x-0 opacity-100'}`}>
+        <div className="">
           {/* Quiz di tre minuti header */}
           <div className="text-center mb-4">
             
