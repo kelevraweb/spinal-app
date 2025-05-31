@@ -1,3 +1,4 @@
+
 /* Global Styles */
 body {
   font-family: 'Arial', sans-serif;
@@ -107,11 +108,11 @@ header a:hover {
 
 .button_1 {
   height: 38px;
-  background: white;
-  border: 2px solid #ccc;
+  background: white !important;
+  border: 2px solid #ccc !important;
   padding-left: 20px;
   padding-right: 20px;
-  color: #333;
+  color: #333 !important;
 }
 
 /* Boxes Styles */
@@ -207,7 +208,7 @@ footer {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding: 1rem 0;
+  padding: 0.5rem 0;
   background: transparent;
 }
 
@@ -231,29 +232,29 @@ footer {
   }
 }
 
-/* Option button styling - white background */
+/* Option button styling - white background with !important */
 .option-btn {
   width: 100%;
   padding: 1rem;
-  border: 2px solid #e5e7eb;
+  border: 2px solid #e5e7eb !important;
   border-radius: 0.75rem;
-  background: white;
+  background: white !important;
   text-align: left;
   font-weight: 500;
-  color: #374151;
+  color: #374151 !important;
   transition: all 0.2s ease-in-out;
   cursor: pointer;
 }
 
 .option-btn:hover {
-  border-color: #9ca3af;
-  background-color: #f9fafb;
+  border-color: #9ca3af !important;
+  background-color: #f9fafb !important;
 }
 
 .option-btn.selected {
-  border-color: #9ca3af;
-  background-color: #f3f4f6;
-  color: #374151;
+  border-color: #9ca3af !important;
+  background-color: #f3f4f6 !important;
+  color: #374151 !important;
 }
 
 /* Icon circle styling */
@@ -301,9 +302,4 @@ footer {
   90% {
     transform: translateY(-3px);
   }
-}
-
-/* Dark theme for loading analysis */
-.bg-gray-900 {
-  background-color: #111827;
 }
