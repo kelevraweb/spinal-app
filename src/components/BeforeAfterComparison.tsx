@@ -84,7 +84,7 @@ const BeforeAfterComparison: React.FC = () => {
             {/* Badge */}
             <div className="flex justify-center mb-6">
               <div className="bg-gray-400 text-white px-4 py-2 rounded-full">
-                <span className="font-bold text-sm md:text-base">Now</span>
+                <span className="font-bold text-sm md:text-base">Ora</span>
               </div>
             </div>
             
@@ -100,23 +100,23 @@ const BeforeAfterComparison: React.FC = () => {
             {/* Progress Indicators */}
             <div className="space-y-4">
               <ProgressIndicator
-                title="Energy level"
-                value={25}
-                label="Low"
+                title="Dolore lombare"
+                value={80}
+                label="Alto"
                 color="#9CA3AF"
                 delay={300}
               />
               <ProgressIndicator
-                title="Well-being level"
-                value={20}
-                label="Weak"
+                title="Mobilità spinale"
+                value={25}
+                label="Limitata"
                 color="#9CA3AF"
                 delay={500}
               />
               <ProgressIndicator
-                title="Self-esteem level"
-                value={30}
-                label="Low"
+                title="Rigidità mattutina"
+                value={75}
+                label="Severa"
                 color="#9CA3AF"
                 delay={700}
               />
@@ -128,7 +128,7 @@ const BeforeAfterComparison: React.FC = () => {
             {/* Badge */}
             <div className="flex justify-center mb-6">
               <div className="bg-[#71b8bc] text-white px-4 py-2 rounded-full shadow-lg">
-                <span className="font-bold text-sm md:text-base">Your Goal</span>
+                <span className="font-bold text-sm md:text-base">Il Tuo Obiettivo</span>
               </div>
             </div>
             
@@ -144,23 +144,23 @@ const BeforeAfterComparison: React.FC = () => {
             {/* Progress Indicators */}
             <div className="space-y-4">
               <ProgressIndicator
-                title="Energy level"
-                value={90}
-                label="High"
+                title="Dolore lombare"
+                value={15}
+                label="Minimo"
                 color="#71b8bc"
                 delay={800}
               />
               <ProgressIndicator
-                title="Well-being level"
-                value={95}
-                label="Strong"
+                title="Mobilità spinale"
+                value={90}
+                label="Ottima"
                 color="#71b8bc"
                 delay={1000}
               />
               <ProgressIndicator
-                title="Self-esteem level"
-                value={88}
-                label="High"
+                title="Rigidità mattutina"
+                value={10}
+                label="Assente"
                 color="#71b8bc"
                 delay={1200}
               />
