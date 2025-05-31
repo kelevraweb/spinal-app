@@ -1,5 +1,5 @@
 
-/* Existing styles ... keep existing code */
+/* ... keep existing code (existing styles) */
 
 /* Quiz specific styles */
 .quiz-container {
@@ -11,16 +11,13 @@
 }
 
 .quiz-card {
-  background: white;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-  margin-bottom: 2rem;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 /* Question title styling - made smaller */
 .question-title {
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #374151;
   margin-bottom: 1rem;
@@ -29,7 +26,7 @@
 
 @media (min-width: 768px) {
   .question-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
   }
 }
 
