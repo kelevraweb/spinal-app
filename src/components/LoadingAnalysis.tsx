@@ -40,7 +40,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   ]);
   
   const [currentBarIndex, setCurrentBarIndex] = useState(0);
-  const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [isProgressing, setIsProgressing] = useState(true);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
 
   const testimonials = [
@@ -62,8 +63,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     }
   ];
 
+  // Rotate testimonials
   useEffect(() => {
-    // Rotate testimonials
     const testimonialInterval = setInterval(() => {
       setTestimonialIndex(prev => (prev + 1) % testimonials.length);
     }, 3000);
@@ -71,99 +72,69 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     return () => clearInterval(testimonialInterval);
   }, []);
 
-  // New useEffect to handle resuming progress after question is answered
+  // Main progress logic - single useEffect to handle everything
   useEffect(() => {
-    if (activeBarIndex === null && currentBarIndex < bars.length) {
-      // Question was just answered, resume progress for current bar
-      const currentBar = bars[currentBarIndex];
-      if (currentBar && currentBar.answered && currentBar.progress < 100) {
-        const interval = setInterval(() => {
-          setBars(prevBars => {
-            const newBars = [...prevBars];
-            const bar = newBars[currentBarIndex];
-            
-            if (bar.progress < 100) {
-              newBars[currentBarIndex] = {
-                ...bar,
-                progress: Math.min(bar.progress + 2, 100)
-              };
-            } else {
-              // Bar complete, move to next
-              clearInterval(interval);
-              setCurrentBarIndex(prev => prev + 1);
-            }
-            
-            return newBars;
-          });
-        }, 50);
-        
-        return () => clearInterval(interval);
-      }
-    }
-  }, [activeBarIndex, currentBarIndex, bars]);
-
-  useEffect(() => {
-    // Skip if we've completed all bars
+    // If all bars are complete, finish
     if (currentBarIndex >= bars.length) {
       setTimeout(onComplete, 1000);
       return;
     }
 
-    // Skip if there's an active question
-    if (activeBarIndex !== null) {
+    // If showing question, don't progress
+    if (showQuestion) {
       return;
     }
 
-    const currentBar = bars[currentBarIndex];
-    
-    // If bar is already answered and at 100%, move to next
-    if (currentBar.answered && currentBar.progress >= 100) {
-      setCurrentBarIndex(prev => prev + 1);
+    // If not progressing, don't start interval
+    if (!isProgressing) {
       return;
     }
 
     const interval = setInterval(() => {
       setBars(prevBars => {
         const newBars = [...prevBars];
-        const bar = newBars[currentBarIndex];
+        const currentBar = newBars[currentBarIndex];
         
-        // If we've reached 50% and haven't answered the question yet
-        if (bar.progress >= 50 && !bar.answered) {
-          setActiveBarIndex(currentBarIndex);
-          clearInterval(interval);
+        // If we've reached 50% and haven't shown the question yet
+        if (currentBar.progress >= 50 && !currentBar.answered && !showQuestion) {
+          setShowQuestion(true);
+          setIsProgressing(false);
           return newBars;
         }
         
-        // Continue bar progress
-        if (bar.progress < 100) {
-          newBars[currentBarIndex] = {
-            ...bar,
-            progress: Math.min(bar.progress + 2, 100)
-          };
-        } else {
-          // Bar is complete, move to next bar
-          clearInterval(interval);
+        // If bar is complete, move to next
+        if (currentBar.progress >= 100) {
           setCurrentBarIndex(prev => prev + 1);
+          return newBars;
         }
+        
+        // Continue progress
+        newBars[currentBarIndex] = {
+          ...currentBar,
+          progress: Math.min(currentBar.progress + 2, 100)
+        };
         
         return newBars;
       });
     }, 50);
     
     return () => clearInterval(interval);
-  }, [currentBarIndex, bars, activeBarIndex, onComplete]);
+  }, [currentBarIndex, showQuestion, isProgressing, bars.length, onComplete]);
   
-  const handleAnswer = (index: number, answer: boolean) => {
+  const handleAnswer = (answer: boolean) => {
+    // Mark current bar as answered
     setBars(prevBars => {
       const newBars = [...prevBars];
-      newBars[index] = {
-        ...newBars[index],
+      newBars[currentBarIndex] = {
+        ...newBars[currentBarIndex],
         answered: true
       };
       return newBars;
     });
     
-    setActiveBarIndex(null);
+    // Hide question and resume progress
+    setShowQuestion(false);
+    setIsProgressing(true);
   };
 
   return (
@@ -189,30 +160,32 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
                 style={{ width: `${bar.progress}%` }}
               />
             </div>
-            
-            {/* Question popup when bar reaches 50% - now centered */}
-            {activeBarIndex === index && (
-              <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
-                <h4 className="font-medium mb-3 text-gray-800">{bar.question}</h4>
-                <div className="flex gap-4">
-                  <button 
-                    onClick={() => handleAnswer(index, true)}
-                    className="flex-1 bg-[#71b8bc] text-white rounded-full px-4 py-2 text-sm"
-                  >
-                    Sì
-                  </button>
-                  <button 
-                    onClick={() => handleAnswer(index, false)}
-                    className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm"
-                  >
-                    No
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         ))}
       </div>
+      
+      {/* Question popup - shown when showQuestion is true */}
+      {showQuestion && currentBarIndex < bars.length && (
+        <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
+          <h4 className="font-medium mb-3 text-gray-800">
+            {bars[currentBarIndex].question}
+          </h4>
+          <div className="flex gap-4">
+            <button 
+              onClick={() => handleAnswer(true)}
+              className="flex-1 bg-[#71b8bc] text-white rounded-full px-4 py-2 text-sm"
+            >
+              Sì
+            </button>
+            <button 
+              onClick={() => handleAnswer(false)}
+              className="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm"
+            >
+              No
+            </button>
+          </div>
+        </div>
+      )}
       
       {/* Testimonials */}
       <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
