@@ -101,18 +101,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
             </Badge>
           </div>
 
-          {/* Gender-based Image */}
-          <div className="flex justify-center mb-6">
-            <div className="w-40 h-48">
-              <img 
-                src={getGenderImage()} 
-                alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
-                className="w-full h-full object-contain" 
-              />
-            </div>
-          </div>
-
-          {/* Level Bar */}
+          {/* Level Bar with Image attached */}
           <div className="relative mb-6">
             <div className="h-4 bg-gradient-to-r from-blue-400 via-yellow-400 to-red-400 rounded-full relative">
               <div 
@@ -120,6 +109,21 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
                 style={{ left: getLevelPosition(), transform: `translateX(-50%) translateY(-25%)` }}
               />
             </div>
+            
+            {/* Gender-based Image attached to the progress bar */}
+            <div 
+              className="absolute transform -translate-x-1/2"
+              style={{ left: getLevelPosition(), top: '-60px' }}
+            >
+              <div className="w-16 h-20">
+                <img 
+                  src={getGenderImage()} 
+                  alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
+                  className="w-full h-full object-contain" 
+                />
+              </div>
+            </div>
+
             <div className="flex justify-between text-xs text-gray-500 mt-2">
               <span>Low</span>
               <span>Medium</span>
