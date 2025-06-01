@@ -7,6 +7,7 @@ const BeforeAfterComparison: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [userName, setUserName] = useState('Marco');
   const [showArrows, setShowArrows] = useState(false);
+  const [userGender, setUserGender] = useState<'male' | 'female'>('female');
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -25,11 +26,44 @@ const BeforeAfterComparison: React.FC = () => {
       setUserName(name.charAt(0).toUpperCase() + name.slice(1));
     }
     
+    // Get user gender from quiz answers
+    const quizAnswers = localStorage.getItem('quizAnswers');
+    if (quizAnswers) {
+      try {
+        const answers = JSON.parse(quizAnswers);
+        const genderAnswer = answers.find((answer: any) => answer.questionId === 'gender');
+        if (genderAnswer && genderAnswer.answer === 'Maschio') {
+          setUserGender('male');
+        } else {
+          setUserGender('female');
+        }
+      } catch (error) {
+        console.log('Error parsing quiz answers:', error);
+      }
+    }
+    
     return () => {
       clearTimeout(visibilityTimer);
       clearTimeout(arrowTimer);
     };
   }, []);
+
+  // Define images based on gender
+  const getImages = () => {
+    if (userGender === 'male') {
+      return {
+        before: '/lovable-uploads/4e274e35-bef9-4027-a6d2-c81ebac7a977.png', // uomo con dolore
+        after: '/lovable-uploads/50cef083-f86e-4494-83b4-9bb6a7ebdab8.png'   // uomo felice
+      };
+    } else {
+      return {
+        before: '/lovable-uploads/0fcec0b5-c106-4caf-aacb-a211a4f1149d.png', // donna con dolore
+        after: '/lovable-uploads/c6beb892-948e-4825-ac8a-47fa21d45ae6.png'   // donna felice
+      };
+    }
+  };
+
+  const images = getImages();
 
   const ProgressIndicator = ({ 
     title, 
@@ -88,12 +122,12 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image */}
-            <div className="relative mb-6">
+            {/* Image - Made smaller */}
+            <div className="relative mb-6 flex justify-center">
               <img 
-                src="/lovable-uploads/c99bbbe1-5997-45bd-a1ff-752a4a9049f1.png" 
+                src={images.before}
                 alt="Situazione attuale - persona con stress e dolori" 
-                className="w-full h-auto object-cover"
+                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
               />
             </div>
             
@@ -132,12 +166,12 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image */}
-            <div className="relative mb-6">
+            {/* Image - Made smaller */}
+            <div className="relative mb-6 flex justify-center">
               <img 
-                src="/lovable-uploads/eb4eabe5-ba3d-4388-948c-d21e0211167f.png" 
+                src={images.after}
                 alt="Obiettivo - persona felice e in salute" 
-                className="w-full h-auto object-cover"
+                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
               />
             </div>
             
@@ -169,7 +203,7 @@ const BeforeAfterComparison: React.FC = () => {
         </div>
 
         {/* Animated Arrow Between Images */}
-        <div className="absolute top-32 md:top-40 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute top-16 md:top-20 left-1/2 transform -translate-x-1/2 z-10">
           <div className={`flex items-center space-x-1 transition-all duration-1000 ${showArrows ? 'opacity-100 scale-100' : 'opacity-0 scale-50'}`}>
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-[#71b8bc] animate-bounce" />
             <ChevronRight className="w-6 h-6 md:w-8 md:h-8 text-[#71b8bc] animate-bounce" style={{ animationDelay: '0.2s' }} />
