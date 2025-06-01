@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
@@ -48,14 +47,14 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // CORRECT image paths using the NEW uploaded images - THESE ARE THE RIGHT ONES!
+  // Updated image paths using the newly uploaded images
   const beforeImage = userGender === 'male' 
-    ? '/lovable-uploads/9a85d05c-58e2-4525-ba80-3f09a535780b.png' // uomo con dolore (PRIMA)
-    : '/lovable-uploads/2a43f080-c42b-4d16-bd8d-8397cf5b51a2.png'; // donna con dolore (PRIMA)
+    ? '/lovable-uploads/6d02ebab-8485-42e8-a014-48ca3653e864.png' // uomo con dolore (PRIMA)
+    : '/lovable-uploads/0e8bba9a-9925-4106-868d-c22c28a06a89.png'; // donna con dolore (PRIMA)
 
   const afterImage = userGender === 'male'
-    ? '/lovable-uploads/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo felice (DOPO)
-    : '/lovable-uploads/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna felice (DOPO)
+    ? '/lovable-uploads/bcd54b29-c739-451a-a1d3-be51ff2146b4.png' // uomo felice (DOPO)
+    : '/lovable-uploads/68299748-6c24-40c4-9030-c2c3e47bfa1c.png'; // donna felice (DOPO)
 
   const ProgressIndicator = ({ 
     title, 
@@ -114,7 +113,7 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - NOW WITH CORRECT PATHS! */}
+            {/* Image with updated paths */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={beforeImage}
@@ -160,7 +159,7 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - NOW WITH CORRECT PATHS! */}
+            {/* Image with updated paths */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={afterImage}
