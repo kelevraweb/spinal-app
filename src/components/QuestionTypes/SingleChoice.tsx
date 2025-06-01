@@ -194,7 +194,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     );
   }
 
-  // Default view for all other questions - USANDO SOLO TAILWIND CSS
+  // Default view for all other questions
   return (
     <div className="w-full max-w-full space-y-3 mt-6">
       {options.map((option, index) => {

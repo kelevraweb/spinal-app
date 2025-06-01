@@ -145,7 +145,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           type="button"
           onClick={onNextClick}
           disabled={!isNextEnabled}
-          className={`w-full py-3 rounded-lg flex items-center justify-center font-medium ${
+          className={`w-full max-w-full py-3 rounded-lg flex items-center justify-center font-medium ${
             isNextEnabled 
               ? 'bg-[#71b8bc] text-white' 
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
