@@ -1,5 +1,4 @@
-
-/* ... keep existing code (existing styles) */
+/* Existing styles */
 
 /* Quiz specific styles */
 .quiz-container {
@@ -28,31 +27,6 @@
   .question-title {
     font-size: 1.125rem;
   }
-}
-
-/* Option button styling - transparent background */
-.option-btn {
-  width: 100%;
-  padding: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  background: transparent;
-  text-align: left;
-  font-weight: 500;
-  color: #374151;
-  transition: all 0.2s ease-in-out;
-  cursor: pointer;
-}
-
-.option-btn:hover {
-  border-color: #9ca3af;
-  background-color: #f9fafb;
-}
-
-.option-btn.selected {
-  border-color: #71b8bc;
-  background-color: rgba(113, 184, 188, 0.1);
-  color: #374151;
 }
 
 /* Icon circle styling */
