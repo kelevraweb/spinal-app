@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
@@ -8,6 +7,7 @@ const BeforeAfterComparison: React.FC = () => {
   const [userName, setUserName] = useState('Marco');
   const [showArrows, setShowArrows] = useState(false);
   const [userGender, setUserGender] = useState<'male' | 'female'>('female');
+  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({});
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -37,6 +37,7 @@ const BeforeAfterComparison: React.FC = () => {
         } else {
           setUserGender('female');
         }
+        console.log('User gender detected:', genderAnswer?.answer, 'Set to:', userGender);
       } catch (error) {
         console.log('Error parsing quiz answers:', error);
       }
@@ -48,22 +49,31 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // Define images based on gender
+  // Define images based on gender with multiple fallbacks
   const getImages = () => {
     if (userGender === 'male') {
       return {
-        before: '/lovable-uploads/14b3b7bb-8eed-4dcb-9ed9-686b8e1d4fe1.png', // uomo con dolore
-        after: '/lovable-uploads/98078a63-2ffc-4565-80d4-717be56bda47.png'   // uomo felice
+        before: '/lovable-uploads/2f0d9073-87c5-4875-a918-f292d1ddbdd1.png', // Try different images
+        after: '/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png'
       };
     } else {
       return {
-        before: '/lovable-uploads/eddd57b4-6de4-4e84-8829-a52d23357ec1.png', // donna con dolore
-        after: '/lovable-uploads/bf61115f-7aad-4be4-9a96-4bdbb64a4968.png'   // donna felice
+        before: '/lovable-uploads/4c503bbb-0aea-4ecb-9636-84204fc62ad6.png', // Try different images
+        after: '/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png'
       };
     }
   };
 
   const images = getImages();
+
+  const handleImageError = (imageKey: string) => {
+    console.log(`Image failed to load: ${imageKey}`);
+    setImageErrors(prev => ({ ...prev, [imageKey]: true }));
+  };
+
+  const handleImageLoad = (imageKey: string) => {
+    console.log(`Image loaded successfully: ${imageKey}`);
+  };
 
   const ProgressIndicator = ({ 
     title, 
@@ -110,6 +120,11 @@ const BeforeAfterComparison: React.FC = () => {
         {userName}, il tuo piano personalizzato è pronto!
       </h2>
       
+      {/* Debug info */}
+      <div className="text-center mb-4 text-sm text-gray-500">
+        Gender: {userGender} | Before: {images.before} | After: {images.after}
+      </div>
+      
       {/* Main Before-After Layout */}
       <div className="relative">
         <div className="grid grid-cols-2 gap-4 md:gap-16">
@@ -124,11 +139,19 @@ const BeforeAfterComparison: React.FC = () => {
             
             {/* Image - Made smaller */}
             <div className="relative mb-6 flex justify-center">
-              <img 
-                src={images.before}
-                alt="Situazione attuale - persona con stress e dolori" 
-                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
-              />
+              {imageErrors['before'] ? (
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-sm">
+                  Immagine non disponibile
+                </div>
+              ) : (
+                <img 
+                  src={images.before}
+                  alt="Situazione attuale - persona con stress e dolori" 
+                  className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                  onError={() => handleImageError('before')}
+                  onLoad={() => handleImageLoad('before')}
+                />
+              )}
             </div>
             
             {/* Progress Indicators */}
@@ -168,11 +191,19 @@ const BeforeAfterComparison: React.FC = () => {
             
             {/* Image - Made smaller */}
             <div className="relative mb-6 flex justify-center">
-              <img 
-                src={images.after}
-                alt="Obiettivo - persona felice e in salute" 
-                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
-              />
+              {imageErrors['after'] ? (
+                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-sm">
+                  Immagine non disponibile
+                </div>
+              ) : (
+                <img 
+                  src={images.after}
+                  alt="Obiettivo - persona felice e in salute" 
+                  className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                  onError={() => handleImageError('after')}
+                  onLoad={() => handleImageLoad('after')}
+                />
+              )}
             </div>
             
             {/* Progress Indicators */}
