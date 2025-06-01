@@ -45,6 +45,36 @@ export type Database = {
         }
         Relationships: []
       }
+      quiz_responses: {
+        Row: {
+          answer: string
+          created_at: string
+          gender: string | null
+          id: string
+          question_id: string
+          updated_at: string
+          user_session_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string
+          gender?: string | null
+          id?: string
+          question_id: string
+          updated_at?: string
+          user_session_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string
+          gender?: string | null
+          id?: string
+          question_id?: string
+          updated_at?: string
+          user_session_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

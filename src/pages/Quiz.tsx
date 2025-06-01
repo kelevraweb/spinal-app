@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
 import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
 import TopNavBar from '../components/TopNavBar';
+import { saveQuizAnswer, loadQuizAnswers } from '../components/QuizDataManager';
 
 // Question type components
 import SingleChoice from '../components/QuestionTypes/SingleChoice';
@@ -22,6 +23,7 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
+
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -40,6 +42,21 @@ const Quiz: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
+
+  // Load existing answers on component mount
+  useEffect(() => {
+    const loadExistingAnswers = async () => {
+      const existingAnswers = await loadQuizAnswers();
+      if (existingAnswers.length > 0) {
+        setState(prevState => ({
+          ...prevState,
+          answers: existingAnswers
+        }));
+      }
+    };
+    
+    loadExistingAnswers();
+  }, []);
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -103,21 +120,30 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(true);
     }
   };
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!isNextEnabled || isAnimating) return;
+    
     const updatedAnswers = [...state.answers];
     const existingAnswerIndex = updatedAnswers.findIndex(answer => answer.questionId === state.currentQuestion?.id);
     const newAnswer: QuizAnswer = {
       questionId: state.currentQuestion?.id || '',
       answer: currentAnswer
     };
+    
     if (existingAnswerIndex >= 0) {
       updatedAnswers[existingAnswerIndex] = newAnswer;
     } else {
       updatedAnswers.push(newAnswer);
     }
+
+    // Save answer immediately
+    if (state.currentQuestion?.id) {
+      await saveQuizAnswer(state.currentQuestion.id, currentAnswer, updatedAnswers);
+    }
+
     setTransitionDirection('next');
     let showSpecialPage = undefined;
+    
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
@@ -133,6 +159,7 @@ const Quiz: React.FC = () => {
     if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
+    
     let nextStep = state.currentStep + 1;
     if (nextStep >= state.totalSteps) {
       setState({
@@ -143,12 +170,14 @@ const Quiz: React.FC = () => {
       });
       return;
     }
+    
     setIsAnimating(true);
     setState(prevState => ({
       ...prevState,
       answers: updatedAnswers,
       showSpecialPage
     }));
+    
     if (!showSpecialPage) {
       setTimeout(() => {
         setState(prevState => ({

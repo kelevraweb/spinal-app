@@ -1,0 +1,120 @@
+
+import { supabase } from '@/integrations/supabase/client';
+import { QuizAnswer } from '../types/quiz';
+
+// Generate a unique session ID for this quiz session
+const generateSessionId = () => {
+  return `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Get or create session ID
+const getSessionId = () => {
+  let sessionId = localStorage.getItem('quiz_session_id');
+  if (!sessionId) {
+    sessionId = generateSessionId();
+    localStorage.setItem('quiz_session_id', sessionId);
+  }
+  return sessionId;
+};
+
+export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
+  const sessionId = getSessionId();
+  
+  // Convert answer to string for storage
+  const answerString = Array.isArray(answer) ? answer.join(',') : String(answer);
+  
+  // Get gender from current answers
+  const genderAnswer = allAnswers.find(a => a.questionId === 'gender');
+  const gender = genderAnswer ? String(genderAnswer.answer) : null;
+  
+  // Save to localStorage
+  localStorage.setItem('quizAnswers', JSON.stringify(allAnswers));
+  if (gender) {
+    localStorage.setItem('userGender', gender);
+  }
+  
+  // Save to database
+  try {
+    const { error } = await supabase
+      .from('quiz_responses')
+      .upsert({
+        user_session_id: sessionId,
+        question_id: questionId,
+        answer: answerString,
+        gender: gender
+      }, {
+        onConflict: 'user_session_id,question_id'
+      });
+    
+    if (error) {
+      console.error('Error saving quiz response:', error);
+    }
+  } catch (error) {
+    console.error('Error saving to database:', error);
+  }
+};
+
+export const loadQuizAnswers = async (): Promise<QuizAnswer[]> => {
+  // First try localStorage
+  const localAnswers = localStorage.getItem('quizAnswers');
+  if (localAnswers) {
+    try {
+      return JSON.parse(localAnswers);
+    } catch (error) {
+      console.error('Error parsing local answers:', error);
+    }
+  }
+  
+  // Then try database
+  const sessionId = localStorage.getItem('quiz_session_id');
+  if (sessionId) {
+    try {
+      const { data, error } = await supabase
+        .from('quiz_responses')
+        .select('question_id, answer')
+        .eq('user_session_id', sessionId);
+      
+      if (error) {
+        console.error('Error loading from database:', error);
+        return [];
+      }
+      
+      if (data) {
+        return data.map(item => ({
+          questionId: item.question_id,
+          answer: item.answer.includes(',') ? item.answer.split(',') : item.answer
+        }));
+      }
+    } catch (error) {
+      console.error('Error loading from database:', error);
+    }
+  }
+  
+  return [];
+};
+
+export const getUserGender = (): string => {
+  // First check localStorage
+  const storedGender = localStorage.getItem('userGender');
+  if (storedGender) {
+    return storedGender;
+  }
+  
+  // Then check quiz answers
+  const localAnswers = localStorage.getItem('quizAnswers');
+  if (localAnswers) {
+    try {
+      const answers = JSON.parse(localAnswers);
+      const genderAnswer = answers.find((answer: QuizAnswer) => answer.questionId === 'gender');
+      if (genderAnswer) {
+        const gender = String(genderAnswer.answer);
+        localStorage.setItem('userGender', gender);
+        return gender;
+      }
+    } catch (error) {
+      console.error('Error parsing quiz answers:', error);
+    }
+  }
+  
+  return 'Femmina'; // Default fallback
+};

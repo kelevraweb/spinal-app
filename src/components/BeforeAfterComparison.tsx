@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
+import { getUserGender } from './QuizDataManager';
 
 const BeforeAfterComparison: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -25,20 +26,14 @@ const BeforeAfterComparison: React.FC = () => {
       setUserName(name.charAt(0).toUpperCase() + name.slice(1));
     }
     
-    // Get user gender from quiz answers
-    const quizAnswers = localStorage.getItem('quizAnswers');
-    if (quizAnswers) {
-      try {
-        const answers = JSON.parse(quizAnswers);
-        const genderAnswer = answers.find((answer: any) => answer.questionId === 'gender');
-        if (genderAnswer && genderAnswer.answer === 'Maschio') {
-          setUserGender('male');
-        } else {
-          setUserGender('female');
-        }
-      } catch (error) {
-        console.log('Error parsing quiz answers:', error);
-      }
+    // Get user gender using the new data manager
+    const gender = getUserGender();
+    console.log('Gender from getUserGender:', gender);
+    
+    if (gender === 'Maschio') {
+      setUserGender('male');
+    } else {
+      setUserGender('female');
     }
     
     return () => {
