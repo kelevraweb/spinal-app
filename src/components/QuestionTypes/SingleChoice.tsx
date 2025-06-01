@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSmile, faMeh, faFrown, faClock, faCalendarAlt, faStopwatch, faDumbbell, faHeartbeat, faTrophy, faStar, faWalking, faRunning, faPersonWalking, faUserNinja, faSpinner, faChartLine } from '@fortawesome/free-solid-svg-icons';
+import { faSmile, faMeh, faFrown, faClock, faCalendarAlt, faStopwatch, faDumbbell, faHeartbeat, faTrophy, faStar, faWalking, faRunning, faPersonWalking, faUserNinja, faSpinner, faChartLine, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 
 interface SingleChoiceProps {
   options: string[] | QuizOption[];
@@ -74,47 +73,71 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           </h2>
         )}
         
-        <div className="w-full max-w-full grid grid-cols-2 gap-4 mt-6">
+        <div className="w-full max-w-full grid grid-cols-2 gap-6 mt-8">
           <button 
             type="button" 
-            className={`w-full max-w-full flex flex-col items-center p-4 pt-8 pb-6 rounded-lg border-2 transition-all bg-white relative overflow-visible h-48 ${
-              value === 'Maschio' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-72 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+              value === 'Maschio' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
-            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-40 h-40">
+            {/* Image container that extends outside the card */}
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-48 h-48 z-10">
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
-                className="w-full h-full object-contain" 
+                className="w-full h-full object-contain drop-shadow-lg" 
               />
             </div>
-            <div className="mt-auto">
-              <span className="font-medium text-lg">Maschio</span>
+            
+            {/* Colored footer section */}
+            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-6 py-4 flex items-center justify-between transition-all duration-300 ${
+              value === 'Maschio' ? 'bg-[#71b8bc]' : 'bg-[#88c2aa] group-hover:bg-[#71b8bc]'
+            }`}>
+              <span className="font-semibold text-lg text-white">Maschio</span>
+              <FontAwesomeIcon 
+                icon={faChevronRight} 
+                className={`text-white transition-transform duration-300 ${
+                  value === 'Maschio' ? 'transform rotate-90' : 'group-hover:transform group-hover:translate-x-1'
+                }`}
+                size="lg" 
+              />
             </div>
           </button>
           
           <button 
             type="button" 
-            className={`w-full max-w-full flex flex-col items-center p-4 pt-8 pb-6 rounded-lg border-2 transition-all bg-white relative overflow-visible h-48 ${
-              value === 'Femmina' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-72 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+              value === 'Femmina' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
-            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-40 h-40">
+            {/* Image container that extends outside the card */}
+            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-48 h-48 z-10">
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
-                className="w-full h-full object-contain" 
+                className="w-full h-full object-contain drop-shadow-lg" 
               />
             </div>
-            <div className="mt-auto">
-              <span className="font-medium text-lg">Femmina</span>
+            
+            {/* Colored footer section */}
+            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-6 py-4 flex items-center justify-between transition-all duration-300 ${
+              value === 'Femmina' ? 'bg-[#71b8bc]' : 'bg-[#88c2aa] group-hover:bg-[#71b8bc]'
+            }`}>
+              <span className="font-semibold text-lg text-white">Femmina</span>
+              <FontAwesomeIcon 
+                icon={faChevronRight} 
+                className={`text-white transition-transform duration-300 ${
+                  value === 'Femmina' ? 'transform rotate-90' : 'group-hover:transform group-hover:translate-x-1'
+                }`}
+                size="lg" 
+              />
             </div>
           </button>
         </div>
         
-        <div className="text-center mt-6">
+        <div className="text-center mt-8">
           <p className="text-xs text-gray-500">
             Facendo clic su "Maschio" o "Femmina" accetti i Termini di utilizzo e servizio, l'Informativa sulla privacy, l'Informativa sugli abbonamenti e l'Informativa sui cookie
           </p>
