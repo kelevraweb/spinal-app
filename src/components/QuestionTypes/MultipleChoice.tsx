@@ -103,12 +103,18 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           <button
             key={index}
             type="button"
-            className={`w-full option-btn ${isSelected ? 'selected' : ''}`}
+            className={`w-full max-w-full bg-white border-2 hover:border-[#71b8bc] text-gray-800 font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 text-left hover:shadow-md flex items-center justify-between ${
+              isSelected 
+                ? 'bg-[#e5f6f7] border-[#71b8bc] text-gray-900 shadow-md' 
+                : 'border-gray-200'
+            }`}
             onClick={() => handleOptionClick(optionText)}
           >
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center">
-                <div className={`icon-circle ${isSelected ? 'bg-[#88c2aa]/30' : 'bg-gray-100'}`}>
+                <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-3 ${
+                  isSelected ? 'bg-[#88c2aa]/30' : 'bg-gray-100'
+                }`}>
                   <FontAwesomeIcon 
                     icon={iconOption} 
                     className={isSelected ? 'text-[#71b8bc]' : 'text-gray-500'}

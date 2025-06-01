@@ -74,10 +74,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           </h2>
         )}
         
-        <div className="w-full grid grid-cols-2 gap-4 mt-6">
+        <div className="w-full max-w-full grid grid-cols-2 gap-4 mt-6">
           <button 
             type="button" 
-            className={`w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full max-w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
               value === 'Maschio' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Maschio')}
@@ -94,7 +94,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           
           <button 
             type="button" 
-            className={`w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full max-w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
               value === 'Femmina' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Femmina')}
@@ -125,7 +125,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
       <div className="w-full max-w-full flex flex-col space-y-3 mt-6">
         <button 
           type="button" 
-          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Quasi nulla' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Quasi nulla')}
@@ -142,7 +142,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Solo camminate leggere' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Solo camminate leggere')}
@@ -159,7 +159,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Faccio sport o esercizi regolari')}
@@ -176,7 +176,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Alterno periodi attivi e sedentari')}
@@ -194,7 +194,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
     );
   }
 
-  // Default view for all other questions
+  // Default view for all other questions - USANDO SOLO TAILWIND CSS
   return (
     <div className="w-full max-w-full space-y-3 mt-6">
       {options.map((option, index) => {
@@ -206,11 +206,17 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             key={index} 
             type="button" 
-            className={`w-full option-btn bg-white ${value === optionText ? 'selected' : ''}`} 
+            className={`w-full max-w-full bg-white border-2 hover:border-[#71b8bc] text-gray-800 font-medium py-3 px-6 rounded-xl transition-all duration-200 mb-3 text-left hover:shadow-md flex items-center justify-between ${
+              value === optionText 
+                ? 'bg-[#e5f6f7] border-[#71b8bc] text-gray-900 shadow-md' 
+                : 'border-gray-200'
+            }`} 
             onClick={() => handleSelection(optionText)}
           >
             <div className="flex items-center w-full">
-              <div className={`icon-circle ${value === optionText ? 'bg-[#88c2aa]/30' : 'bg-gray-100'}`}>
+              <div className={`flex items-center justify-center w-10 h-10 rounded-full mr-3 ${
+                value === optionText ? 'bg-[#88c2aa]/30' : 'bg-gray-100'
+              }`}>
                 <FontAwesomeIcon 
                   icon={icon} 
                   className={value === optionText ? 'text-[#71b8bc]' : 'text-gray-500'} 
