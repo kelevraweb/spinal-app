@@ -48,17 +48,17 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // Define images based on gender using the correct uploaded images
+  // Define images based on gender using the correct newly uploaded images
   const getImages = () => {
     if (userGender === 'male') {
       return {
-        before: '/lovable-uploads/83fadbe2-1ede-468f-80e3-2e9742de5ec1.png', // uomo con dolore
-        after: '/lovable-uploads/85de19fa-cef4-474f-b384-39dd4e1847e5.png'   // uomo felice
+        before: '/lovable-uploads/71a00505-b4d5-4b20-acb5-601a93e78ee3.png', // uomo con dolore
+        after: '/lovable-uploads/4949156c-1b8b-41f2-8c9f-ddaa4c05f37c.png'   // uomo felice
       };
     } else {
       return {
-        before: '/lovable-uploads/bfa8ae3e-276a-40eb-aa48-d1cc9d3b8854.png', // donna con dolore
-        after: '/lovable-uploads/6d7d9ddc-5708-4ca0-a54b-6714c9d00d97.png'   // donna felice
+        before: '/lovable-uploads/9f5df4b7-1535-4038-bc71-c0c74053d24e.png', // donna con dolore
+        after: '/lovable-uploads/d0d212c9-ea45-48a6-b144-650d8d5cd5ab.png'   // donna felice
       };
     }
   };
@@ -118,11 +118,6 @@ const BeforeAfterComparison: React.FC = () => {
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 text-gray-800">
         {userName}, il tuo piano personalizzato è pronto!
       </h2>
-      
-      {/* Debug info */}
-      <div className="text-center mb-4 text-sm text-gray-500">
-        Gender: {userGender} | Before: {images.before} | After: {images.after}
-      </div>
       
       {/* Main Before-After Layout */}
       <div className="relative">
