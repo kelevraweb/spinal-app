@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Info, Heart, Brain, Zap, Bed } from 'lucide-react';
+
 interface WellbeingLevelIndicatorProps {
   level: 'Low' | 'Medium' | 'High';
   onContinue: () => void;
   gender?: string;
 }
+
 const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
   level,
   onContinue,
@@ -67,7 +69,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
     }
   };
   if (!showContent) {
-    return <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
+    return <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
         <div className="bg-white rounded-3xl p-8 shadow-lg">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 rounded mb-8"></div>
@@ -83,7 +85,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
         </div>
       </div>;
   }
-  return <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
+  return <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
       <div className="bg-white rounded-3xl p-8 shadow-lg animate-fade-in">
         {/* Header */}
         <div className="text-center mb-8">
@@ -185,4 +187,5 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
       </div>
     </div>;
 };
+
 export default WellbeingLevelIndicator;
