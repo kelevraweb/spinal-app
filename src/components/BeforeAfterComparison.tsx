@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
@@ -7,7 +8,6 @@ const BeforeAfterComparison: React.FC = () => {
   const [userName, setUserName] = useState('Marco');
   const [showArrows, setShowArrows] = useState(false);
   const [userGender, setUserGender] = useState<'male' | 'female'>('female');
-  const [imageErrors, setImageErrors] = useState<{[key: string]: boolean}>({});
   const isMobile = useIsMobile();
   
   useEffect(() => {
@@ -48,31 +48,14 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // Define images based on gender using the correct newly uploaded images
-  const getImages = () => {
-    if (userGender === 'male') {
-      return {
-        before: '/lovable-uploads/71a00505-b4d5-4b20-acb5-601a93e78ee3.png', // uomo con dolore
-        after: '/lovable-uploads/4949156c-1b8b-41f2-8c9f-ddaa4c05f37c.png'   // uomo felice
-      };
-    } else {
-      return {
-        before: '/lovable-uploads/9f5df4b7-1535-4038-bc71-c0c74053d24e.png', // donna con dolore
-        after: '/lovable-uploads/d0d212c9-ea45-48a6-b144-650d8d5cd5ab.png'   // donna felice
-      };
-    }
-  };
+  // Simple image paths based on gender - using the 4 new uploaded images
+  const beforeImage = userGender === 'male' 
+    ? '/lovable-uploads/9938adb2-3dd1-4fca-9ddc-fd41b723c5f5.png' // uomo con dolore
+    : '/lovable-uploads/839c4e82-3366-400d-81e7-b0be5836e02b.png'; // donna con dolore
 
-  const images = getImages();
-
-  const handleImageError = (imageKey: string) => {
-    console.log(`Image failed to load: ${imageKey}`);
-    setImageErrors(prev => ({ ...prev, [imageKey]: true }));
-  };
-
-  const handleImageLoad = (imageKey: string) => {
-    console.log(`Image loaded successfully: ${imageKey}`);
-  };
+  const afterImage = userGender === 'male'
+    ? '/lovable-uploads/5679b624-a511-41e8-a4b5-a321187ecea7.png' // uomo felice
+    : '/lovable-uploads/d4e29adc-e0c8-48e4-b183-f7da112d2066.png'; // donna felice
 
   const ProgressIndicator = ({ 
     title, 
@@ -131,21 +114,13 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - Made smaller */}
+            {/* Image - Simple and direct */}
             <div className="relative mb-6 flex justify-center">
-              {imageErrors['before'] ? (
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-sm">
-                  Immagine non disponibile
-                </div>
-              ) : (
-                <img 
-                  src={images.before}
-                  alt="Situazione attuale - persona con stress e dolori" 
-                  className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
-                  onError={() => handleImageError('before')}
-                  onLoad={() => handleImageLoad('before')}
-                />
-              )}
+              <img 
+                src={beforeImage}
+                alt="Situazione attuale - persona con stress e dolori" 
+                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+              />
             </div>
             
             {/* Progress Indicators */}
@@ -183,21 +158,13 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - Made smaller */}
+            {/* Image - Simple and direct */}
             <div className="relative mb-6 flex justify-center">
-              {imageErrors['after'] ? (
-                <div className="w-32 h-32 md:w-40 md:h-40 bg-gray-300 rounded-lg flex items-center justify-center text-gray-600 text-sm">
-                  Immagine non disponibile
-                </div>
-              ) : (
-                <img 
-                  src={images.after}
-                  alt="Obiettivo - persona felice e in salute" 
-                  className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
-                  onError={() => handleImageError('after')}
-                  onLoad={() => handleImageLoad('after')}
-                />
-              )}
+              <img 
+                src={afterImage}
+                alt="Obiettivo - persona felice e in salute" 
+                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+              />
             </div>
             
             {/* Progress Indicators */}
