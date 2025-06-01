@@ -1,48 +1,32 @@
 
 import React, { useState, useEffect } from 'react';
-import { Progress } from '@/components/ui/progress';
 
 interface LoadingAnalysisProps {
   onComplete: () => void;
 }
 
-interface BarData {
-  name: string;
-  progress: number;
-  color: string;
-  question?: string;
-  answered?: boolean;
-}
-
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
-  const [bars, setBars] = useState<BarData[]>([
+  // Simple state - no complex objects
+  const [currentBarIndex, setCurrentBarIndex] = useState(0);
+  const [currentProgress, setCurrentProgress] = useState(0);
+  const [showQuestion, setShowQuestion] = useState(false);
+  const [testimonialIndex, setTestimonialIndex] = useState(0);
+
+  // Static data - not in state to avoid dependency issues
+  const bars = [
     { 
       name: 'Analisi posturale', 
-      progress: 0, 
-      color: 'bg-[#71b8bc]', 
-      question: 'Ti senti spesso bloccato/a nei movimenti?',
-      answered: false
+      question: 'Ti senti spesso bloccato/a nei movimenti?'
     },
     { 
       name: 'Analisi mobilità', 
-      progress: 0, 
-      color: 'bg-[#71b8bc]',
-      question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?',
-      answered: false
+      question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?'
     },
     { 
       name: 'Analisi benessere fisico', 
-      progress: 0, 
-      color: 'bg-[#71b8bc]',
-      question: 'Ti senti spesso rigido/a quando ti svegli al mattino?',
-      answered: false
+      question: 'Ti senti spesso rigido/a quando ti svegli al mattino?'
     }
-  ]);
-  
-  const [currentBarIndex, setCurrentBarIndex] = useState(0);
-  const [showQuestion, setShowQuestion] = useState(false);
-  const [isProgressing, setIsProgressing] = useState(true);
-  const [testimonialIndex, setTestimonialIndex] = useState(0);
+  ];
 
   const testimonials = [
     {
@@ -63,7 +47,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     }
   ];
 
-  // Rotate testimonials
+  // Testimonial rotation
   useEffect(() => {
     const testimonialInterval = setInterval(() => {
       setTestimonialIndex(prev => (prev + 1) % testimonials.length);
@@ -72,7 +56,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     return () => clearInterval(testimonialInterval);
   }, []);
 
-  // Main progress logic - single useEffect to handle everything
+  // Main progress logic - single useEffect with simple dependencies
   useEffect(() => {
     // If all bars are complete, finish
     if (currentBarIndex >= bars.length) {
@@ -85,56 +69,34 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       return;
     }
 
-    // If not progressing, don't start interval
-    if (!isProgressing) {
-      return;
-    }
-
     const interval = setInterval(() => {
-      setBars(prevBars => {
-        const newBars = [...prevBars];
-        const currentBar = newBars[currentBarIndex];
+      setCurrentProgress(prevProgress => {
+        const newProgress = prevProgress + 2;
         
-        // If we've reached 50% and haven't shown the question yet
-        if (currentBar.progress >= 50 && !currentBar.answered && !showQuestion) {
+        // If we reach 50% and haven't shown question yet
+        if (newProgress >= 50 && newProgress < 52 && !showQuestion) {
           setShowQuestion(true);
-          setIsProgressing(false);
-          return newBars;
+          return 50; // Stop at 50%
         }
         
-        // If bar is complete, move to next
-        if (currentBar.progress >= 100) {
+        // If we reach 100%, move to next bar
+        if (newProgress >= 100) {
           setCurrentBarIndex(prev => prev + 1);
-          return newBars;
+          setCurrentProgress(0);
+          return 0;
         }
         
-        // Continue progress
-        newBars[currentBarIndex] = {
-          ...currentBar,
-          progress: Math.min(currentBar.progress + 2, 100)
-        };
-        
-        return newBars;
+        return newProgress;
       });
     }, 50);
     
     return () => clearInterval(interval);
-  }, [currentBarIndex, showQuestion, isProgressing, bars.length, onComplete]);
+  }, [currentBarIndex, showQuestion, onComplete]);
   
   const handleAnswer = (answer: boolean) => {
-    // Mark current bar as answered
-    setBars(prevBars => {
-      const newBars = [...prevBars];
-      newBars[currentBarIndex] = {
-        ...newBars[currentBarIndex],
-        answered: true
-      };
-      return newBars;
-    });
-    
-    // Hide question and resume progress
+    console.log('Answer:', answer);
     setShowQuestion(false);
-    setIsProgressing(true);
+    // Progress will resume automatically
   };
 
   return (
@@ -147,24 +109,35 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       </h2>
       
       <div className="space-y-8 mt-10">
-        {bars.map((bar, index) => (
-          <div key={index} className="relative">
-            <div className="flex justify-between items-center mb-2">
-              <div className="font-medium text-gray-800">{bar.name}</div>
-              <div className="text-sm text-gray-600">{Math.round(bar.progress)}%</div>
+        {bars.map((bar, index) => {
+          let progress = 0;
+          
+          if (index < currentBarIndex) {
+            progress = 100; // Completed bars
+          } else if (index === currentBarIndex) {
+            progress = currentProgress; // Current bar
+          }
+          // Future bars stay at 0
+          
+          return (
+            <div key={index} className="relative">
+              <div className="flex justify-between items-center mb-2">
+                <div className="font-medium text-gray-800">{bar.name}</div>
+                <div className="text-sm text-gray-600">{Math.round(progress)}%</div>
+              </div>
+              
+              <div className="w-full bg-gray-200 rounded-full h-3">
+                <div 
+                  className="bg-[#71b8bc] h-3 rounded-full transition-all duration-300 ease-out"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
             </div>
-            
-            <div className="w-full bg-gray-200 rounded-full h-3">
-              <div 
-                className="bg-[#71b8bc] h-3 rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${bar.progress}%` }}
-              />
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       
-      {/* Question popup - shown when showQuestion is true */}
+      {/* Question popup */}
       {showQuestion && currentBarIndex < bars.length && (
         <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
           <h4 className="font-medium mb-3 text-gray-800">
