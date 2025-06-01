@@ -11,6 +11,7 @@ interface SingleChoiceProps {
   useImages?: boolean;
   questionId?: string;
   autoAdvance?: boolean;
+  question?: string;
 }
 
 const SingleChoice: React.FC<SingleChoiceProps> = ({
@@ -19,7 +20,8 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   onChange,
   useImages = false,
   questionId,
-  autoAdvance = true // Enable auto-advance by default
+  autoAdvance = true,
+  question
 }) => {
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
@@ -65,6 +67,12 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             QUIZ DI 3 MINUTI
           </h3>
         </div>
+
+        {question && (
+          <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight text-center">
+            {question}
+          </h2>
+        )}
         
         <div className="grid grid-cols-2 gap-4 mt-6">
           <button 
