@@ -75,7 +75,10 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
         </div>
         
         <div className="mt-6">
-          <button type="submit" className="btn-primary w-full">
+          <button 
+            type="submit" 
+            className="w-full bg-[#71b8bc] hover:bg-[#619da0] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg"
+          >
             Continua
           </button>
         </div>
