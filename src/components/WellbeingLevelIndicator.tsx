@@ -2,13 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Info, Heart, Brain, Zap, Bed } from 'lucide-react';
-
 interface WellbeingLevelIndicatorProps {
   level: 'Low' | 'Medium' | 'High';
   onContinue: () => void;
   gender?: string;
 }
-
 const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
   level,
   onContinue,
@@ -69,7 +67,9 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
     }
   };
   if (!showContent) {
-    return <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
+    return <div className="mx-auto my-12 px-4 pt-16" style={{
+      maxWidth: '580px'
+    }}>
         <div className="bg-white rounded-3xl p-8 shadow-lg">
           <div className="animate-pulse">
             <div className="h-6 bg-gray-200 rounded mb-8"></div>
@@ -85,7 +85,9 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
         </div>
       </div>;
   }
-  return <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
+  return <div className="mx-auto my-12 px-4 pt-16" style={{
+    maxWidth: '580px'
+  }}>
       <div className="bg-white rounded-3xl p-8 shadow-lg animate-fade-in">
         {/* Header */}
         <div className="text-center mb-8">
@@ -106,7 +108,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
           </div>
 
           {/* Gender-based Image */}
-          <div className="flex justify-center mb-6 my-0">
+          <div className="flex justify-center mb-6 py-0 my-0">
             <div className="w-40 h-48">
               <img src={getGenderImage()} alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} className="w-full h-full object-contain" />
             </div>
@@ -187,5 +189,4 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
       </div>
     </div>;
 };
-
 export default WellbeingLevelIndicator;
