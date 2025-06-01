@@ -300,15 +300,7 @@ const Quiz: React.FC = () => {
     if (!state.currentQuestion) return null;
     switch (state.currentQuestion.type) {
       case 'single':
-        return <SingleChoice 
-          options={state.currentQuestion.options || []} 
-          value={currentAnswer as string} 
-          onChange={handleAnswerChange} 
-          useImages={state.currentQuestion.id === 'gender'} 
-          questionId={state.currentQuestion.id} 
-          autoAdvance={true}
-          question={state.currentQuestion.question}
-        />;
+        return <SingleChoice options={state.currentQuestion.options || []} value={currentAnswer as string} onChange={handleAnswerChange} useImages={state.currentQuestion.id === 'gender'} questionId={state.currentQuestion.id} autoAdvance={true} question={state.currentQuestion.question} />;
       case 'multiple':
         return <MultipleChoice options={state.currentQuestion.options || []} value={currentAnswer as string[]} onChange={handleAnswerChange} maxSelections={state.currentQuestion.maxSelections} onNextClick={handleNext} />;
       case 'text':
@@ -321,7 +313,7 @@ const Quiz: React.FC = () => {
         return <p>Tipo di domanda non supportato</p>;
     }
   };
-  return <div className="max-w-[480px] mx-auto px-4">
+  return <div className="max-w-[580px] mx-auto px-4">
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
         <div className="">
@@ -331,11 +323,9 @@ const Quiz: React.FC = () => {
           </div>
           
           {/* Question title - only show for non-gender questions */}
-          {state.currentQuestion?.id !== 'gender' && (
-            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
+          {state.currentQuestion?.id !== 'gender' && <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-4 leading-tight">
               {state.currentQuestion?.question || 'Loading...'}
-            </h2>
-          )}
+            </h2>}
           
           {/* Question content based on type */}
           {renderQuestionContent()}
@@ -350,5 +340,4 @@ const Quiz: React.FC = () => {
       </div>
     </div>;
 };
-
 export default Quiz;
