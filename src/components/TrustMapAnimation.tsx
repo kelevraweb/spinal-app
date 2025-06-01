@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { ChevronRight } from 'lucide-react';
@@ -171,7 +172,8 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
           <Button 
             onClick={handleContinueClick}
             size="lg" 
-            className="bg-blue-500 hover:bg-blue-600 text-white"
+            style={{ backgroundColor: '#70b8bc' }}
+            className="hover:opacity-90 text-white"
           >
             Continua <ChevronRight className="ml-2" size={18} />
           </Button>
@@ -240,7 +242,8 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
         <Button 
           onClick={handleContinueClick}
           size="lg" 
-          className="bg-blue-500 hover:bg-blue-600 text-white"
+          style={{ backgroundColor: '#70b8bc' }}
+          className="hover:opacity-90 text-white"
         >
           Continua <ChevronRight className="ml-2" size={18} />
         </Button>
