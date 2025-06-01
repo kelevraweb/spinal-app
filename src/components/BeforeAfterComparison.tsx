@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
@@ -47,14 +48,14 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // CORRECT image paths based on gender - using the 4 ACTUAL uploaded images
+  // CORRECT image paths using the NEW uploaded images - THESE ARE THE RIGHT ONES!
   const beforeImage = userGender === 'male' 
-    ? '/lovable-uploads/71a00505-b4d5-4b20-acb5-601a93e78ee3.png' // uomo con dolore
-    : '/lovable-uploads/9f5df4b7-1535-4038-bc71-c0c74053d24e.png'; // donna con dolore
+    ? '/lovable-uploads/9a85d05c-58e2-4525-ba80-3f09a535780b.png' // uomo con dolore (PRIMA)
+    : '/lovable-uploads/2a43f080-c42b-4d16-bd8d-8397cf5b51a2.png'; // donna con dolore (PRIMA)
 
   const afterImage = userGender === 'male'
-    ? '/lovable-uploads/4949156c-1b8b-41f2-8c9f-ddaa4c05f37c.png' // uomo felice
-    : '/lovable-uploads/d0d212c9-ea45-48a6-b144-650d8d5cd5ab.png'; // donna felice
+    ? '/lovable-uploads/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo felice (DOPO)
+    : '/lovable-uploads/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna felice (DOPO)
 
   const ProgressIndicator = ({ 
     title, 
@@ -113,12 +114,14 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - Simple and direct with CORRECT path */}
+            {/* Image - NOW WITH CORRECT PATHS! */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={beforeImage}
                 alt="Situazione attuale - persona con stress e dolori" 
                 className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                onError={(e) => console.log('Error loading before image:', beforeImage)}
+                onLoad={() => console.log('Successfully loaded before image:', beforeImage)}
               />
             </div>
             
@@ -157,12 +160,14 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image - Simple and direct with CORRECT path */}
+            {/* Image - NOW WITH CORRECT PATHS! */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={afterImage}
                 alt="Obiettivo - persona felice e in salute" 
                 className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                onError={(e) => console.log('Error loading after image:', afterImage)}
+                onLoad={() => console.log('Successfully loaded after image:', afterImage)}
               />
             </div>
             
