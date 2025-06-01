@@ -43,22 +43,29 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
       </h2>
       
       <form onSubmit={handleSubmit} className="mt-8">
-        <div className="email-container">
-          <input
-            type="email"
-            className={`email-input ${!isValid ? 'email-error' : ''}`}
-            placeholder="Email"
-            value={email}
-            onChange={handleEmailChange}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-          />
-          <button type="submit" className="email-button">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
+        <div className="relative mb-4">
+          <div className="flex border-2 rounded-lg overflow-hidden focus-within:border-[#71b8bc] transition-colors">
+            <input
+              type="email"
+              className={`flex-1 px-4 py-3 text-lg outline-none ${
+                !isValid ? 'border-red-500' : ''
+              }`}
+              placeholder="Email"
+              value={email}
+              onChange={handleEmailChange}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
+            />
+            <button 
+              type="submit" 
+              className="bg-[#71b8bc] hover:bg-[#619da0] text-white px-6 py-3 transition-colors duration-300"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+            </button>
+          </div>
           {!isValid && (
             <p className="text-red-500 text-sm mt-1">Inserisci un indirizzo email valido</p>
           )}

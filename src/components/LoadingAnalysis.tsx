@@ -19,21 +19,21 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     { 
       name: 'Analisi posturale', 
       progress: 0, 
-      color: 'bg-white', 
+      color: 'bg-[#71b8bc]', 
       question: 'Ti senti spesso bloccato/a nei movimenti?',
       answered: false
     },
     { 
       name: 'Analisi mobilità', 
       progress: 0, 
-      color: 'bg-white',
+      color: 'bg-[#71b8bc]',
       question: 'Ti capita spesso di evitare alcuni movimenti per paura del dolore?',
       answered: false
     },
     { 
       name: 'Analisi benessere fisico', 
       progress: 0, 
-      color: 'bg-white',
+      color: 'bg-[#71b8bc]',
       question: 'Ti senti spesso rigido/a quando ti svegli al mattino?',
       answered: false
     }
@@ -42,7 +42,6 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   const [currentBarIndex, setCurrentBarIndex] = useState(0);
   const [activeBarIndex, setActiveBarIndex] = useState<number | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
-  const [animationPaused, setAnimationPaused] = useState(false);
 
   const testimonials = [
     {
@@ -73,35 +72,34 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
   }, []);
 
   useEffect(() => {
-    if (animationPaused) return;
+    // Skip if we've completed all bars
+    if (currentBarIndex >= bars.length) {
+      setTimeout(onComplete, 1000);
+      return;
+    }
 
     const interval = setInterval(() => {
       setBars(prevBars => {
         const newBars = [...prevBars];
+        const currentBar = newBars[currentBarIndex];
         
         // If we've reached 50% and haven't answered the question yet
-        if (newBars[currentBarIndex].progress >= 50 && !newBars[currentBarIndex].answered && !animationPaused) {
-          setAnimationPaused(true);
+        if (currentBar.progress >= 50 && !currentBar.answered) {
           setActiveBarIndex(currentBarIndex);
           clearInterval(interval);
           return newBars;
         }
         
-        // Continue bar progress
-        if (newBars[currentBarIndex].progress < 100) {
+        // Continue bar progress if question is answered or not reached 50%
+        if (currentBar.progress < 100) {
           newBars[currentBarIndex] = {
-            ...newBars[currentBarIndex],
-            progress: Math.min(newBars[currentBarIndex].progress + 2, 100)
+            ...currentBar,
+            progress: Math.min(currentBar.progress + 2, 100)
           };
         } else {
           // Bar is complete, move to next bar
           clearInterval(interval);
-          if (currentBarIndex < bars.length - 1) {
-            setCurrentBarIndex(prev => prev + 1);
-          } else {
-            // All bars complete
-            setTimeout(onComplete, 1000);
-          }
+          setCurrentBarIndex(prev => prev + 1);
         }
         
         return newBars;
@@ -109,7 +107,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     }, 50);
     
     return () => clearInterval(interval);
-  }, [currentBarIndex, animationPaused, onComplete, bars.length]);
+  }, [currentBarIndex, bars, onComplete]);
   
   const handleAnswer = (index: number, answer: boolean) => {
     setBars(prevBars => {
@@ -122,12 +120,11 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     });
     
     setActiveBarIndex(null);
-    setAnimationPaused(false);
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
-      <h2 className="text-2xl font-bold text-center mb-3 text-white">
+    <div className="max-w-2xl mx-auto my-12 px-4 pt-16 bg-white min-h-screen">
+      <h2 className="text-2xl font-bold text-center mb-3 text-gray-800">
         Creazione del tuo
       </h2>
       <h2 className="text-2xl font-bold text-center text-[#71b8bc] mb-6">
@@ -138,13 +135,13 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
         {bars.map((bar, index) => (
           <div key={index} className="relative">
             <div className="flex justify-between items-center mb-2">
-              <div className="font-medium text-white">{bar.name}</div>
-              <div className="text-sm text-gray-300">{Math.round(bar.progress)}%</div>
+              <div className="font-medium text-gray-800">{bar.name}</div>
+              <div className="text-sm text-gray-600">{Math.round(bar.progress)}%</div>
             </div>
             
-            <div className="w-full bg-gray-700 rounded-full h-3">
+            <div className="w-full bg-gray-200 rounded-full h-3">
               <div 
-                className="bg-white h-3 rounded-full transition-all duration-300 ease-out"
+                className="bg-[#71b8bc] h-3 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${bar.progress}%` }}
               />
             </div>
@@ -152,7 +149,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
             {/* Question popup when bar reaches 50% - now centered */}
             {activeBarIndex === index && (
               <div className="fixed inset-x-0 top-1/2 transform -translate-y-1/2 mx-auto bg-white rounded-lg shadow-xl p-6 border border-gray-200 w-[85%] max-w-sm z-20 animate-fade-in">
-                <h4 className="font-medium mb-3">{bar.question}</h4>
+                <h4 className="font-medium mb-3 text-gray-800">{bar.question}</h4>
                 <div className="flex gap-4">
                   <button 
                     onClick={() => handleAnswer(index, true)}
@@ -175,8 +172,8 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       
       {/* Testimonials */}
       <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
-        <p className="italic mb-2">"{testimonials[testimonialIndex].text}"</p>
-        <p className="text-right font-semibold">— {testimonials[testimonialIndex].name}</p>
+        <p className="italic mb-2 text-gray-700">"{testimonials[testimonialIndex].text}"</p>
+        <p className="text-right font-semibold text-gray-800">— {testimonials[testimonialIndex].name}</p>
       </div>
     </div>
   );
