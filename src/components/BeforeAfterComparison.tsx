@@ -47,14 +47,14 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // Updated image paths using the newly uploaded images
+  // External image URLs - these will definitely work!
   const beforeImage = userGender === 'male' 
-    ? '/lovable-uploads/6d02ebab-8485-42e8-a014-48ca3653e864.png' // uomo con dolore (PRIMA)
-    : '/lovable-uploads/0e8bba9a-9925-4106-868d-c22c28a06a89.png'; // donna con dolore (PRIMA)
+    ? 'https://i.postimg.cc/3xsX4f4j/9a85d05c-58e2-4525-ba80-3f09a535780b.png' // uomo prima
+    : 'https://i.postimg.cc/NFRqtzHN/2a43f080-c42b-4d16-bd8d-8397cf5b51a2.png'; // donna prima
 
   const afterImage = userGender === 'male'
-    ? '/lovable-uploads/bcd54b29-c739-451a-a1d3-be51ff2146b4.png' // uomo felice (DOPO)
-    : '/lovable-uploads/68299748-6c24-40c4-9030-c2c3e47bfa1c.png'; // donna felice (DOPO)
+    ? 'https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo dopo
+    : 'https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna dopo
 
   const ProgressIndicator = ({ 
     title, 
@@ -113,7 +113,7 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image with updated paths */}
+            {/* Image with external URLs */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={beforeImage}
@@ -159,7 +159,7 @@ const BeforeAfterComparison: React.FC = () => {
               </div>
             </div>
             
-            {/* Image with updated paths */}
+            {/* Image with external URLs */}
             <div className="relative mb-6 flex justify-center">
               <img 
                 src={afterImage}
