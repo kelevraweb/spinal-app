@@ -52,13 +52,13 @@ const BeforeAfterComparison: React.FC = () => {
   const getImages = () => {
     if (userGender === 'male') {
       return {
-        before: '/lovable-uploads/4e274e35-bef9-4027-a6d2-c81ebac7a977.png', // uomo con dolore
-        after: '/lovable-uploads/50cef083-f86e-4494-83b4-9bb6a7ebdab8.png'   // uomo felice
+        before: '/lovable-uploads/14b3b7bb-8eed-4dcb-9ed9-686b8e1d4fe1.png', // uomo con dolore
+        after: '/lovable-uploads/98078a63-2ffc-4565-80d4-717be56bda47.png'   // uomo felice
       };
     } else {
       return {
-        before: '/lovable-uploads/0fcec0b5-c106-4caf-aacb-a211a4f1149d.png', // donna con dolore
-        after: '/lovable-uploads/c6beb892-948e-4825-ac8a-47fa21d45ae6.png'   // donna felice
+        before: '/lovable-uploads/eddd57b4-6de4-4e84-8829-a52d23357ec1.png', // donna con dolore
+        after: '/lovable-uploads/bf61115f-7aad-4be4-9a96-4bdbb64a4968.png'   // donna felice
       };
     }
   };
