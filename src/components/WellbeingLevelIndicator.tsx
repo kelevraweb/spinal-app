@@ -2,14 +2,15 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Info, AlertTriangle, Heart, Brain, Zap } from 'lucide-react';
+import { Info, Heart, Brain, Zap, Bed } from 'lucide-react';
 
 interface WellbeingLevelIndicatorProps {
   level: 'Low' | 'Medium' | 'High';
   onContinue: () => void;
+  gender?: string;
 }
 
-const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level, onContinue }) => {
+const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level, onContinue, gender }) => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
@@ -48,6 +49,14 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
       case 'Low': return '20%';
       case 'Medium': return '50%';
       case 'High': return '80%';
+    }
+  };
+
+  const getGenderImage = () => {
+    if (gender === 'Maschio') {
+      return '/lovable-uploads/e7153d0f-abb0-43b0-bdbc-491e1cacbfb2.png';
+    } else {
+      return '/lovable-uploads/2f0d9073-87c5-4875-a918-f292d1ddbdd1.png';
     }
   };
 
@@ -92,12 +101,14 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
             </Badge>
           </div>
 
-          {/* Woman Image Placeholder */}
+          {/* Gender-based Image */}
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 bg-gradient-to-br from-blue-100 to-pink-100 rounded-full flex items-center justify-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-200 to-pink-200 rounded-full flex items-center justify-center">
-                <AlertTriangle className="w-12 h-12 text-gray-600" />
-              </div>
+            <div className="w-32 h-32 rounded-full overflow-hidden">
+              <img 
+                src={getGenderImage()} 
+                alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
+                className="w-full h-full object-cover" 
+              />
             </div>
           </div>
 
@@ -161,7 +172,7 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
 
           <div className="bg-gray-50 p-4 rounded-xl">
             <div className="flex items-center justify-center w-12 h-12 bg-green-100 rounded-full mb-3 mx-auto">
-              <Heart className="w-6 h-6 text-green-500" />
+              <Bed className="w-6 h-6 text-green-500" />
             </div>
             <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Sleep Quality</h3>
             <p className="text-xs text-gray-600 text-center">Rest & recovery</p>

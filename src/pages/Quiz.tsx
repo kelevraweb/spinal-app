@@ -46,6 +46,12 @@ const Quiz: React.FC = () => {
     return typeof option === 'string' ? option : option.text;
   };
 
+  // Helper function to get the gender from answers
+  const getSelectedGender = () => {
+    const genderAnswer = state.answers.find(answer => answer.questionId === 'gender');
+    return genderAnswer ? genderAnswer.answer as string : 'Femmina'; // Default to female
+  };
+
   // Handle automatic transitions between special pages
   useEffect(() => {
     let timer: NodeJS.Timeout | undefined;
@@ -259,7 +265,7 @@ const Quiz: React.FC = () => {
       case 'wellbeingLevel':
         return <div className="max-w-[480px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
-            <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} />
+            <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
         return <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
