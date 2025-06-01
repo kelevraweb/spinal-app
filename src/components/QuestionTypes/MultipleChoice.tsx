@@ -86,7 +86,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
   };
 
   return (
-    <div className="space-y-3 mt-6">
+    <div className="w-full max-w-full space-y-3 mt-6">
       {maxSelections && (
         <p className="text-sm text-gray-500 mb-2">
           Seleziona fino a {maxSelections} opzioni
@@ -103,7 +103,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
           <button
             key={index}
             type="button"
-            className={`option-btn ${isSelected ? 'selected' : ''}`}
+            className={`w-full option-btn ${isSelected ? 'selected' : ''}`}
             onClick={() => handleOptionClick(optionText)}
           >
             <div className="flex items-center justify-between w-full">
@@ -134,7 +134,7 @@ const MultipleChoice: React.FC<MultipleChoiceProps> = ({
       )}
       
       {/* Next button visible with multiple selection */}
-      <div className="mt-8">
+      <div className="w-full mt-8">
         <button
           type="button"
           onClick={onNextClick}

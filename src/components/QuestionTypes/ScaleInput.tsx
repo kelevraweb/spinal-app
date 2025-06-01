@@ -21,7 +21,7 @@ const ScaleInput: React.FC<ScaleInputProps> = ({
   const values = Array.from({ length: (max - min) / step + 1 }, (_, i) => min + i * step);
   
   return (
-    <div className="mt-8">
+    <div className="w-full max-w-full mt-8">
       <div className="flex justify-between items-center mb-2 text-sm text-gray-500">
         <span>Low: {min}</span>
         <span>High: {max}</span>
@@ -43,7 +43,7 @@ const ScaleInput: React.FC<ScaleInputProps> = ({
         </div>
       </div>
       
-      <div className="flex justify-between">
+      <div className="w-full flex justify-between">
         {values.map((val) => (
           <button
             key={val}

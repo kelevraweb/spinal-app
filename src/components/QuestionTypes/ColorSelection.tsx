@@ -38,12 +38,12 @@ const ColorSelection: React.FC<ColorSelectionProps> = ({
   };
 
   return (
-    <div className="mt-8">
+    <div className="w-full max-w-full mt-8">
       <p className="text-sm text-gray-600 mb-4">
         Seleziona da 1 a {maxSelections} colori che riflettono il tuo momento attuale
       </p>
       
-      <div className="grid grid-cols-4 gap-4">
+      <div className="w-full grid grid-cols-4 gap-4">
         {colors.map((color) => (
           <button
             key={color.value}

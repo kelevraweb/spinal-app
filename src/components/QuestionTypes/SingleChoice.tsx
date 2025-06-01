@@ -55,7 +55,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   // Show gender selection with titles and disclaimer
   if (useImages && questionId === 'gender') {
     return (
-      <div className="space-y-6">
+      <div className="w-full max-w-full space-y-6">
         <div className="text-center space-y-2 mb-8">
           <h1 className="text-xl md:text-2xl font-bold text-gray-800 uppercase">
             UN PIANO PERSONALIZZATO per il tuo mal di schiena
@@ -74,10 +74,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           </h2>
         )}
         
-        <div className="grid grid-cols-2 gap-4 mt-6">
+        <div className="w-full grid grid-cols-2 gap-4 mt-6">
           <button 
             type="button" 
-            className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
               value === 'Maschio' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Maschio')}
@@ -94,7 +94,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           
           <button 
             type="button" 
-            className={`flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
               value === 'Femmina' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Femmina')}
@@ -122,10 +122,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   // Show smaller image cards for daily_activity question
   if (questionId === 'daily_activity') {
     return (
-      <div className="flex flex-col space-y-3 mt-6">
+      <div className="w-full max-w-full flex flex-col space-y-3 mt-6">
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Quasi nulla' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Quasi nulla')}
@@ -142,7 +142,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Solo camminate leggere' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Solo camminate leggere')}
@@ -159,7 +159,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Faccio sport o esercizi regolari')}
@@ -176,7 +176,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <button 
           type="button" 
-          className={`flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+          className={`w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
             value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
           }`} 
           onClick={() => handleSelection('Alterno periodi attivi e sedentari')}
@@ -196,7 +196,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
 
   // Default view for all other questions
   return (
-    <div className="space-y-3 mt-6">
+    <div className="w-full max-w-full space-y-3 mt-6">
       {options.map((option, index) => {
         const optionText = typeof option === 'string' ? option : option.text;
         const optionIconName = typeof option === 'string' ? null : option.iconName;
@@ -206,7 +206,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           <button 
             key={index} 
             type="button" 
-            className={`option-btn bg-white ${value === optionText ? 'selected' : ''}`} 
+            className={`w-full option-btn bg-white ${value === optionText ? 'selected' : ''}`} 
             onClick={() => handleSelection(optionText)}
           >
             <div className="flex items-center w-full">

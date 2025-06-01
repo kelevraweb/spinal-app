@@ -26,7 +26,7 @@ const TextInput: React.FC<TextInputProps> = ({
   };
 
   return (
-    <div className="mt-6">
+    <div className="w-full max-w-full mt-6">
       <textarea
         value={value}
         onChange={handleChange}
