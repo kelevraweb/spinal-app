@@ -103,11 +103,11 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({ level
 
           {/* Gender-based Image */}
           <div className="flex justify-center mb-6">
-            <div className="w-32 h-32 rounded-full overflow-hidden">
+            <div className="w-40 h-48">
               <img 
                 src={getGenderImage()} 
                 alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-contain" 
               />
             </div>
           </div>
