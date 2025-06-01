@@ -117,7 +117,7 @@ const Pricing: React.FC = () => {
   };
 
   const PricingSection = ({ compact = false }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[480px] mx-auto px-4`}>
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
       {!compact && (
         <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
@@ -203,7 +203,7 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
-      <div className="max-w-[480px] mx-auto px-4">
+      <div className="max-w-[580px] mx-auto px-4">
         {/* Before-After Comparison Section */}
         <BeforeAfterComparison />
         
@@ -364,7 +364,7 @@ const Pricing: React.FC = () => {
             Le persone spesso chiedono:
           </h2>
           
-          <div className="max-w-[480px] mx-auto space-y-4">
+          <div className="max-w-[580px] mx-auto space-y-4">
             {faqItems.map((faq) => (
               <Collapsible key={faq.id} open={openFAQ === faq.id} onOpenChange={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
                 <CollapsibleTrigger className="w-full">
