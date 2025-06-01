@@ -37,7 +37,6 @@ const BeforeAfterComparison: React.FC = () => {
         } else {
           setUserGender('female');
         }
-        console.log('User gender detected:', genderAnswer?.answer, 'Set to:', userGender);
       } catch (error) {
         console.log('Error parsing quiz answers:', error);
       }
@@ -49,17 +48,17 @@ const BeforeAfterComparison: React.FC = () => {
     };
   }, []);
 
-  // Define images based on gender with multiple fallbacks
+  // Define images based on gender using the correct uploaded images
   const getImages = () => {
     if (userGender === 'male') {
       return {
-        before: '/lovable-uploads/2f0d9073-87c5-4875-a918-f292d1ddbdd1.png', // Try different images
-        after: '/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png'
+        before: '/lovable-uploads/83fadbe2-1ede-468f-80e3-2e9742de5ec1.png', // uomo con dolore
+        after: '/lovable-uploads/85de19fa-cef4-474f-b384-39dd4e1847e5.png'   // uomo felice
       };
     } else {
       return {
-        before: '/lovable-uploads/4c503bbb-0aea-4ecb-9636-84204fc62ad6.png', // Try different images
-        after: '/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png'
+        before: '/lovable-uploads/bfa8ae3e-276a-40eb-aa48-d1cc9d3b8854.png', // donna con dolore
+        after: '/lovable-uploads/6d7d9ddc-5708-4ca0-a54b-6714c9d00d97.png'   // donna felice
       };
     }
   };
