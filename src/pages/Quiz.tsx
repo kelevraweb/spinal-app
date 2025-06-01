@@ -22,7 +22,6 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -269,7 +268,7 @@ const Quiz: React.FC = () => {
             <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
-        return <div className="w-full px-4 bg-gray-900 min-h-screen">
+        return <div className="w-full px-4 min-h-screen bg-white">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
           </div>;
@@ -341,5 +340,4 @@ const Quiz: React.FC = () => {
       </div>
     </div>;
 };
-
 export default Quiz;
