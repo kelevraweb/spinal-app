@@ -1,37 +1,72 @@
-
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
   const navigate = useNavigate();
+  const [userGender, setUserGender] = useState<'male' | 'female'>('female');
+  
+  useEffect(() => {
+    // Get user gender from quiz answers
+    const quizAnswers = localStorage.getItem('quizAnswers');
+    if (quizAnswers) {
+      try {
+        const answers = JSON.parse(quizAnswers);
+        const genderAnswer = answers.find((answer: any) => answer.questionId === 'gender');
+        if (genderAnswer && genderAnswer.answer === 'Maschio') {
+          setUserGender('male');
+        } else {
+          setUserGender('female');
+        }
+      } catch (error) {
+        console.log('Error parsing quiz answers:', error);
+      }
+    }
+  }, []);
   
   const startQuiz = () => {
     navigate('/quiz');
   };
+
+  // Image URLs based on gender
+  const heroImage = userGender === 'male' 
+    ? 'https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo
+    : 'https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna
 
   return (
     <div className="min-h-screen flex flex-col">
       {/* Hero Section */}
       <div className="bg-gradient-to-b from-brand-light to-white py-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Scopri il tuo <span className="text-brand-primary">Piano Personalizzato</span> per il Benessere Emotivo
-            </h1>
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <div className="text-center md:text-left">
+              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                Scopri il tuo <span className="text-brand-primary">Piano Personalizzato</span> per il Benessere Emotivo
+              </h1>
+              
+              <p className="text-xl text-gray-700 mb-10">
+                Basato su decenni di ricerca scientifica e sviluppato da esperti, il nostro quiz ti aiuta a comprendere le tue relazioni e a migliorare il tuo benessere emotivo.
+              </p>
+              
+              <button
+                onClick={startQuiz}
+                className="btn-primary text-lg px-8 py-4"
+              >
+                Inizia il Quiz Gratuito
+              </button>
+              
+              <div className="mt-6 text-gray-500">
+                Richiede solo 5 minuti • Risultati personalizzati
+              </div>
+            </div>
             
-            <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-10">
-              Basato su decenni di ricerca scientifica e sviluppato da esperti, il nostro quiz ti aiuta a comprendere le tue relazioni e a migliorare il tuo benessere emotivo.
-            </p>
-            
-            <button
-              onClick={startQuiz}
-              className="btn-primary text-lg px-8 py-4"
-            >
-              Inizia il Quiz Gratuito
-            </button>
-            
-            <div className="mt-6 text-gray-500">
-              Richiede solo 5 minuti • Risultati personalizzati
+            <div className="flex justify-center">
+              <img 
+                src={heroImage}
+                alt="Persona felice e in salute" 
+                className="w-64 h-64 md:w-80 md:h-80 object-contain rounded-lg"
+                onError={(e) => console.log('Error loading hero image:', heroImage)}
+                onLoad={() => console.log('Successfully loaded hero image:', heroImage)}
+              />
             </div>
           </div>
         </div>
