@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -82,8 +81,8 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
-            {/* Image container that extends outside the card and touches the footer */}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-56 h-72 z-10">
+            {/* Image container positioned to touch the footer from bottom */}
+            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
@@ -113,8 +112,8 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
-            {/* Image container that extends outside the card and touches the footer */}
-            <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-56 h-72 z-10">
+            {/* Image container positioned to touch the footer from bottom */}
+            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
