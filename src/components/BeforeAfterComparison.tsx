@@ -118,7 +118,7 @@ const BeforeAfterComparison: React.FC = () => {
               <img 
                 src={beforeImage}
                 alt="Situazione attuale - persona con stress e dolori" 
-                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                className="w-32 h-32 md:w-40 md:h-40 object-contain rounded-lg"
                 onError={(e) => console.log('Error loading before image:', beforeImage)}
                 onLoad={() => console.log('Successfully loaded before image:', beforeImage)}
               />
@@ -164,7 +164,7 @@ const BeforeAfterComparison: React.FC = () => {
               <img 
                 src={afterImage}
                 alt="Obiettivo - persona felice e in salute" 
-                className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg"
+                className="w-32 h-32 md:w-40 md:h-40 object-contain rounded-lg"
                 onError={(e) => console.log('Error loading after image:', afterImage)}
                 onLoad={() => console.log('Successfully loaded after image:', afterImage)}
               />
