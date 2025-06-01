@@ -71,6 +71,37 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     return () => clearInterval(testimonialInterval);
   }, []);
 
+  // New useEffect to handle resuming progress after question is answered
+  useEffect(() => {
+    if (activeBarIndex === null && currentBarIndex < bars.length) {
+      // Question was just answered, resume progress for current bar
+      const currentBar = bars[currentBarIndex];
+      if (currentBar && currentBar.answered && currentBar.progress < 100) {
+        const interval = setInterval(() => {
+          setBars(prevBars => {
+            const newBars = [...prevBars];
+            const bar = newBars[currentBarIndex];
+            
+            if (bar.progress < 100) {
+              newBars[currentBarIndex] = {
+                ...bar,
+                progress: Math.min(bar.progress + 2, 100)
+              };
+            } else {
+              // Bar complete, move to next
+              clearInterval(interval);
+              setCurrentBarIndex(prev => prev + 1);
+            }
+            
+            return newBars;
+          });
+        }, 50);
+        
+        return () => clearInterval(interval);
+      }
+    }
+  }, [activeBarIndex, currentBarIndex, bars]);
+
   useEffect(() => {
     // Skip if we've completed all bars
     if (currentBarIndex >= bars.length) {
@@ -78,23 +109,36 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
       return;
     }
 
+    // Skip if there's an active question
+    if (activeBarIndex !== null) {
+      return;
+    }
+
+    const currentBar = bars[currentBarIndex];
+    
+    // If bar is already answered and at 100%, move to next
+    if (currentBar.answered && currentBar.progress >= 100) {
+      setCurrentBarIndex(prev => prev + 1);
+      return;
+    }
+
     const interval = setInterval(() => {
       setBars(prevBars => {
         const newBars = [...prevBars];
-        const currentBar = newBars[currentBarIndex];
+        const bar = newBars[currentBarIndex];
         
         // If we've reached 50% and haven't answered the question yet
-        if (currentBar.progress >= 50 && !currentBar.answered) {
+        if (bar.progress >= 50 && !bar.answered) {
           setActiveBarIndex(currentBarIndex);
           clearInterval(interval);
           return newBars;
         }
         
-        // Continue bar progress if question is answered or not reached 50%
-        if (currentBar.progress < 100) {
+        // Continue bar progress
+        if (bar.progress < 100) {
           newBars[currentBarIndex] = {
-            ...currentBar,
-            progress: Math.min(currentBar.progress + 2, 100)
+            ...bar,
+            progress: Math.min(bar.progress + 2, 100)
           };
         } else {
           // Bar is complete, move to next bar
@@ -107,7 +151,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({ onComplete }) => {
     }, 50);
     
     return () => clearInterval(interval);
-  }, [currentBarIndex, bars, onComplete]);
+  }, [currentBarIndex, bars, activeBarIndex, onComplete]);
   
   const handleAnswer = (index: number, answer: boolean) => {
     setBars(prevBars => {
