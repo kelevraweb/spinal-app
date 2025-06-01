@@ -84,7 +84,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           >
             <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
               <img 
-                src="/lovable-uploads/8416fbc2-1a9c-4811-b5e7-3f97afd4ef1a.png" 
+                src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
                 className="w-full h-full object-cover" 
               />
@@ -101,7 +101,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           >
             <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
               <img 
-                src="/lovable-uploads/eca5092d-dc6c-48c1-a4d7-849a52a9f1da.png" 
+                src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
                 className="w-full h-full object-cover" 
               />
