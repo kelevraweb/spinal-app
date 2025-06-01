@@ -22,6 +22,7 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
+
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -243,52 +244,52 @@ const Quiz: React.FC = () => {
   if (state.showSpecialPage) {
     switch (state.showSpecialPage) {
       case 'trustMap':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <TrustMapAnimation onContinue={handleSpecialPageComplete} />
           </div>;
       case 'universities':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <UniversityLogos />
           </div>;
       case 'expert':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ExpertReview />
           </div>;
       case 'worldCommunity':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <WorldCommunity onContinue={handleWorldCommunityComplete} />
           </div>;
       case 'wellbeingLevel':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
-        return <div className="max-w-[480px] mx-auto px-4 bg-gray-900 min-h-screen">
+        return <div className="w-full px-4 bg-gray-900 min-h-screen">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
           </div>;
       case 'progressChart':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ProgressChart onContinue={handleProgressChartComplete} />
           </div>;
       case 'emailCapture':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <EmailCapture onSubmit={handleEmailCapture} />
           </div>;
       case 'nameCapture':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <NameCapture onSubmit={handleNameCapture} />
           </div>;
       case 'sinusoidalGraph':
-        return <div className="max-w-[480px] mx-auto px-4">
+        return <div className="w-full px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
           </div>;
@@ -313,7 +314,7 @@ const Quiz: React.FC = () => {
         return <p>Tipo di domanda non supportato</p>;
     }
   };
-  return <div className="max-w-[580px] mx-auto px-4">
+  return <div className="w-full px-4">
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
         <div className="">
@@ -340,4 +341,5 @@ const Quiz: React.FC = () => {
       </div>
     </div>;
 };
+
 export default Quiz;
