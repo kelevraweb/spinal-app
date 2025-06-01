@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -76,17 +77,17 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <div className="w-full max-w-full grid grid-cols-2 gap-6 mt-8">
           <button 
             type="button" 
-            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-72 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
               value === 'Maschio' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
-            {/* Image container that extends outside the card */}
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-48 h-48 z-10">
+            {/* Image container that extends outside the card and touches the footer */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
-                className="w-full h-full object-contain drop-shadow-lg" 
+                className="w-full h-full object-contain object-bottom drop-shadow-lg" 
               />
             </div>
             
@@ -107,17 +108,17 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           
           <button 
             type="button" 
-            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-72 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
               value === 'Femmina' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
-            {/* Image container that extends outside the card */}
-            <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 w-48 h-48 z-10">
+            {/* Image container that extends outside the card and touches the footer */}
+            <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
-                className="w-full h-full object-contain drop-shadow-lg" 
+                className="w-full h-full object-contain object-bottom drop-shadow-lg" 
               />
             </div>
             
