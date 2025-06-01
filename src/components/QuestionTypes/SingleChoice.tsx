@@ -77,36 +77,40 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         <div className="w-full max-w-full grid grid-cols-2 gap-4 mt-6">
           <button 
             type="button" 
-            className={`w-full max-w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full max-w-full flex flex-col items-center p-4 pt-8 pb-6 rounded-lg border-2 transition-all bg-white relative overflow-visible h-48 ${
               value === 'Maschio' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
-            <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-40 h-40">
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-contain" 
               />
             </div>
-            <span className="font-medium text-lg">Maschio</span>
+            <div className="mt-auto">
+              <span className="font-medium text-lg">Maschio</span>
+            </div>
           </button>
           
           <button 
             type="button" 
-            className={`w-full max-w-full flex flex-col items-center p-4 rounded-lg border-2 transition-all bg-white ${
+            className={`w-full max-w-full flex flex-col items-center p-4 pt-8 pb-6 rounded-lg border-2 transition-all bg-white relative overflow-visible h-48 ${
               value === 'Femmina' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
-            <div className="w-32 h-32 rounded-full overflow-hidden mb-3">
+            <div className="absolute -top-6 left-1/2 transform -translate-x-1/2 w-40 h-40">
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
-                className="w-full h-full object-cover" 
+                className="w-full h-full object-contain" 
               />
             </div>
-            <span className="font-medium text-lg">Femmina</span>
+            <div className="mt-auto">
+              <span className="font-medium text-lg">Femmina</span>
+            </div>
           </button>
         </div>
         
