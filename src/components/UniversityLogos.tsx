@@ -3,7 +3,7 @@ import React from 'react';
 
 const UniversityLogos: React.FC = () => {
   return (
-    <div className="pt-24">
+    <div className="pt-24 pb-16">
       {/* Title positioned under TopNavBar */}
       <div className="text-center mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight">
@@ -18,21 +18,27 @@ const UniversityLogos: React.FC = () => {
       <div className="mb-12">
         <div className="grid grid-cols-1 gap-8 items-center justify-items-center">
           <div className="text-center">
-            <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
-              HARVARD<br />UNIVERSITY
-            </h2>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+                HARVARD<br />UNIVERSITY
+              </h2>
+            </div>
           </div>
           
           <div className="text-center">
-            <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
-              UNIVERSITY<br />OF OXFORD
-            </h2>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+                UNIVERSITY<br />OF OXFORD
+              </h2>
+            </div>
           </div>
           
           <div className="text-center">
-            <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
-              UNIVERSITY<br />OF CAMBRIDGE
-            </h2>
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+                UNIVERSITY<br />OF CAMBRIDGE
+              </h2>
+            </div>
           </div>
         </div>
       </div>
