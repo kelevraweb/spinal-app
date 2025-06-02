@@ -375,7 +375,7 @@ const Quiz: React.FC = () => {
             <NameCapture onSubmit={handleNameCapture} />
           </div>;
       case 'sinusoidalGraph':
-        return <div className="max-w-[580px] mx-auto px-4 bg-white">
+        return <div className="max-w-[580px] mx-auto px-4 bg-[#fbfaf8]">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
           </div>;
