@@ -53,7 +53,6 @@ const Quiz: React.FC = () => {
       setSessionChecked(true);
     }
   }, [sessionChecked]);
-
   const handleContinueSession = async () => {
     const existingAnswers = await loadQuizAnswers();
     if (existingAnswers.length > 0) {
@@ -66,7 +65,6 @@ const Quiz: React.FC = () => {
     setShowSessionModal(false);
     setSessionChecked(true);
   };
-
   const handleRestartSession = async () => {
     await clearQuizSession();
     setState(prevState => ({
@@ -297,7 +295,7 @@ const Quiz: React.FC = () => {
   const handleSinusoidalComplete = async () => {
     // Clear the quiz session when completed
     await clearQuizSession();
-    
+
     // Pass the name to pricing page via URL params and scroll to top
     const userName = state.userProfile.name || '';
     navigate(`/pricing-discounted?name=${encodeURIComponent(userName)}`);
@@ -309,22 +307,15 @@ const Quiz: React.FC = () => {
 
   // Show session modal if needed
   if (showSessionModal) {
-    return (
-      <div className="max-w-[580px] mx-auto px-4">
+    return <div className="max-w-[580px] mx-auto px-4">
         <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={() => {}} canGoBack={false} />
-        <QuizSessionModal
-          isOpen={showSessionModal}
-          onContinue={handleContinueSession}
-          onRestart={handleRestartSession}
-        />
-      </div>
-    );
+        <QuizSessionModal isOpen={showSessionModal} onContinue={handleContinueSession} onRestart={handleRestartSession} />
+      </div>;
   }
 
   // Don't render quiz content until session is checked
   if (!sessionChecked) {
-    return (
-      <div className="max-w-[580px] mx-auto px-4">
+    return <div className="max-w-[580px] mx-auto px-4">
         <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={() => {}} canGoBack={false} />
         <div className="flex items-center justify-center min-h-screen">
           <div className="text-center">
@@ -332,8 +323,7 @@ const Quiz: React.FC = () => {
             <p className="text-gray-600">Caricamento...</p>
           </div>
         </div>
-      </div>
-    );
+      </div>;
   }
 
   // Render special pages based on current state
@@ -365,7 +355,7 @@ const Quiz: React.FC = () => {
             <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
-        return <div className="max-w-[580px] mx-auto px-4 min-h-screen bg-white">
+        return <div className="max-w-[580px] mx-auto px-4 min-h-screen bg-[#fbfaf8]">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
           </div>;
