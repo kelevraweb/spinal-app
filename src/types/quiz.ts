@@ -23,6 +23,7 @@ export type UserProfile = {
   age?: string;
   answers: QuizAnswer[];
   email?: string;
+  name?: string;
   wellbeingScore?: number;
   completedAt?: Date;
 };
