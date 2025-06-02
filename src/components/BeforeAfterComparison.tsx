@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
 import { ChevronRight } from 'lucide-react';
 import { getUserGender } from './QuizDataManager';
 
 const BeforeAfterComparison: React.FC = () => {
   const [isVisible, setIsVisible] = useState(false);
-  const [userName, setUserName] = useState('Marco');
   const [showArrows, setShowArrows] = useState(false);
   const [userGender, setUserGender] = useState<'male' | 'female'>('female');
   const isMobile = useIsMobile();
+  const [searchParams] = useSearchParams();
+  
+  // Get user name from URL params
+  const userName = searchParams.get('name') || 'Marco';
   
   useEffect(() => {
     const visibilityTimer = setTimeout(() => {
@@ -18,13 +22,6 @@ const BeforeAfterComparison: React.FC = () => {
     const arrowTimer = setTimeout(() => {
       setShowArrows(true);
     }, 1200);
-    
-    // Try to get user name from localStorage or quiz data
-    const storedEmail = localStorage.getItem('userEmail') || '';
-    if (storedEmail) {
-      const name = storedEmail.split('@')[0];
-      setUserName(name.charAt(0).toUpperCase() + name.slice(1));
-    }
     
     // Get user gender using the new data manager
     const gender = getUserGender();
