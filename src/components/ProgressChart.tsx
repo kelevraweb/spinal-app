@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import { ProgressChartData } from '../types/quiz';
 import { Button } from './ui/button';
-import { Progress } from './ui/progress';
 
 interface ProgressChartProps {
   initialData?: ProgressChartData[];
@@ -13,7 +12,6 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
   const [chartData, setChartData] = useState<ProgressChartData[]>([]);
   const [animated, setAnimated] = useState(false);
 
-  // Get current month and calculate next months dynamically
   const getCurrentMonthData = () => {
     const currentDate = new Date();
     const monthNames = [
@@ -51,93 +49,64 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
   }, [initialData]);
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
-      <h2 className="text-2xl font-bold text-center mb-3">
-        Un piano progettato per migliorare la tua postura e il tuo benessere fisico
-      </h2>
+    <div className="w-full max-w-md mx-auto px-4 pt-8 pb-4">
+      <div className="text-center mb-6">
+        <h2 className="text-xl md:text-2xl font-bold mb-2">
+          Un piano progettato per migliorare la tua postura
+        </h2>
+        
+        <p className="text-sm text-gray-600 mb-4">
+          In base alle tue risposte, prevediamo miglioramenti entro
+        </p>
+        
+        <h3 className="text-lg font-bold text-[#71b8bc]">{chartData[2]?.month || 'Prossimi mesi'}</h3>
+      </div>
       
-      <p className="text-center mb-8 text-gray-600">
-        In base alle tue risposte, prevediamo che migliorerai la tua postura e ridurrai il dolore entro
-      </p>
-      
-      <h3 className="text-2xl font-bold text-center mb-8">{chartData[2]?.month || 'Prossimi mesi'}</h3>
-      
-      <div className="relative bg-white rounded-lg shadow-lg p-8 mb-10">
-        <div className="flex justify-between mb-16">
+      {/* Mobile-optimized chart */}
+      <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
+        {/* Horizontal bar chart for mobile */}
+        <div className="space-y-4">
           {chartData.map((data, index) => (
-            <div key={index} className="flex flex-col items-center relative">
-              <div className="w-24 h-64 bg-gray-100 rounded-t-lg relative overflow-hidden">
+            <div key={index} className="relative">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-medium text-gray-700">{data.label}</span>
+                <span className="text-sm font-bold text-gray-900">{data.value}%</span>
+              </div>
+              
+              <div className="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
                 <div 
-                  className={`absolute bottom-0 w-full rounded-t-lg transition-all duration-1000 ease-out`}
+                  className="h-full rounded-full transition-all duration-1000 ease-out relative"
                   style={{
                     backgroundColor: data.color,
-                    height: animated ? `${data.value}%` : '0%',
+                    width: animated ? `${data.value}%` : '0%',
                     transitionDelay: `${index * 0.3}s`
                   }}
                 >
-                  <div 
-                    className="absolute top-0 left-0 w-full flex justify-center transform -translate-y-10"
-                    style={{ opacity: animated ? 1 : 0, transition: `opacity 0.5s ease ${index * 0.3 + 0.5}s` }}
-                  >
-                    <span 
-                      className="px-4 py-2 rounded-full text-white font-bold text-lg"
-                      style={{ backgroundColor: data.color }}
-                    >
-                      {data.value}%
-                    </span>
-                  </div>
+                  {data.isGoal && animated && (
+                    <div className="absolute -top-8 right-0 bg-[#71b8bc] text-white px-2 py-1 rounded text-xs font-medium animate-bounce-slow">
+                      Obiettivo
+                    </div>
+                  )}
                 </div>
-
-                {data.isGoal && animated && (
-                  <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-[#71b8bc] text-white px-4 py-2 rounded-full text-sm font-semibold animate-bounce-slow">
-                    Obiettivo
-                  </div>
-                )}
               </div>
-
-              <div className="mt-4 flex flex-col items-center">
-                <span className="font-bold text-lg">{data.month}</span>
-                <span className="text-sm text-gray-600">{data.label}</span>
-              </div>
+              
+              <div className="text-xs text-gray-500 mt-1">{data.month}</div>
             </div>
           ))}
         </div>
-
-        <div className="mt-10">
-          <h4 className="font-semibold text-lg mb-2">Il tuo progresso previsto</h4>
-          <div className="space-y-4">
-            {chartData.map((data, index) => (
-              <div key={index}>
-                <div className="flex justify-between text-sm text-gray-600 mb-1">
-                  <span>{data.label}</span>
-                  <span>{data.value}%</span>
-                </div>
-                <div className="relative w-full">
-                  <Progress value={animated ? data.value : 0} className="h-2 bg-gray-200" 
-                    style={{
-                      "--tw-progress-color": data.color,
-                      transition: `all 1s ease ${index * 0.3}s`
-                    } as React.CSSProperties} 
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-10 text-center">
-          <Button 
-            onClick={onContinue}
-            size="lg" 
-            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white"
-          >
-            Continua
-          </Button>
-        </div>
       </div>
       
-      <p className="text-xs text-center text-gray-400 mt-2">
-        Il grafico è un'illustrazione non personalizzata e i risultati possono variare
+      <div className="text-center">
+        <Button 
+          onClick={onContinue}
+          className="w-full bg-[#71b8bc] hover:bg-[#5da0a4] text-white py-3 rounded-lg"
+        >
+          Continua
+        </Button>
+      </div>
+      
+      <p className="text-xs text-center text-gray-400 mt-3">
+        Il grafico è un'illustrazione e i risultati possono variare
       </p>
     </div>
   );

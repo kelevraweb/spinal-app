@@ -34,29 +34,29 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
   }, [animationStep]);
 
   return (
-    <div className="max-w-4xl mx-auto px-6 pt-24 pb-16 min-h-screen flex flex-col justify-center bg-white">
+    <div className="w-full max-w-4xl mx-auto px-4 pt-16 pb-8 min-h-screen flex flex-col justify-between bg-white">
       <div className={`transition-opacity duration-500 ${animationStep > 0 ? 'opacity-100' : 'opacity-0'}`}>
-        {/* Main Title with proper spacing */}
-        <div className="text-center mb-16">
-          <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-6 leading-tight">
+        {/* Main Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 leading-tight px-2">
             Ecco, il tuo Piano di Gestione del 
             <span className="text-[#71b8bc]"> Benessere Personalizzato</span> è pronto!
           </h1>
         </div>
         
-        {/* Chart Container - Much larger and professional */}
-        <div className="bg-white rounded-3xl shadow-2xl p-10 mb-12">
-          <div className="text-center mb-10">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+        {/* Mobile-optimized Chart Container */}
+        <div className="bg-white rounded-2xl shadow-lg p-4 md:p-8 mb-8">
+          <div className="text-center mb-6">
+            <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
               Il tuo progresso nelle prossime settimane
             </h2>
-            <p className="text-lg text-gray-600">Ecco come migliorerà il tuo benessere seguendo il piano</p>
+            <p className="text-sm md:text-base text-gray-600">Ecco come migliorerà il tuo benessere seguendo il piano</p>
           </div>
           
-          {/* Large Professional Progress Chart */}
-          <div className="relative h-96 mb-10">
+          {/* Simplified Progress Chart for Mobile */}
+          <div className="relative h-48 md:h-64 mb-6">
             <svg
-              viewBox="0 0 1000 400"
+              viewBox="0 0 800 200"
               width="100%"
               height="100%"
               className="overflow-visible"
@@ -75,176 +75,125 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
                 </linearGradient>
               </defs>
               
-              {/* Grid lines - horizontal (more subtle) */}
-              {[0, 1, 2, 3, 4, 5].map((i) => (
+              {/* Grid lines */}
+              {[0, 1, 2, 3, 4].map((i) => (
                 <line
                   key={`h-${i}`}
-                  x1="100"
-                  y1={60 + i * 60}
-                  x2="900"
-                  y2={60 + i * 60}
+                  x1="50"
+                  y1={20 + i * 40}
+                  x2="750"
+                  y2={20 + i * 40}
                   stroke="#f5f5f5"
                   strokeWidth="1"
-                  strokeDasharray="5,5"
-                />
-              ))}
-              
-              {/* Grid lines - vertical (more subtle) */}
-              {[0, 1, 2, 3, 4, 5, 6].map((i) => (
-                <line
-                  key={`v-${i}`}
-                  x1={100 + i * 133.33}
-                  y1="60"
-                  x2={100 + i * 133.33}
-                  y2="360"
-                  stroke="#f5f5f5"
-                  strokeWidth="1"
-                  strokeDasharray="5,5"
+                  strokeDasharray="3,3"
                 />
               ))}
               
               {/* Area under curve */}
               <path
-                d="M100,300 Q200,280 300,240 T500,180 T700,140 T900,100 L900,360 L100,360 Z"
+                d="M50,160 Q200,140 350,100 T650,40 L650,180 L50,180 Z"
                 fill="url(#areaGradient)"
                 opacity={animationStep >= 2 ? "1" : "0"}
                 style={{ transition: "opacity 1s ease" }}
               />
               
-              {/* Main progress curve - much more pronounced */}
+              {/* Main progress curve */}
               <path
-                d="M100,300 Q200,280 300,240 T500,180 T700,140 T900,100"
+                d="M50,160 Q200,140 350,100 T650,40"
                 fill="none"
                 stroke="url(#curveGradient)"
-                strokeWidth="6"
+                strokeWidth="4"
                 strokeLinecap="round"
-                strokeDasharray={animationStep >= 2 ? "0" : "2000,2000"}
-                strokeDashoffset={animationStep >= 2 ? "0" : "2000"}
+                strokeDasharray={animationStep >= 2 ? "0" : "1500,1500"}
+                strokeDashoffset={animationStep >= 2 ? "0" : "1500"}
                 style={{ 
-                  transition: "stroke-dashoffset 2.5s ease-in-out",
-                  filter: "drop-shadow(0 4px 8px rgba(113, 184, 188, 0.3))"
+                  transition: "stroke-dashoffset 2s ease-in-out",
+                  filter: "drop-shadow(0 2px 4px rgba(113, 184, 188, 0.3))"
                 }}
               />
               
-              {/* Data points with animation */}
+              {/* Data points */}
               {animationStep >= 2 && [
-                { x: 100, y: 300, week: "Today", value: "20%" },
-                { x: 300, y: 240, week: "Week 1", value: "40%" },
-                { x: 500, y: 180, week: "Week 2", value: "60%" },
-                { x: 700, y: 140, week: "Week 3", value: "75%" },
-                { x: 900, y: 100, week: "After using Liven", value: "90%" }
+                { x: 50, y: 160, week: "Oggi", value: "20%" },
+                { x: 350, y: 100, week: "Settimana 2", value: "60%" },
+                { x: 650, y: 40, week: "Con Liven", value: "90%" }
               ].map((point, i) => (
                 <g key={i}>
-                  {/* Point glow effect */}
                   <circle
                     cx={point.x}
                     cy={point.y}
-                    r="12"
-                    fill="#71b8bc"
-                    opacity="0.3"
-                    className="animate-pulse"
-                    style={{ animationDelay: `${i * 0.4}s` }}
-                  />
-                  {/* Main point */}
-                  <circle
-                    cx={point.x}
-                    cy={point.y}
-                    r="8"
+                    r="6"
                     fill="white"
                     stroke="#71b8bc"
-                    strokeWidth="3"
-                    className="animate-bounce-slow"
+                    strokeWidth="2"
                     style={{ 
                       animationDelay: `${i * 0.4}s`,
-                      filter: "drop-shadow(0 2px 4px rgba(0,0,0,0.2))"
+                      filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.2))"
                     }}
                   />
-                  {/* Value labels */}
                   <text
                     x={point.x}
-                    y={point.y - 25}
+                    y={point.y - 15}
                     textAnchor="middle"
-                    className="text-sm fill-gray-700 font-bold"
-                    style={{ fontSize: '16px' }}
+                    className="text-xs fill-gray-700 font-bold"
                   >
                     {point.value}
                   </text>
                 </g>
               ))}
               
-              {/* Week labels - larger and better positioned */}
-              <text x="100" y="390" textAnchor="middle" className="text-sm fill-gray-600 font-medium" style={{ fontSize: '14px' }}>Today</text>
-              <text x="300" y="390" textAnchor="middle" className="text-sm fill-gray-600 font-medium" style={{ fontSize: '14px' }}>Week 1</text>
-              <text x="500" y="390" textAnchor="middle" className="text-sm fill-gray-600 font-medium" style={{ fontSize: '14px' }}>Week 2</text>
-              <text x="700" y="390" textAnchor="middle" className="text-sm fill-gray-600 font-medium" style={{ fontSize: '14px' }}>Week 3</text>
-              <text x="900" y="390" textAnchor="middle" className="text-sm fill-[#71b8bc] font-bold" style={{ fontSize: '14px' }}>After using Liven</text>
-              
-              {/* Y-axis labels */}
-              <text x="85" y="365" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>0%</text>
-              <text x="85" y="305" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>20%</text>
-              <text x="85" y="245" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>40%</text>
-              <text x="85" y="185" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>60%</text>
-              <text x="85" y="125" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>80%</text>
-              <text x="85" y="65" textAnchor="end" className="text-sm fill-gray-500" style={{ fontSize: '12px' }}>100%</text>
+              {/* Labels */}
+              <text x="50" y="195" textAnchor="middle" className="text-xs fill-gray-600">Oggi</text>
+              <text x="350" y="195" textAnchor="middle" className="text-xs fill-gray-600">Settimana 2</text>
+              <text x="650" y="195" textAnchor="middle" className="text-xs fill-[#71b8bc] font-bold">Con Liven</text>
             </svg>
-          </div>
-          
-          {/* Chart Legend */}
-          <div className="text-center text-base text-gray-600 mb-8">
-            <div className="flex items-center justify-center gap-3">
-              <div className="w-6 h-2 rounded-full" style={{ background: 'linear-gradient(90deg, #ff6b6b 0%, #ffa726 25%, #42a5f5 75%, #66bb6a 100%)' }}></div>
-              <span className="font-medium">Miglioramento del benessere fisico</span>
-            </div>
           </div>
         </div>
 
         {/* Benefits Section */}
         <div 
-          className={`bg-gradient-to-r from-[#71b8bc]/10 to-[#88c2aa]/10 rounded-3xl p-8 mb-12 transition-all duration-500 ${
+          className={`bg-gradient-to-r from-[#71b8bc]/10 to-[#88c2aa]/10 rounded-2xl p-4 md:p-6 mb-8 transition-all duration-500 ${
             animationStep >= 3 ? 'opacity-100 transform translate-y-0' : 'opacity-0 transform translate-y-4'
           }`}
         >
-          <h3 className="text-xl font-semibold text-gray-800 mb-6 text-center">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 text-center">
             Cosa otterrai con il tuo piano personalizzato:
           </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="flex items-start">
-              <div className="w-3 h-3 bg-[#71b8bc] rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <span className="text-gray-700 text-lg">Riduzione significativa del dolore lombare</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-3 h-3 bg-[#71b8bc] rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <span className="text-gray-700 text-lg">Miglioramento della postura quotidiana</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-3 h-3 bg-[#71b8bc] rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <span className="text-gray-700 text-lg">Maggiore mobilità e flessibilità</span>
-            </div>
-            <div className="flex items-start">
-              <div className="w-3 h-3 bg-[#71b8bc] rounded-full mt-2 mr-4 flex-shrink-0"></div>
-              <span className="text-gray-700 text-lg">Aumento dei livelli di energia</span>
-            </div>
+          <div className="grid grid-cols-1 gap-3">
+            {[
+              "Riduzione significativa del dolore lombare",
+              "Miglioramento della postura quotidiana",
+              "Maggiore mobilità e flessibilità",
+              "Aumento dei livelli di energia"
+            ].map((benefit, index) => (
+              <div key={index} className="flex items-start">
+                <div className="w-2 h-2 bg-[#71b8bc] rounded-full mt-2 mr-3 flex-shrink-0"></div>
+                <span className="text-gray-700 text-sm md:text-base">{benefit}</span>
+              </div>
+            ))}
           </div>
         </div>
-        
-        {/* CTA Button */}
-        <div 
-          className={`text-center transition-opacity duration-500 ${
-            animationStep >= 3 ? 'opacity-100' : 'opacity-0'
-          }`}
-        >
+      </div>
+      
+      {/* Fixed bottom button */}
+      <div 
+        className={`w-full transition-opacity duration-500 ${
+          animationStep >= 3 ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <div className="text-center mb-4">
           <Button 
             onClick={onContinue} 
             size="lg"
-            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-16 py-6 text-xl rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+            className="w-full max-w-md bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Inizia il tuo percorso di benessere
           </Button>
-          
-          <p className="text-base text-gray-600 mt-6 max-w-md mx-auto">
-            Il tuo piano ti aspetta. Inizia oggi stesso il tuo viaggio verso il benessere!
-          </p>
         </div>
+        
+        <p className="text-sm text-gray-600 text-center max-w-md mx-auto px-4">
+          Il tuo piano ti aspetta. Inizia oggi stesso il tuo viaggio verso il benessere!
+        </p>
       </div>
     </div>
   );

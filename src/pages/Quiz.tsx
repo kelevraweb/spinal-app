@@ -256,7 +256,13 @@ const Quiz: React.FC = () => {
     });
   };
   const handleSinusoidalComplete = () => {
-    navigate('/pricing-discounted');
+    // Pass the name to pricing page via URL params and scroll to top
+    const userName = state.userProfile.name || '';
+    navigate(`/pricing-discounted?name=${encodeURIComponent(userName)}`);
+    // Ensure page starts from top
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 100);
   };
 
   // Render special pages based on current state

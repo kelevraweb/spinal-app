@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faStar, faShieldAlt, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '@/components/Rating';
@@ -14,9 +14,18 @@ import CountdownOffer from '@/components/CountdownOffer';
 
 const PricingDiscounted: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+  
+  // Get user name from URL params
+  const userName = searchParams.get('name') || '';
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const plans = {
     trial: {
@@ -135,7 +144,7 @@ const PricingDiscounted: React.FC = () => {
             🔥 OFFERTA LIMITATA - 50% DI SCONTO!
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
-            Il tuo piano personalizzato per la salute della schiena è pronto!
+            {userName ? `Ciao ${userName}, il` : 'Il'} tuo piano personalizzato per la salute della schiena è pronto!
           </h1>
           <p className="text-red-600 font-semibold text-lg">
             Approfitta subito dello sconto del 50%!
@@ -229,7 +238,7 @@ const PricingDiscounted: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <CountdownOffer onExpired={handleCountdownExpired} />
       
-      <div className="max-w-[580px] mx-auto px-4 pt-20"> {/* Added top padding for countdown */}
+      <div className="max-w-[580px] mx-auto px-4 pt-32"> {/* Increased from pt-20 to pt-32 */}
         {/* Before-After Comparison Section */}
         <BeforeAfterComparison />
         
