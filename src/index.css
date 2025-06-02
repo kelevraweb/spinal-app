@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -101,7 +102,7 @@
 
   @media (min-width: 768px) {
     .md\:h-80 {
-      height: 16rem;
+      height: 16rem !important;
       margin-top: 60px;
     }
     
