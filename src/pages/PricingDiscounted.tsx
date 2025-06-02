@@ -11,12 +11,15 @@ import { ChevronDown } from 'lucide-react';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import CountdownOffer from '@/components/CountdownOffer';
+import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+
 const PricingDiscounted: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+  const { trackAddToCart } = useFacebookPixel();
 
   // Get user name from URL params
   const userName = searchParams.get('name') || '';
@@ -25,6 +28,7 @@ const PricingDiscounted: React.FC = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
   const plans = {
     trial: {
       title: 'PIANO 7 GIORNI',
@@ -51,16 +55,38 @@ const PricingDiscounted: React.FC = () => {
       savings: '50%'
     }
   };
+
   const handleCountdownExpired = () => {
     navigate('/pricing');
   };
+
   const handleSelectPlan = () => {
+    const selectedPlanDetails = plans[selectedPlan];
+    
+    // Track AddToCart event
+    trackAddToCart({
+      value: selectedPlanDetails.discountedPrice,
+      currency: 'EUR',
+      plan_type: selectedPlan,
+      content_ids: [selectedPlan]
+    });
+
     setShowCheckoutDialog(true);
   };
-  const handlePurchase = () => {
-    console.log('Elaborazione acquisto...');
-    navigate('/thank-you');
+
+  const handlePurchase = (purchaseData: { planType: string; amount: number }) => {
+    console.log('Elaborazione acquisto completata:', purchaseData);
+    
+    // Navigate to thank you page with purchase data
+    const params = new URLSearchParams({
+      plan: purchaseData.planType,
+      amount: purchaseData.amount.toString(),
+      name: userName
+    });
+    
+    navigate(`/thank-you?${params.toString()}`);
   };
+
   const faqItems = [{
     id: 'consistency',
     question: 'E se non riesco a essere costante con gli esercizi?',
@@ -110,11 +136,13 @@ const PricingDiscounted: React.FC = () => {
           <p className="mt-1">Meglio poco ma fatto bene, che niente.</p>
         </div>
   }];
+
   const disclaimers = {
     trial: "Cliccando \"Ottieni il Mio Piano\", accetti una prova di 1 settimana a €24,99, che si converte in un abbonamento auto-rinnovabile di €24,99/mese se non cancellato (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
     monthly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese è €24,99, poi €24,99/mese (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
     quarterly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. I primi tre mesi sono €49,99, poi €49,99 ogni tre mesi (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli."
   };
+
   const PricingSection = ({
     compact = false
   }) => <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
@@ -139,7 +167,6 @@ const PricingDiscounted: React.FC = () => {
                 </div>
               </div>}
             
-            {/* Savings badge */}
             <div className="absolute -top-3 -right-3 z-10">
               <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
                 RISPARMIA {plan.savings}
@@ -148,7 +175,6 @@ const PricingDiscounted: React.FC = () => {
             
             <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')} className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
               <div className="flex items-center justify-between">
-                {/* Left side: Radio button + Plan content */}
                 <div className="flex items-center flex-1">
                   <div className="mr-4">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === key ? 'border-green-500 bg-green-500' : 'border-gray-300'}`}>
@@ -157,10 +183,7 @@ const PricingDiscounted: React.FC = () => {
                   </div>
                   
                   <div>
-                    {/* Plan title */}
                     <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    
-                    {/* Prices */}
                     <div className="flex items-center space-x-2">
                       <span className="text-lg font-bold text-green-600">€{plan.discountedPrice}</span>
                       <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>
@@ -168,7 +191,6 @@ const PricingDiscounted: React.FC = () => {
                   </div>
                 </div>
 
-                {/* Right side: Grey container with daily price */}
                 <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
                   <div className="text-xl font-bold text-gray-900">
                     €{plan.dailyPrice.toFixed(2)}
@@ -193,14 +215,10 @@ const PricingDiscounted: React.FC = () => {
   return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
       <CountdownOffer onExpired={handleCountdownExpired} />
       
-      <div className="max-w-[580px] mx-auto px-4 pt-32"> {/* Increased from pt-20 to pt-32 */}
-        {/* Before-After Comparison Section */}
+      <div className="max-w-[580px] mx-auto px-4 pt-32">
         <BeforeAfterComparison />
-        
-        {/* Main Pricing Section */}
         <PricingSection />
 
-        {/* Pay Safe & Secure Section */}
         <div className="text-center mb-16">
           <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md mx-auto">
             <div className="flex items-center justify-center mb-4">
@@ -211,7 +229,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Objectives Section */}
         <div className="mb-16">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
@@ -231,7 +248,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Statistics Section */}
         <div className="mb-16">
           <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-3xl p-8 md:p-12 text-white text-center">
             <h2 className="text-2xl md:text-3xl font-bold mb-8">
@@ -256,9 +272,7 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Without Our Plan vs With Our Plan Sections */}
         <div className="mb-16 grid grid-cols-1 gap-8">
-          {/* Without Our Plan */}
           <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-6 md:p-8">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-red-800">
               Senza il nostro piano
@@ -271,7 +285,6 @@ const PricingDiscounted: React.FC = () => {
             </div>
           </div>
 
-          {/* With Our Plan */}
           <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-6 md:p-8">
             <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-green-800">
               Con il nostro piano "Schiena Libera"
@@ -285,7 +298,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Second Pricing Section (Compact) - BEFORE GUARANTEE */}
         <div className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-6 md:p-8">
           <div className="text-center mb-8">
             <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800">
@@ -296,7 +308,6 @@ const PricingDiscounted: React.FC = () => {
           <PricingSection compact={true} />
         </div>
 
-        {/* Money Back Guarantee */}
         <div className="mb-16">
           <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-6 md:p-8 border-2 border-green-200">
             <div className="text-center mb-6">
@@ -320,7 +331,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* FAQ Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
             Le persone spesso chiedono:
@@ -345,7 +355,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Testimonials Section */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
             Gli utenti adorano il nostro piano "Schiena Libera"
@@ -379,7 +388,6 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        {/* Payment Dialog */}
         <Dialog open={showCheckoutDialog} onOpenChange={setShowCheckoutDialog}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
@@ -391,4 +399,5 @@ const PricingDiscounted: React.FC = () => {
       </div>
     </div>;
 };
+
 export default PricingDiscounted;
