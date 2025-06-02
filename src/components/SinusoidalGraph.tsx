@@ -34,17 +34,17 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
   }, [animationStep]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 pt-16 pb-8 min-h-screen flex flex-col justify-between bg-white">
+    <div className="pt-24 pb-8 min-h-screen flex flex-col justify-between">
       <div className={`transition-opacity duration-500 ${animationStep > 0 ? 'opacity-100' : 'opacity-0'}`}>
-        {/* Main Title */}
+        {/* Main Title positioned under TopNavBar */}
         <div className="text-center mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 leading-tight px-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-4 leading-tight">
             Ecco, il tuo Piano di Gestione del 
             <span className="text-[#71b8bc]"> Benessere Personalizzato</span> è pronto!
           </h1>
         </div>
         
-        {/* Mobile-optimized Chart Container */}
+        {/* Chart Container */}
         <div className="bg-white rounded-2xl shadow-lg p-4 md:p-8 mb-8">
           <div className="text-center mb-6">
             <h2 className="text-lg md:text-xl font-semibold text-gray-800 mb-2">
@@ -53,7 +53,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
             <p className="text-sm md:text-base text-gray-600">Ecco come migliorerà il tuo benessere seguendo il piano</p>
           </div>
           
-          {/* Simplified Progress Chart for Mobile */}
+          {/* Progress Chart */}
           <div className="relative h-48 md:h-64 mb-6">
             <svg
               viewBox="0 0 800 200"
@@ -116,7 +116,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
               {animationStep >= 2 && [
                 { x: 50, y: 160, week: "Oggi", value: "20%" },
                 { x: 350, y: 100, week: "Settimana 2", value: "60%" },
-                { x: 650, y: 40, week: "Con Liven", value: "90%" }
+                { x: 650, y: 40, week: "Obiettivo", value: "90%" }
               ].map((point, i) => (
                 <g key={i}>
                   <circle
@@ -145,7 +145,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
               {/* Labels */}
               <text x="50" y="195" textAnchor="middle" className="text-xs fill-gray-600">Oggi</text>
               <text x="350" y="195" textAnchor="middle" className="text-xs fill-gray-600">Settimana 2</text>
-              <text x="650" y="195" textAnchor="middle" className="text-xs fill-[#71b8bc] font-bold">Con Liven</text>
+              <text x="650" y="195" textAnchor="middle" className="text-xs fill-[#71b8bc] font-bold">Obiettivo</text>
             </svg>
           </div>
         </div>
@@ -162,7 +162,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
           <div className="grid grid-cols-1 gap-3">
             {[
               "Riduzione significativa del dolore lombare",
-              "Miglioramento della postura quotidiana",
+              "Miglioramento della postura quotidiana", 
               "Maggiore mobilità e flessibilità",
               "Aumento dei livelli di energia"
             ].map((benefit, index) => (
@@ -185,13 +185,13 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
           <Button 
             onClick={onContinue} 
             size="lg"
-            className="w-full max-w-md bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+            className="w-full bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
           >
             Inizia il tuo percorso di benessere
           </Button>
         </div>
         
-        <p className="text-sm text-gray-600 text-center max-w-md mx-auto px-4">
+        <p className="text-sm text-gray-600 text-center px-4">
           Il tuo piano ti aspetta. Inizia oggi stesso il tuo viaggio verso il benessere!
         </p>
       </div>

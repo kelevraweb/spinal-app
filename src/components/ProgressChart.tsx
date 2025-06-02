@@ -49,48 +49,48 @@ const ProgressChart: React.FC<ProgressChartProps> = ({ initialData, onContinue }
   }, [initialData]);
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 pt-8 pb-4">
+    <div className="pt-24 pb-4">
       <div className="text-center mb-6">
-        <h2 className="text-xl md:text-2xl font-bold mb-2">
+        <h2 className="text-2xl md:text-3xl font-bold mb-2">
           Un piano progettato per migliorare la tua postura
         </h2>
         
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="text-gray-600 mb-4">
           In base alle tue risposte, prevediamo miglioramenti entro
         </p>
         
         <h3 className="text-lg font-bold text-[#71b8bc]">{chartData[2]?.month || 'Prossimi mesi'}</h3>
       </div>
       
-      {/* Mobile-optimized chart */}
-      <div className="bg-white rounded-xl shadow-lg p-4 mb-6">
-        {/* Horizontal bar chart for mobile */}
-        <div className="space-y-4">
+      {/* Vertical column chart for mobile */}
+      <div className="bg-white rounded-xl shadow-lg p-6 mb-6">
+        <div className="flex items-end justify-between h-48 mb-4">
           {chartData.map((data, index) => (
-            <div key={index} className="relative">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm font-medium text-gray-700">{data.label}</span>
-                <span className="text-sm font-bold text-gray-900">{data.value}%</span>
-              </div>
-              
-              <div className="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
-                <div 
-                  className="h-full rounded-full transition-all duration-1000 ease-out relative"
-                  style={{
-                    backgroundColor: data.color,
-                    width: animated ? `${data.value}%` : '0%',
-                    transitionDelay: `${index * 0.3}s`
-                  }}
-                >
-                  {data.isGoal && animated && (
-                    <div className="absolute -top-8 right-0 bg-[#71b8bc] text-white px-2 py-1 rounded text-xs font-medium animate-bounce-slow">
-                      Obiettivo
-                    </div>
-                  )}
+            <div key={index} className="flex flex-col items-center flex-1 mx-2">
+              <div className="relative w-full flex flex-col items-center">
+                {data.isGoal && animated && (
+                  <div className="mb-2 bg-[#71b8bc] text-white px-2 py-1 rounded text-xs font-medium animate-bounce-slow">
+                    Obiettivo
+                  </div>
+                )}
+                
+                <div className="relative w-12 bg-gray-200 rounded-t-lg flex flex-col justify-end overflow-hidden">
+                  <div 
+                    className="w-full rounded-t-lg transition-all duration-1000 ease-out"
+                    style={{
+                      backgroundColor: data.color,
+                      height: animated ? `${(data.value / 60) * 160}px` : '0px',
+                      transitionDelay: `${index * 0.3}s`
+                    }}
+                  />
+                </div>
+                
+                <div className="mt-2 text-center">
+                  <div className="text-sm font-bold text-gray-900 mb-1">{data.value}%</div>
+                  <div className="text-xs font-medium text-gray-700">{data.label}</div>
+                  <div className="text-xs text-gray-500 mt-1">{data.month}</div>
                 </div>
               </div>
-              
-              <div className="text-xs text-gray-500 mt-1">{data.month}</div>
             </div>
           ))}
         </div>

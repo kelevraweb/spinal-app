@@ -340,52 +340,52 @@ const Quiz: React.FC = () => {
   if (state.showSpecialPage) {
     switch (state.showSpecialPage) {
       case 'trustMap':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <TrustMapAnimation onContinue={handleSpecialPageComplete} />
           </div>;
       case 'universities':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <UniversityLogos />
           </div>;
       case 'expert':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ExpertReview />
           </div>;
       case 'worldCommunity':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <WorldCommunity onContinue={handleWorldCommunityComplete} />
           </div>;
       case 'wellbeingLevel':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
-        return <div className="w-full px-4 min-h-screen bg-white">
+        return <div className="max-w-[580px] mx-auto px-4 min-h-screen bg-white">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <LoadingAnalysis onComplete={handleLoadingAnalysisComplete} />
           </div>;
       case 'progressChart':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <ProgressChart onContinue={handleProgressChartComplete} />
           </div>;
       case 'emailCapture':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <EmailCapture onSubmit={handleEmailCapture} />
           </div>;
       case 'nameCapture':
-        return <div className="w-full px-4">
+        return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <NameCapture onSubmit={handleNameCapture} />
           </div>;
       case 'sinusoidalGraph':
-        return <div className="w-full px-4 bg-white">
+        return <div className="max-w-[580px] mx-auto px-4 bg-white">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
           </div>;
