@@ -23,7 +23,6 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -54,7 +53,6 @@ const Quiz: React.FC = () => {
         }));
       }
     };
-    
     loadExistingAnswers();
   }, []);
 
@@ -122,14 +120,12 @@ const Quiz: React.FC = () => {
   };
   const handleNext = async () => {
     if (!isNextEnabled || isAnimating) return;
-    
     const updatedAnswers = [...state.answers];
     const existingAnswerIndex = updatedAnswers.findIndex(answer => answer.questionId === state.currentQuestion?.id);
     const newAnswer: QuizAnswer = {
       questionId: state.currentQuestion?.id || '',
       answer: currentAnswer
     };
-    
     if (existingAnswerIndex >= 0) {
       updatedAnswers[existingAnswerIndex] = newAnswer;
     } else {
@@ -140,10 +136,8 @@ const Quiz: React.FC = () => {
     if (state.currentQuestion?.id) {
       await saveQuizAnswer(state.currentQuestion.id, currentAnswer, updatedAnswers);
     }
-
     setTransitionDirection('next');
     let showSpecialPage = undefined;
-    
     if (state.currentStep === 1) {
       showSpecialPage = 'trustMap';
     }
@@ -159,7 +153,6 @@ const Quiz: React.FC = () => {
     if (state.currentStep === 29) {
       showSpecialPage = 'wellbeingLevel';
     }
-    
     let nextStep = state.currentStep + 1;
     if (nextStep >= state.totalSteps) {
       setState({
@@ -170,14 +163,12 @@ const Quiz: React.FC = () => {
       });
       return;
     }
-    
     setIsAnimating(true);
     setState(prevState => ({
       ...prevState,
       answers: updatedAnswers,
       showSpecialPage
     }));
-    
     if (!showSpecialPage) {
       setTimeout(() => {
         setState(prevState => ({
@@ -317,7 +308,7 @@ const Quiz: React.FC = () => {
             <NameCapture onSubmit={handleNameCapture} />
           </div>;
       case 'sinusoidalGraph':
-        return <div className="w-full px-4">
+        return <div className="w-full px-4 bg-white">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
             <SinusoidalGraph onContinue={handleSinusoidalComplete} />
           </div>;
