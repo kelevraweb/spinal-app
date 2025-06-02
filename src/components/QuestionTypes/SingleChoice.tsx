@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -73,16 +74,16 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           </h2>
         )}
         
-        <div className="w-full max-w-full grid grid-cols-2 gap-6 mt-8">
+        <div className="w-full max-w-full grid grid-cols-2 gap-3 md:gap-6 mt-8">
           <button 
             type="button" 
-            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-64 md:h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
               value === 'Maschio' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
             {/* Image container positioned to touch the footer from bottom */}
-            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
+            <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
@@ -91,10 +92,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             </div>
             
             {/* Colored footer section */}
-            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-6 py-4 flex items-center justify-between transition-all duration-300 ${
+            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-4 py-3 md:px-6 md:py-4 flex items-center justify-between transition-all duration-300 ${
               value === 'Maschio' ? 'bg-[#71b8bc]' : 'bg-[#88c2aa] group-hover:bg-[#71b8bc]'
             }`}>
-              <span className="font-semibold text-lg text-white">Maschio</span>
+              <span className="font-semibold text-base md:text-lg text-white">Maschio</span>
               <FontAwesomeIcon 
                 icon={faChevronRight} 
                 className={`text-white transition-transform duration-300 ${
@@ -107,13 +108,13 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
           
           <button 
             type="button" 
-            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
+            className={`group w-full max-w-full flex flex-col items-center rounded-2xl border-2 transition-all duration-300 bg-white relative overflow-visible h-64 md:h-80 shadow-lg hover:shadow-xl transform hover:scale-105 ${
               value === 'Femmina' ? 'border-[#71b8bc] shadow-[#71b8bc]/20' : 'border-gray-200 hover:border-gray-300'
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
             {/* Image container positioned to touch the footer from bottom */}
-            <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 w-56 h-64 z-10">
+            <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
@@ -122,10 +123,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             </div>
             
             {/* Colored footer section */}
-            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-6 py-4 flex items-center justify-between transition-all duration-300 ${
+            <div className={`absolute bottom-0 left-0 right-0 rounded-b-2xl px-4 py-3 md:px-6 md:py-4 flex items-center justify-between transition-all duration-300 ${
               value === 'Femmina' ? 'bg-[#71b8bc]' : 'bg-[#88c2aa] group-hover:bg-[#71b8bc]'
             }`}>
-              <span className="font-semibold text-lg text-white">Femmina</span>
+              <span className="font-semibold text-base md:text-lg text-white">Femmina</span>
               <FontAwesomeIcon 
                 icon={faChevronRight} 
                 className={`text-white transition-transform duration-300 ${

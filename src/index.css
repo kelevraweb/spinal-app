@@ -84,14 +84,25 @@
     animation: pulse-glow 2s ease-in-out infinite;
   }
 
-  /* Custom overrides for gender selection positioning */
-  .bottom-12 {
-    bottom: 60px;
+  /* Custom responsive overrides for gender selection */
+  @media (max-width: 768px) {
+    .h-64 {
+      height: 16rem;
+    }
+    
+    .bottom-10 {
+      bottom: 40px;
+    }
   }
 
-  .h-80 {
-    margin-top: 120px;
-    height: 14rem;
+  @media (min-width: 769px) {
+    .md\:h-80 {
+      height: 20rem;
+    }
+    
+    .md\:bottom-12 {
+      bottom: 48px;
+    }
   }
 }
 
