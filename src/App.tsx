@@ -1,10 +1,11 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import React from "react"; // Add explicit React import
-import Index from "./pages/Index";
+import NewIndex from "./pages/NewIndex";
 import Quiz from "./pages/Quiz";
 import Pricing from "./pages/Pricing";
 import PricingDiscounted from "./pages/PricingDiscounted";
@@ -68,7 +69,7 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <Routes>
-              <Route path="/" element={<Index />} />
+              <Route path="/" element={<NewIndex />} />
               <Route path="/quiz" element={<Quiz />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/pricing-discounted" element={<PricingDiscounted />} />
