@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
 import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
 import TopNavBar from '../components/TopNavBar';
-import { saveQuizAnswer, loadQuizAnswers } from '../components/QuizDataManager';
+import { saveQuizAnswer, loadQuizAnswers, hasExistingSession, clearQuizSession } from '../components/QuizDataManager';
+import QuizSessionModal from '../components/QuizSessionModal';
 
 // Question type components
 import SingleChoice from '../components/QuestionTypes/SingleChoice';
@@ -41,20 +42,58 @@ const Quiz: React.FC = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [transitionDirection, setTransitionDirection] = useState<'next' | 'prev'>('next');
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
+  const [showSessionModal, setShowSessionModal] = useState(false);
+  const [sessionChecked, setSessionChecked] = useState(false);
 
-  // Load existing answers on component mount
+  // Check for existing session on component mount
   useEffect(() => {
-    const loadExistingAnswers = async () => {
-      const existingAnswers = await loadQuizAnswers();
-      if (existingAnswers.length > 0) {
-        setState(prevState => ({
-          ...prevState,
-          answers: existingAnswers
-        }));
-      }
-    };
-    loadExistingAnswers();
-  }, []);
+    if (hasExistingSession() && !sessionChecked) {
+      setShowSessionModal(true);
+    } else {
+      setSessionChecked(true);
+    }
+  }, [sessionChecked]);
+
+  const handleContinueSession = async () => {
+    const existingAnswers = await loadQuizAnswers();
+    if (existingAnswers.length > 0) {
+      setState(prevState => ({
+        ...prevState,
+        answers: existingAnswers,
+        currentStep: existingAnswers.length < quizQuestions.length ? existingAnswers.length : 0
+      }));
+    }
+    setShowSessionModal(false);
+    setSessionChecked(true);
+  };
+
+  const handleRestartSession = async () => {
+    await clearQuizSession();
+    setState(prevState => ({
+      ...prevState,
+      currentStep: 0,
+      answers: [],
+      currentQuestion: quizQuestions[0]
+    }));
+    setShowSessionModal(false);
+    setSessionChecked(true);
+  };
+
+  // Load existing answers only after session check is complete
+  useEffect(() => {
+    if (sessionChecked && !showSessionModal) {
+      const loadExistingAnswers = async () => {
+        const existingAnswers = await loadQuizAnswers();
+        if (existingAnswers.length > 0) {
+          setState(prevState => ({
+            ...prevState,
+            answers: existingAnswers
+          }));
+        }
+      };
+      loadExistingAnswers();
+    }
+  }, [sessionChecked, showSessionModal]);
 
   // Helper function to get the text value of an option
   const getOptionText = (option: string | QuizOption): string => {
@@ -96,9 +135,9 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(false);
     }
 
-    // Enable auto-advance for single choice questions
-    setShouldAutoAdvance(state.currentQuestion?.type === 'single');
-  }, [state.currentStep, state.currentQuestion]);
+    // Only enable auto-advance for single choice questions if session is checked
+    setShouldAutoAdvance(state.currentQuestion?.type === 'single' && sessionChecked);
+  }, [state.currentStep, state.currentQuestion, sessionChecked]);
 
   // Auto-advance for single choice questions
   useEffect(() => {
@@ -255,7 +294,10 @@ const Quiz: React.FC = () => {
       showSpecialPage: 'sinusoidalGraph'
     });
   };
-  const handleSinusoidalComplete = () => {
+  const handleSinusoidalComplete = async () => {
+    // Clear the quiz session when completed
+    await clearQuizSession();
+    
     // Pass the name to pricing page via URL params and scroll to top
     const userName = state.userProfile.name || '';
     navigate(`/pricing-discounted?name=${encodeURIComponent(userName)}`);
@@ -264,6 +306,35 @@ const Quiz: React.FC = () => {
       window.scrollTo(0, 0);
     }, 100);
   };
+
+  // Show session modal if needed
+  if (showSessionModal) {
+    return (
+      <div className="max-w-[580px] mx-auto px-4">
+        <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={() => {}} canGoBack={false} />
+        <QuizSessionModal
+          isOpen={showSessionModal}
+          onContinue={handleContinueSession}
+          onRestart={handleRestartSession}
+        />
+      </div>
+    );
+  }
+
+  // Don't render quiz content until session is checked
+  if (!sessionChecked) {
+    return (
+      <div className="max-w-[580px] mx-auto px-4">
+        <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={() => {}} canGoBack={false} />
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-[#71b8bc] border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Caricamento...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   // Render special pages based on current state
   if (state.showSpecialPage) {

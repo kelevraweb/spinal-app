@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { QuizAnswer } from '../types/quiz';
 
@@ -15,6 +14,35 @@ const getSessionId = () => {
     localStorage.setItem('quiz_session_id', sessionId);
   }
   return sessionId;
+};
+
+// Clear all quiz session data
+export const clearQuizSession = async () => {
+  const sessionId = localStorage.getItem('quiz_session_id');
+  
+  // Clear localStorage
+  localStorage.removeItem('quiz_session_id');
+  localStorage.removeItem('quizAnswers');
+  localStorage.removeItem('userGender');
+  
+  // Clear database records if session exists
+  if (sessionId) {
+    try {
+      await supabase
+        .from('quiz_responses')
+        .delete()
+        .eq('user_session_id', sessionId);
+    } catch (error) {
+      console.error('Error clearing database session:', error);
+    }
+  }
+};
+
+// Check if there's an existing quiz session
+export const hasExistingSession = () => {
+  const sessionId = localStorage.getItem('quiz_session_id');
+  const answers = localStorage.getItem('quizAnswers');
+  return !!(sessionId && answers);
 };
 
 export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
