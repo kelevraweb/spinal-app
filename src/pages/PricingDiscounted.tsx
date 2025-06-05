@@ -151,7 +151,8 @@ const PricingDiscounted: React.FC = () => {
 
   const PricingSection = ({
     compact = false
-  }) => <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
+  }) => (
+    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
       {!compact && <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium mb-4 animate-pulse">
             🔥 OFFERTA LIMITATA - FINO AL 79% DI SCONTO!
@@ -224,12 +225,16 @@ const PricingDiscounted: React.FC = () => {
       <div className="text-center mt-4 text-sm text-gray-600">
         <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
       </div>
-    </div>;
-  return <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
       <CountdownOffer onExpired={handleCountdownExpired} />
       
       <div className="max-w-[580px] mx-auto px-4 pt-32">
-        <BeforeAfterComparison userGender={userGender} />
+        {/* Before-After Comparison Section - Remove userGender prop */}
+        <BeforeAfterComparison />
         <PricingSection />
 
         <div className="text-center mb-16">
@@ -410,7 +415,8 @@ const PricingDiscounted: React.FC = () => {
           </DialogContent>
         </Dialog>
       </div>
-    </div>;
+    </div>
+  );
 };
 
 export default PricingDiscounted;

@@ -159,7 +159,6 @@ const Pricing: React.FC = () => {
               }`}
             >
               <div className="flex items-center justify-between">
-                {/* Left side: Radio button + Plan content */}
                 <div className="flex items-center flex-1">
                   <div className="mr-4">
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
@@ -174,15 +173,11 @@ const Pricing: React.FC = () => {
                   </div>
                   
                   <div>
-                    {/* Plan title */}
                     <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    
-                    {/* Total price */}
                     <div className="text-lg font-bold text-gray-900">€{plan.price}</div>
                   </div>
                 </div>
 
-                {/* Right side: Grey container with daily price */}
                 <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
                   <div className="text-xl font-bold text-gray-900">
                     €{plan.dailyPrice.toFixed(2)}
@@ -213,8 +208,8 @@ const Pricing: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="max-w-[580px] mx-auto px-4">
-        {/* Before-After Comparison Section */}
-        <BeforeAfterComparison userGender={userGender} />
+        {/* Before-After Comparison Section - Remove userGender prop */}
+        <BeforeAfterComparison />
         
         {/* Main Pricing Section */}
         <PricingSection />
