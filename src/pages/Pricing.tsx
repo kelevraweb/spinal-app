@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faStar, faShieldAlt, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { Rating } from '@/components/Rating';
@@ -13,9 +13,18 @@ import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 
 const Pricing: React.FC = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+
+  // Get user gender from URL params
+  const userGender = searchParams.get('gender') || 'male';
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const plans = {
     trial: {
@@ -27,7 +36,7 @@ const Pricing: React.FC = () => {
     monthly: {
       title: 'PIANO 1 MESE',
       price: 49.99,
-      dailyPrice: 1.66,
+      dailyPrice: 1.67,
       popular: true
     },
     quarterly: {
@@ -39,9 +48,9 @@ const Pricing: React.FC = () => {
   };
 
   const disclaimers = {
-    trial: "Cliccando \"Ottieni il Mio Piano\", accetti una prova di 1 settimana a €49,99, che si converte in un abbonamento auto-rinnovabile di €49,99/mese se non cancellato (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
-    monthly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese è €49,99, poi €49,99/mese (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
-    quarterly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. I primi tre mesi sono €99,99, poi €99,99 ogni tre mesi (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli."
+    trial: "Cliccando \"Ottieni il Mio Piano\", accetti una prova di 1 settimana a €49,99, che si converte in un abbonamento auto-rinnovabile di €49,99/mese se non cancellato (prezzi IVA inclusa). Cancella tramite l'app o email: support@spinalapp.net. Consulta la Politica degli Abbonamenti per i dettagli.",
+    monthly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese è €49,99, poi €49,99/mese (prezzi IVA inclusa). Cancella tramite l'app o email: support@spinalapp.net. Consulta la Politica degli Abbonamenti per i dettagli.",
+    quarterly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. I primi tre mesi sono €99,99, poi €99,99 ogni tre mesi (prezzi IVA inclusa). Cancella tramite l'app o email: support@spinalapp.net. Consulta la Politica degli Abbonamenti per i dettagli."
   };
 
   const faqItems = [
@@ -168,8 +177,8 @@ const Pricing: React.FC = () => {
                     {/* Plan title */}
                     <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
                     
-                    {/* Small total price */}
-                    <div className="text-sm text-gray-600">€{plan.price}</div>
+                    {/* Total price */}
+                    <div className="text-lg font-bold text-gray-900">€{plan.price}</div>
                   </div>
                 </div>
 
@@ -205,7 +214,7 @@ const Pricing: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white">
       <div className="max-w-[580px] mx-auto px-4">
         {/* Before-After Comparison Section */}
-        <BeforeAfterComparison />
+        <BeforeAfterComparison userGender={userGender} />
         
         {/* Main Pricing Section */}
         <PricingSection />

@@ -3,14 +3,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React from "react"; // Add explicit React import
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import React, { useEffect } from "react";
 import NewIndex from "./pages/NewIndex";
 import Quiz from "./pages/Quiz";
 import Pricing from "./pages/Pricing";
 import PricingDiscounted from "./pages/PricingDiscounted";
 import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
+import { useFacebookPixel } from "@/hooks/useFacebookPixel";
 
 // Configure FontAwesome
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -60,6 +61,23 @@ library.add(
 // Create the query client outside of the component
 const queryClient = new QueryClient();
 
+// Component to track page views
+const PageViewTracker = () => {
+  const location = useLocation();
+  
+  // Initialize Facebook Pixel (this will load the pixel script)
+  useFacebookPixel();
+  
+  useEffect(() => {
+    // Track page view on route changes
+    if (typeof window !== 'undefined' && window.fbq) {
+      window.fbq('track', 'PageView');
+    }
+  }, [location]);
+
+  return null;
+};
+
 const App = () => {
   return (
     <React.StrictMode>
@@ -68,6 +86,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
+            <PageViewTracker />
             <Routes>
               <Route path="/" element={<NewIndex />} />
               <Route path="/quiz" element={<Quiz />} />

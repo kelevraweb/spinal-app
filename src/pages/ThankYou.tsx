@@ -9,7 +9,7 @@ const ThankYou: React.FC = () => {
 
   // Get purchase data from URL params
   const planType = searchParams.get('plan') || 'quarterly';
-  const amount = parseFloat(searchParams.get('amount') || '49.99');
+  const amount = parseFloat(searchParams.get('amount') || '34.99');
   const userName = searchParams.get('name') || '';
 
   useEffect(() => {
@@ -21,6 +21,19 @@ const ThankYou: React.FC = () => {
       content_ids: [planType]
     });
   }, [amount, planType, trackPurchase]);
+
+  const getPlanDisplayName = (plan: string) => {
+    switch (plan) {
+      case 'trial':
+        return 'Piano 7 Giorni';
+      case 'monthly':
+        return 'Piano 1 Mese';
+      case 'quarterly':
+        return 'Piano 3 Mesi';
+      default:
+        return 'Piano Personalizzato';
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
@@ -78,7 +91,7 @@ const ThankYou: React.FC = () => {
             <p className="font-medium text-green-800">Pagamento confermato</p>
           </div>
           <p className="text-sm text-green-700">
-            Piano: {planType.toUpperCase()} • Importo: €{amount.toFixed(2)}
+            {getPlanDisplayName(planType)} • Importo: €{amount.toFixed(2)}
           </p>
         </div>
         
@@ -87,7 +100,7 @@ const ThankYou: React.FC = () => {
         </Link>
 
         <div className="mt-6 text-xs text-gray-500">
-          <p>Hai domande? Contattaci a support@theliven.com</p>
+          <p>Hai domande? Contattaci a support@spinalapp.net</p>
           <p className="mt-1">Il tuo acquisto è protetto dalla nostra garanzia di rimborso di 30 giorni.</p>
         </div>
       </div>

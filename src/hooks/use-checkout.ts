@@ -1,10 +1,15 @@
+
 import { useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
-// This hook is now deprecated in favor of embedded Stripe Elements
-// Keeping for backward compatibility if needed
-
 type PlanType = 'trial' | 'monthly' | 'quarterly';
+
+// Plan pricing mapping
+const PLAN_AMOUNTS = {
+  trial: 10.50,
+  monthly: 19.99,
+  quarterly: 34.99
+};
 
 export function useCheckout() {
   const [isLoading, setIsLoading] = useState(false);
@@ -14,13 +19,25 @@ export function useCheckout() {
     setIsLoading(true);
     
     try {
-      // This function is now replaced by embedded checkout
-      // Redirecting to pricing page for now
-      toast({
-        title: "Informazione",
-        description: "Il checkout è ora integrato nella pagina di pagamento.",
+      const amount = PLAN_AMOUNTS[planType];
+      
+      const response = await fetch('/api/create-payment-intent', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planType,
+          amount: Math.round(amount * 100) // Convert to cents
+        }),
       });
-      return false;
+
+      if (!response.ok) {
+        throw new Error('Failed to create payment intent');
+      }
+
+      const data = await response.json();
+      return data.clientSecret;
     } catch (error) {
       console.error('Checkout error:', error);
       toast({
@@ -28,7 +45,7 @@ export function useCheckout() {
         description: "Si è verificato un errore durante il checkout. Riprova più tardi.",
         variant: "destructive"
       });
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }

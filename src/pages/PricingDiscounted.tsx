@@ -21,8 +21,9 @@ const PricingDiscounted: React.FC = () => {
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const { trackAddToCart } = useFacebookPixel();
 
-  // Get user name from URL params
+  // Get user name and gender from URL params
   const userName = searchParams.get('name') || '';
+  const userGender = searchParams.get('gender') || 'male';
 
   // Scroll to top when component mounts
   useEffect(() => {
@@ -33,26 +34,29 @@ const PricingDiscounted: React.FC = () => {
     trial: {
       title: 'PIANO 7 GIORNI',
       originalPrice: 49.99,
-      discountedPrice: 24.99,
-      dailyPrice: 3.57,
+      discountedPrice: 10.50,
+      originalDailyPrice: 7.14,
+      dailyPrice: 1.50,
       popular: false,
-      savings: '50%'
+      savings: '79%'
     },
     monthly: {
       title: 'PIANO 1 MESE',
       originalPrice: 49.99,
-      discountedPrice: 24.99,
-      dailyPrice: 0.83,
+      discountedPrice: 19.99,
+      originalDailyPrice: 1.67,
+      dailyPrice: 0.66,
       popular: true,
-      savings: '50%'
+      savings: '60%'
     },
     quarterly: {
       title: 'PIANO 3 MESI',
       originalPrice: 99.99,
-      discountedPrice: 49.99,
-      dailyPrice: 0.55,
+      discountedPrice: 34.99,
+      originalDailyPrice: 1.11,
+      dailyPrice: 0.38,
       popular: false,
-      savings: '50%'
+      savings: '65%'
     }
   };
 
@@ -87,88 +91,90 @@ const PricingDiscounted: React.FC = () => {
     navigate(`/thank-you?${params.toString()}`);
   };
 
-  const faqItems = [{
-    id: 'consistency',
-    question: 'E se non riesco a essere costante con gli esercizi?',
-    answer: <div>
-          <p>Il nostro piano è studiato per persone impegnate o poco costanti:</p>
-          <ul className="mt-2 space-y-1">
-            <li className="flex items-start">
-              <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
-              <span>routine brevi da 5 a 15 minuti</span>
-            </li>
-            <li className="flex items-start">
-              <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
-              <span>video guidati passo passo</span>
-            </li>
-            <li className="flex items-start">
-              <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
-              <span>reminder e supporto per aiutarti a non mollare</span>
-            </li>
-          </ul>
-          <p className="mt-2">Non serve forza di volontà: serve solo iniziare.</p>
-        </div>
-  }, {
-    id: 'previous-attempts',
-    question: 'E se ho già provato stretching o fisioterapia, ma non ha funzionato?',
-    answer: <div>
-          <p>Questo non è un "semplice stretching". È un metodo strutturato che unisce:</p>
-          <ul className="mt-2 space-y-1">
-            <li>• esercizi posturali mirati</li>
-            <li>• mobilità funzionale</li>
-            <li>• rilascio delle tensioni profonde</li>
-          </ul>
-          <p className="mt-2">È progressivo, sostenibile e pensato per durare.</p>
-        </div>
-  }, {
-    id: 'chronic-pain',
-    question: 'Ho dolore cronico: posso seguire comunque il piano?',
-    answer: <div>
-          <p>Sì. Ogni esercizio è pensato per essere eseguito in sicurezza, anche in caso di rigidità o dolori persistenti.</p>
-          <p className="mt-2">Ti guideremo nell'adattare i movimenti al tuo livello attuale, senza stress o rischi.</p>
-        </div>
-  }, {
-    id: 'time-constraints',
-    question: 'E se ho poco tempo?',
-    answer: <div>
-          <p>Abbiamo creato routine giornaliere che richiedono solo 5–10 minuti al giorno.</p>
-          <p className="mt-2">Il piano si adatta a te, non il contrario.</p>
-          <p className="mt-1">Meglio poco ma fatto bene, che niente.</p>
-        </div>
-  }];
-
   const disclaimers = {
-    trial: "Cliccando \"Ottieni il Mio Piano\", accetti una prova di 1 settimana a €24,99, che si converte in un abbonamento auto-rinnovabile di €24,99/mese se non cancellato (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
-    monthly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese è €24,99, poi €24,99/mese (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli.",
-    quarterly: "Cliccando \"Ottieni il Mio Piano\", accetti il rinnovo automatico dell'abbonamento. I primi tre mesi sono €49,99, poi €49,99 ogni tre mesi (prezzi IVA inclusa). Cancella tramite l'app o email: support@theliven.com. Consulta la Politica degli Abbonamenti per i dettagli."
+    trial: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. La prima settimana costa 10,50€, poi 49,99 €/mese (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
+    monthly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese costa 19,99€, poi 49,99 €/mese (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
+    quarterly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. I primi 3 mesi costano 34,99€, poi 99,99 € ogni trimestre (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli."
   };
+
+  const faqItems = [
+    {
+      id: 'consistency',
+      question: 'E se non riesco a essere costante con gli esercizi?',
+      answer: <div>
+            <p>Il nostro piano è studiato per persone impegnate o poco costanti:</p>
+            <ul className="mt-2 space-y-1">
+              <li className="flex items-start">
+                <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
+                <span>routine brevi da 5 a 15 minuti</span>
+              </li>
+              <li className="flex items-start">
+                <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
+                <span>video guidati passo passo</span>
+              </li>
+              <li className="flex items-start">
+                <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-2 mt-1 text-sm" />
+                <span>reminder e supporto per aiutarti a non mollare</span>
+              </li>
+            </ul>
+            <p className="mt-2">Non serve forza di volontà: serve solo iniziare.</p>
+          </div>
+    }, {
+      id: 'previous-attempts',
+      question: 'E se ho già provato stretching o fisioterapia, ma non ha funzionato?',
+      answer: <div>
+            <p>Questo non è un "semplice stretching". È un metodo strutturato che unisce:</p>
+            <ul className="mt-2 space-y-1">
+              <li>• esercizi posturali mirati</li>
+              <li>• mobilità funzionale</li>
+              <li>• rilascio delle tensioni profonde</li>
+            </ul>
+            <p className="mt-2">È progressivo, sostenibile e pensato per durare.</p>
+          </div>
+    }, {
+      id: 'chronic-pain',
+      question: 'Ho dolore cronico: posso seguire comunque il piano?',
+      answer: <div>
+            <p>Sì. Ogni esercizio è pensato per essere eseguito in sicurezza, anche in caso di rigidità o dolori persistenti.</p>
+            <p className="mt-2">Ti guideremo nell'adattare i movimenti al tuo livello attuale, senza stress o rischi.</p>
+          </div>
+    }, {
+      id: 'time-constraints',
+      question: 'E se ho poco tempo?',
+      answer: <div>
+            <p>Abbiamo creato routine giornaliere che richiedono solo 5–10 minuti al giorno.</p>
+            <p className="mt-2">Il piano si adatta a te, non il contrario.</p>
+            <p className="mt-1">Meglio poco ma fatto bene, che niente.</p>
+          </div>
+    }
+  ];
 
   const PricingSection = ({
     compact = false
   }) => <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
       {!compact && <div className="text-center mb-12">
           <div className="inline-block bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium mb-4 animate-pulse">
-            🔥 OFFERTA LIMITATA - 50% DI SCONTO!
+            🔥 OFFERTA LIMITATA - FINO AL 79% DI SCONTO!
           </div>
           <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             {userName ? `Ciao ${userName}, il` : 'Il'} tuo piano personalizzato per la salute della schiena è pronto!
           </h1>
           <p className="text-red-600 font-semibold text-lg">
-            Approfitta subito dello sconto del 50%!
+            Approfitta subito dello sconto fino al 79%!
           </p>
         </div>}
       
       <div className="space-y-4">
         {Object.entries(plans).map(([key, plan]) => <div key={key} className="relative">
             {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-green-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center shadow-lg">
                   <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
                   PIÙ POPOLARE
                 </div>
               </div>}
             
             <div className="absolute -top-3 -right-3 z-10">
-              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold">
+              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
                 RISPARMIA {plan.savings}
               </div>
             </div>
@@ -184,7 +190,7 @@ const PricingDiscounted: React.FC = () => {
                   
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    <div className="flex items-center space-x-2">
+                    <div className="flex items-center space-x-2 mb-1">
                       <span className="text-lg font-bold text-green-600">€{plan.discountedPrice}</span>
                       <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>
                     </div>
@@ -196,6 +202,9 @@ const PricingDiscounted: React.FC = () => {
                     €{plan.dailyPrice.toFixed(2)}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
+                  <div className="text-xs text-gray-500 line-through">
+                    €{plan.originalDailyPrice.toFixed(2)}
+                  </div>
                 </div>
               </div>
             </div>
@@ -203,12 +212,16 @@ const PricingDiscounted: React.FC = () => {
       </div>
 
       <div className="text-center mt-8">
-        <Button onClick={handleSelectPlan} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg animate-pulse">
+        <Button onClick={handleSelectPlan} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg transition-all duration-300 transform hover:scale-105">
           OTTIENI IL MIO PIANO SCONTATO
         </Button>
       </div>
 
-      <div className="text-center mt-6 text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+      <div className="text-center mt-6 text-xs text-gray-600 bg-gray-50 p-4 rounded-lg">
+        <p>{disclaimers[selectedPlan]}</p>
+      </div>
+
+      <div className="text-center mt-4 text-sm text-gray-600">
         <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
       </div>
     </div>;
@@ -216,7 +229,7 @@ const PricingDiscounted: React.FC = () => {
       <CountdownOffer onExpired={handleCountdownExpired} />
       
       <div className="max-w-[580px] mx-auto px-4 pt-32">
-        <BeforeAfterComparison />
+        <BeforeAfterComparison userGender={userGender} />
         <PricingSection />
 
         <div className="text-center mb-16">
