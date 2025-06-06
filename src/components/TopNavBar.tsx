@@ -46,7 +46,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
         
         <div className="w-1/3 flex justify-center">
           <img 
-            alt="LoveCoach" 
+            alt="Spinal" 
             className="h-8 w-auto object-contain" 
             src="/lovable-uploads/4c503bbb-0aea-4ecb-9636-84204fc62ad6.png" 
           />
