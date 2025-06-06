@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -121,9 +120,6 @@ const NewIndex = () => {
                 >
                   Inizia il Test Posturale
                 </button>
-                <button className="border-2 border-gray-300 text-gray-700 px-8 py-4 rounded-full font-semibold text-lg hover:border-blue-600 hover:text-blue-600 transition-all duration-300">
-                  Scarica l'App
-                </button>
               </div>
 
               <div className="flex items-center space-x-8 pt-8">
@@ -133,7 +129,7 @@ const NewIndex = () => {
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900">4.8★</div>
-                  <div className="text-sm text-gray-600">Rating App</div>
+                  <div className="text-sm text-gray-600">Valutazione App</div>
                 </div>
                 <div className="text-center">
                   <div className="text-2xl font-bold text-gray-900">90%</div>
@@ -189,7 +185,7 @@ const NewIndex = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Real Support for Real Spine
+              Supporto Reale per una Colonna Vertebrale Reale
             </h2>
             <p className="text-xl text-gray-600">
               Risultati comprovati da migliaia di utenti
@@ -223,7 +219,7 @@ const NewIndex = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Hear from Spinal Users
+              Ascolta gli Utenti di Spinal
             </h2>
             <p className="text-xl text-gray-600">
               Storie reali di trasformazione
@@ -472,33 +468,26 @@ const NewIndex = () => {
             <div>
               <h3 className="font-semibold mb-4">Prodotto</h3>
               <ul className="space-y-2 text-gray-400">
-                <li>Caratteristiche</li>
-                <li>Prezzi</li>
-                <li>Test Gratuito</li>
-                <li>App Mobile</li>
+                <li><a href="/quiz" className="hover:text-white transition-colors">Test Gratuito</a></li>
+                <li><a href="/pricing" className="hover:text-white transition-colors">Prezzi</a></li>
+              </ul>
+            </div>
+            
+            <div>
+              <h3 className="font-semibold mb-4">Legale</h3>
+              <ul className="space-y-2 text-gray-400">
+                <li><a href="/terms-of-use" className="hover:text-white transition-colors">Termini di Utilizzo</a></li>
+                <li><a href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="/cookie-policy" className="hover:text-white transition-colors">Cookie Policy</a></li>
+                <li><a href="/subscription-policy" className="hover:text-white transition-colors">Policy di Abbonamento</a></li>
               </ul>
             </div>
             
             <div>
               <h3 className="font-semibold mb-4">Supporto</h3>
               <ul className="space-y-2 text-gray-400">
-                <li>Centro Aiuto</li>
-                <li>Contatti</li>
-                <li>Community</li>
-                <li>Blog</li>
+                <li><a href="/contact" className="hover:text-white transition-colors">Contatti</a></li>
               </ul>
-            </div>
-            
-            <div>
-              <h3 className="font-semibold mb-4">Scarica l'App</h3>
-              <div className="space-y-3">
-                <div className="bg-gray-800 rounded-lg p-3 flex items-center">
-                  <span className="text-sm">📱 App Store</span>
-                </div>
-                <div className="bg-gray-800 rounded-lg p-3 flex items-center">
-                  <span className="text-sm">🤖 Google Play</span>
-                </div>
-              </div>
             </div>
           </div>
           

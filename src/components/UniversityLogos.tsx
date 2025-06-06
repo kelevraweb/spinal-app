@@ -14,12 +14,12 @@ const UniversityLogos: React.FC = () => {
         </p>
       </div>
 
-      {/* Universities Section */}
+      {/* Universities Section - 2x2 Grid */}
       <div className="mb-12">
-        <div className="grid grid-cols-1 gap-8 items-center justify-items-center">
+        <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
                 HARVARD<br />UNIVERSITY
               </h2>
             </div>
@@ -27,7 +27,7 @@ const UniversityLogos: React.FC = () => {
           
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
                 UNIVERSITY<br />OF OXFORD
               </h2>
             </div>
@@ -35,8 +35,16 @@ const UniversityLogos: React.FC = () => {
           
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-xl md:text-2xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
                 UNIVERSITY<br />OF CAMBRIDGE
+              </h2>
+            </div>
+          </div>
+          
+          <div className="text-center">
+            <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
+              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
+                STANFORD<br />UNIVERSITY
               </h2>
             </div>
           </div>
@@ -44,7 +52,7 @@ const UniversityLogos: React.FC = () => {
       </div>
 
       {/* Scientific Validation Section */}
-      <div className="bg-gray-50 rounded-xl p-6 mb-8">
+      <div className="bg-gray-50 rounded-xl p-6 mb-8 mx-4">
         <div className="text-center">
           <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
             Ricerca scientifica consolidata
@@ -75,7 +83,7 @@ const UniversityLogos: React.FC = () => {
       </div>
 
       {/* Trust Section */}
-      <div className="text-center">
+      <div className="text-center px-4">
         <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">
           Affidabilità scientifica garantita
         </h2>

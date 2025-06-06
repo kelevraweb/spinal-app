@@ -11,6 +11,11 @@ import Pricing from "./pages/Pricing";
 import PricingDiscounted from "./pages/PricingDiscounted";
 import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
+import TermsOfUse from "./pages/TermsOfUse";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CookiePolicy from "./pages/CookiePolicy";
+import SubscriptionPolicy from "./pages/SubscriptionPolicy";
+import Contact from "./pages/Contact";
 import { useFacebookPixel } from "@/hooks/useFacebookPixel";
 
 // Configure FontAwesome
@@ -93,6 +98,11 @@ const App = () => {
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/pricing-discounted" element={<PricingDiscounted />} />
               <Route path="/thank-you" element={<ThankYou />} />
+              <Route path="/terms-of-use" element={<TermsOfUse />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
+              <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </BrowserRouter>
