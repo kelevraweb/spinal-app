@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -47,7 +46,6 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
         },
         animations: {
           enabled: true,
-          easing: 'easeinout',
           speed: 2500,
           animateGradually: {
             enabled: true,
