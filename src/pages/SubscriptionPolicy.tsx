@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const SubscriptionPolicy: React.FC = () => {
@@ -57,12 +56,19 @@ const SubscriptionPolicy: React.FC = () => {
             <section className="mb-8">
               <h2 className="text-2xl font-semibold text-gray-900 mb-4">4. Cancellazione e Rimborsi</h2>
               <p className="text-gray-700 mb-4">
-                Puoi cancellare il tuo abbonamento in qualsiasi momento dalle impostazioni del tuo account. 
+                Per disdire l'abbonamento devi scrivere un'email a: 
+                <a href="mailto:support@spinalapp.net" className="text-blue-600 hover:text-blue-800 ml-1">
+                  support@spinalapp.net
+                </a>
+              </p>
+              <p className="text-gray-700 mb-4">
                 La cancellazione avrà effetto alla fine del periodo di fatturazione corrente.
               </p>
               <p className="text-gray-700 mb-4">
-                Offriamo una garanzia di soddisfazione di 14 giorni. Se non sei soddisfatto del servizio 
-                entro i primi 14 giorni, puoi richiedere un rimborso completo.
+                Per informazioni sui rimborsi, consulta la nostra 
+                <a href="/money-back-guarantee" className="text-blue-600 hover:text-blue-800 ml-1">
+                  Garanzia di Rimborso
+                </a>.
               </p>
             </section>
 

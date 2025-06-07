@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -140,7 +139,23 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
         
         <div className="text-center mt-8">
           <p className="text-xs text-gray-500">
-            Facendo clic su "Maschio" o "Femmina" accetti i Termini di utilizzo e servizio, l'Informativa sulla privacy, l'Informativa sugli abbonamenti e l'Informativa sui cookie
+            Facendo clic su "Maschio" o "Femmina" accetti i{' '}
+            <a href="/terms-of-use" className="underline hover:text-gray-700">
+              Termini di utilizzo e servizio
+            </a>, l'{' '}
+            <a href="/privacy-policy" className="underline hover:text-gray-700">
+              Informativa sulla privacy
+            </a>, l'{' '}
+            <a href="/subscription-policy" className="underline hover:text-gray-700">
+              Informativa sugli abbonamenti
+            </a>, l'{' '}
+            <a href="/money-back-guarantee" className="underline hover:text-gray-700">
+              Garanzia di rimborso
+            </a>{' '}
+            e l'{' '}
+            <a href="/cookie-policy" className="underline hover:text-gray-700">
+              Informativa sui cookie
+            </a>
           </p>
         </div>
       </div>

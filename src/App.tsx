@@ -15,6 +15,7 @@ import TermsOfUse from "./pages/TermsOfUse";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
 import SubscriptionPolicy from "./pages/SubscriptionPolicy";
+import MoneyBackGuarantee from "./pages/MoneyBackGuarantee";
 import Contact from "./pages/Contact";
 import { useFacebookPixel } from "@/hooks/useFacebookPixel";
 
@@ -102,6 +103,7 @@ const App = () => {
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
               <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
+              <Route path="/money-back-guarantee" element={<MoneyBackGuarantee />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="*" element={<NotFound />} />
             </Routes>

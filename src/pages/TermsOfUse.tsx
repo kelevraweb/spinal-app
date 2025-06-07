@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 const TermsOfUse: React.FC = () => {
@@ -77,7 +76,36 @@ const TermsOfUse: React.FC = () => {
             </section>
 
             <section className="mb-8">
-              <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Contatti</h2>
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">8. Documenti Correlati</h2>
+              <p className="text-gray-700 mb-4">
+                Questi Termini di Utilizzo devono essere letti insieme ai seguenti documenti:
+              </p>
+              <ul className="list-disc pl-6 text-gray-700 mb-4">
+                <li>
+                  <a href="/privacy-policy" className="text-blue-600 hover:text-blue-800">
+                    Informativa sulla Privacy
+                  </a>
+                </li>
+                <li>
+                  <a href="/subscription-policy" className="text-blue-600 hover:text-blue-800">
+                    Policy di Abbonamento
+                  </a>
+                </li>
+                <li>
+                  <a href="/money-back-guarantee" className="text-blue-600 hover:text-blue-800">
+                    Garanzia di Rimborso
+                  </a>
+                </li>
+                <li>
+                  <a href="/cookie-policy" className="text-blue-600 hover:text-blue-800">
+                    Informativa sui Cookie
+                  </a>
+                </li>
+              </ul>
+            </section>
+
+            <section className="mb-8">
+              <h2 className="text-2xl font-semibold text-gray-900 mb-4">9. Contatti</h2>
               <p className="text-gray-700 mb-4">
                 Per domande sui presenti Termini di Utilizzo, contattaci all'indirizzo: 
                 <a href="mailto:support@spinalapp.net" className="text-blue-600 hover:text-blue-800 ml-1">

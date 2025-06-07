@@ -239,8 +239,11 @@ const Index = () => {
           <div className="text-center text-gray-500 text-sm">
             <p>&copy; {new Date().getFullYear()} Lovable. Tutti i diritti riservati.</p>
             <p className="mt-2">
-              <a href="#" className="underline hover:text-gray-700 mr-4">Privacy Policy</a>
-              <a href="#" className="underline hover:text-gray-700">Termini e Condizioni</a>
+              <a href="/privacy-policy" className="underline hover:text-gray-700 mr-4">Privacy Policy</a>
+              <a href="/terms-of-use" className="underline hover:text-gray-700 mr-4">Termini e Condizioni</a>
+              <a href="/subscription-policy" className="underline hover:text-gray-700 mr-4">Policy Abbonamento</a>
+              <a href="/money-back-guarantee" className="underline hover:text-gray-700 mr-4">Garanzia Rimborso</a>
+              <a href="/contact" className="underline hover:text-gray-700">Contatti</a>
             </p>
           </div>
         </div>
