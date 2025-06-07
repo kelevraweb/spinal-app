@@ -163,8 +163,19 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
           </div>
         </div>
 
-        {/* Indicators Grid */}
-        <div className="grid grid-cols-2 gap-4 mb-8">
+        {/* Continue Button - MOVED BEFORE INDICATORS */}
+        <div className="text-center mb-8">
+          <Button 
+            onClick={onContinue} 
+            size="lg" 
+            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-3 w-full"
+          >
+            Scopri il tuo piano personalizzato
+          </Button>
+        </div>
+
+        {/* Indicators Grid - NOW AFTER BUTTON */}
+        <div className="grid grid-cols-2 gap-4">
           <div className="bg-gray-50 p-4 rounded-xl">
             <div className="flex items-center justify-center w-12 h-12 bg-[#71b8bc]/20 rounded-full mb-3 mx-auto">
               <Heart className="w-6 h-6 text-[#71b8bc]" />
@@ -196,17 +207,6 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
             <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Qualità del Sonno</h3>
             <p className="text-xs text-gray-600 text-center">Riposo e recupero</p>
           </div>
-        </div>
-
-        {/* Continue Button */}
-        <div className="text-center">
-          <Button 
-            onClick={onContinue} 
-            size="lg" 
-            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-3 w-full"
-          >
-            Scopri il tuo piano personalizzato
-          </Button>
         </div>
       </div>
     </div>

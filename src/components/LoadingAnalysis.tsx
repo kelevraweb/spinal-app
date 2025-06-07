@@ -1,7 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
+import { Star } from 'lucide-react';
+
 interface LoadingAnalysisProps {
   onComplete: () => void;
 }
+
 const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({
   onComplete
 }) => {
@@ -22,6 +26,7 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({
     name: 'Analisi benessere fisico',
     question: 'Ti senti spesso rigido/a quando ti svegli al mattino?'
   }];
+  
   const testimonials = [{
     name: "Marco L.",
     text: "Dopo solo 3 settimane di percorso, il mio mal di schiena è diminuito notevolmente e la mia postura è migliorata."
@@ -35,6 +40,15 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({
     name: "Alessandro B.",
     text: "Il piano personalizzato ha risolto i miei problemi di cervicale che mi tormentavano da anni. Ottimo!"
   }];
+
+  // Star rating component
+  const StarRating = () => (
+    <div className="flex text-yellow-400 mb-2">
+      {[1, 2, 3, 4, 5].map((star) => (
+        <Star key={star} className="w-4 h-4 fill-current" />
+      ))}
+    </div>
+  );
 
   // Testimonial rotation
   useEffect(() => {
@@ -77,11 +91,13 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({
     }, 50);
     return () => clearInterval(interval);
   }, [currentBarIndex, showQuestion, onComplete]);
+  
   const handleAnswer = (answer: boolean) => {
     console.log('Answer:', answer);
     setShowQuestion(false);
     // Progress will resume automatically
   };
+  
   return <div className="max-w-2xl mx-auto my-12 px-4 pt-16 min-h-screen bg-[#fbfaf8]">
       <h2 className="text-2xl font-bold text-center mb-3 text-gray-800">
         Creazione del tuo
@@ -130,11 +146,13 @@ const LoadingAnalysis: React.FC<LoadingAnalysisProps> = ({
           </div>
         </div>}
       
-      {/* Testimonials */}
+      {/* Testimonials with 5-star ratings */}
       <div className="mt-16 bg-white rounded-lg shadow-md p-6 border-l-4 border-[#71b8bc] animate-fade-in">
+        <StarRating />
         <p className="italic mb-2 text-gray-700">"{testimonials[testimonialIndex].text}"</p>
         <p className="text-right font-semibold text-gray-800">— {testimonials[testimonialIndex].name}</p>
       </div>
     </div>;
 };
+
 export default LoadingAnalysis;

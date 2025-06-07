@@ -60,6 +60,17 @@ const PricingDiscounted: React.FC = () => {
     }
   };
 
+  const formatDailyPrice = (price: number) => {
+    const euros = Math.floor(price);
+    const cents = Math.round((price - euros) * 100);
+    return (
+      <span>
+        <span className="text-xl font-bold">{euros}</span>
+        <span className="text-sm">,{cents.toString().padStart(2, '0')}</span>
+      </span>
+    );
+  };
+
   const handleCountdownExpired = () => {
     navigate('/pricing');
   };
@@ -192,19 +203,21 @@ const PricingDiscounted: React.FC = () => {
                   <div>
                     <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-lg font-bold text-green-600">€{plan.discountedPrice}</span>
+                      <span className="text-lg font-bold text-green-600">
+                        €{plan.discountedPrice.toFixed(2)}
+                      </span>
                       <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>
                     </div>
                   </div>
                 </div>
 
                 <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
-                  <div className="text-xl font-bold text-gray-900">
-                    €{plan.dailyPrice.toFixed(2)}
+                  <div className="text-gray-900">
+                    €{formatDailyPrice(plan.dailyPrice)}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
                   <div className="text-xs text-gray-500 line-through">
-                    €{plan.originalDailyPrice.toFixed(2)}
+                    €{formatDailyPrice(plan.originalDailyPrice)}
                   </div>
                 </div>
               </div>

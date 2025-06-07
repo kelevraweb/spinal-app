@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import ReactApexChart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -44,16 +45,19 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
         toolbar: {
           show: false
         },
+        zoom: {
+          enabled: false
+        },
         animations: {
           enabled: true,
-          speed: 2500,
+          speed: 3000,
           animateGradually: {
             enabled: true,
-            delay: 150
+            delay: 800
           },
           dynamicAnimation: {
             enabled: true,
-            speed: 350
+            speed: 800
           }
         }
       },
@@ -76,7 +80,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
         strokeDashArray: 3
       },
       xaxis: {
-        categories: ['Oggi', 'Settimana 1', 'Settimana 2', 'Settimana 3', 'Settimana 4'],
+        categories: ['Oggi', '1 settimana', '1 mese', '3 mesi'],
         labels: {
           style: {
             colors: '#666',
@@ -147,7 +151,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
 
     const series = [{
       name: 'Livello di Benessere',
-      data: [20, 40, 65, 80, 95]
+      data: [20, 50, 75, 95]
     }];
 
     setChartOptions(options);
@@ -169,7 +173,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
         <div className="bg-white rounded-3xl shadow-xl p-6 md:p-10 mb-8 mx-4 max-w-4xl mx-auto">
           <div className="text-center mb-8">
             <h2 className="text-xl md:text-2xl font-bold text-gray-800 mb-3">
-              I tuoi progressi nelle prossime settimane
+              I tuoi progressi nei prossimi mesi
             </h2>
             <p className="text-gray-600">Ecco come migliorerà il tuo benessere seguendo il piano</p>
           </div>
@@ -184,7 +188,7 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
             />
           </div>
 
-          {/* Chart Legend */}
+          {/* Updated Chart Legend with both colors */}
           <div className="text-center mt-6">
             <p className="text-sm text-gray-500 mb-2">Progresso del miglioramento del benessere</p>
             <div className="flex items-center justify-center space-x-6 text-xs text-gray-600">
@@ -197,6 +201,17 @@ const SinusoidalGraph: React.FC<SinusoidalGraphProps> = ({ onContinue }) => {
                 <span>Fase di ottimizzazione</span>
               </div>
             </div>
+          </div>
+          
+          {/* Duplicate button AFTER chart */}
+          <div className="text-center mt-8">
+            <Button 
+              onClick={onContinue} 
+              size="lg"
+              className="w-full bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5da0a4] hover:to-[#72a089] text-white px-8 py-4 text-lg rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+            >
+              Inizia il tuo percorso di benessere
+            </Button>
           </div>
         </div>
 
