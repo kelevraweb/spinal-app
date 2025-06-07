@@ -1,4 +1,3 @@
-
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -24,12 +23,12 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Use the new test key
-    const stripeKey = "sk_test_51N8NRUKUx3KhOjH7pY8DTjsgnlNdrJ5FYhnpstZXOqcFa6HBT39XfxMLH6yZeh9VVUrHtB6nO9OfbwBo53H2g3YH00BM867Clq";
+    // Use the live key
+    const stripeKey = "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";
     
-    // Verify that we're using test mode
-    if (!stripeKey.startsWith('sk_test_')) {
-      throw new Error("Invalid API key: Must use test mode key (starts with 'sk_test_')");
+    // Verify that we're using live mode
+    if (!stripeKey.startsWith('sk_live_')) {
+      throw new Error("Invalid API key: Must use live mode key (starts with 'sk_live_')");
     }
 
     // Get payment details from request body

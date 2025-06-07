@@ -14,7 +14,7 @@ interface CheckoutProps {
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
+const stripePromise = loadStripe('pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5');
 
 const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const stripe = useStripe();
