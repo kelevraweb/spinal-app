@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -19,9 +20,16 @@ const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSd
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
+  userEmail?: string;
+  userName?: string;
 }
 
-const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
+const CheckoutForm: React.FC<CheckoutProps> = ({ 
+  onPurchase, 
+  selectedPlan = 'quarterly',
+  userEmail,
+  userName 
+}) => {
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
@@ -29,12 +37,11 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   const location = useLocation();
   
   const [isLoading, setIsLoading] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string>('');
 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
 
-  // Define pricing based on the page
+  // Define pricing based on the page - updated with correct discounted prices
   const plans = isDiscountedPage ? {
     trial: {
       title: 'PIANO 7 GIORNI',
@@ -91,17 +98,24 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       plan_type: selectedPlan,
       content_ids: [selectedPlan]
     });
-
-    // Create PaymentIntent
-    createPaymentIntent();
   }, [selectedPlan]);
 
-  const createPaymentIntent = async () => {
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!stripe || !elements) {
+      return;
+    }
+
+    setIsLoading(true);
+
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+      // Call the create-checkout function instead of create-payment-intent
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           planType: selectedPlan,
-          amount: Math.round(selectedPlanDetails.price * 100) // Convert to cents
+          userEmail: userEmail,
+          userName: userName
         },
       });
 
@@ -109,75 +123,27 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         throw new Error(error.message);
       }
 
-      if (data?.clientSecret) {
-        setClientSecret(data.clientSecret);
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+        
+        toast({
+          title: "Reindirizzamento a Stripe",
+          description: "Ti stiamo portando alla pagina di pagamento sicura di Stripe."
+        });
       } else {
-        throw new Error('No client secret returned');
+        throw new Error('No checkout URL returned');
       }
     } catch (error) {
-      console.error('Payment intent creation error:', error);
-      toast({
-        title: "Errore",
-        description: "Si è verificato un errore durante la preparazione del pagamento.",
-        variant: "destructive"
-      });
-    }
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!stripe || !elements || !clientSecret) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) return;
-
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-      }
-    });
-
-    if (error) {
-      console.error('Payment error:', error);
+      console.error('Checkout error:', error);
       toast({
         title: "Errore di pagamento",
         description: error.message || "Si è verificato un errore durante il pagamento.",
         variant: "destructive"
       });
-    } else if (paymentIntent.status === 'succeeded') {
-      toast({
-        title: "Pagamento completato!",
-        description: "Il tuo pagamento è stato elaborato con successo."
-      });
-      
-      // Call onPurchase with the purchase data
-      onPurchase({
-        planType: selectedPlan,
-        amount: selectedPlanDetails.price
-      });
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(false);
-  };
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#424770',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-      },
-      invalid: {
-        color: '#9e2146',
-      },
-    },
   };
 
   return (
@@ -189,7 +155,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
             🧪 MODALITÀ TEST - Nessun addebito reale
           </span>
         </div>
-        <p className="text-xs mt-1">Usa 4242 4242 4242 4242 per testare i pagamenti</p>
+        <p className="text-xs mt-1">Test mode - Gli abbonamenti appariranno nella dashboard Stripe</p>
       </div>
 
       {/* Scarcity Banner - only show on discounted page */}
@@ -201,6 +167,15 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
             </span>
           </div>
           <p className="text-xs mt-1 opacity-90">Completa l'acquisto ora per non perdere l'occasione!</p>
+        </div>
+      )}
+
+      {/* User Info Display */}
+      {(userEmail || userName) && (
+        <div className="mb-4 bg-blue-50 border border-blue-200 p-3 rounded-lg">
+          <h3 className="font-semibold text-sm text-blue-800 mb-1">Dettagli utente</h3>
+          {userName && <p className="text-sm text-blue-700">Nome: {userName}</p>}
+          {userEmail && <p className="text-sm text-blue-700">Email: {userEmail}</p>}
         </div>
       )}
 
@@ -236,21 +211,11 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
-            Dettagli carta di credito
-          </label>
-          <div className="border border-gray-300 rounded-md p-3 bg-white">
-            <CardElement options={cardElementOptions} />
-          </div>
-        </div>
-
         <button
           type="submit"
-          disabled={!stripe || isLoading || !clientSecret}
+          disabled={isLoading}
           className={`w-full py-3 rounded-md font-medium ${
-            (!stripe || isLoading || !clientSecret) 
+            isLoading 
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -263,7 +228,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
           ) : (
             <>
               <FontAwesomeIcon icon={faLock} className="mr-2" />
-              PAGA €{selectedPlanDetails.price.toFixed(2)}
+              PROCEDI AL PAGAMENTO €{selectedPlanDetails.price.toFixed(2)}
             </>
           )}
         </button>
