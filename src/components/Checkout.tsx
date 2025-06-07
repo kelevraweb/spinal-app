@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -15,7 +14,7 @@ interface CheckoutProps {
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const stripePromise = loadStripe('pk_test_51QdZQKKmYKm25WGzO0u1LZm6sT6HJgZkNAM34IjcCLQqNOqZxTGvDyoODOHzj0lKvI5vcQGK4uSDPgfA5Y5TGlE000dSF4W3bO');
+const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
 
 const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const stripe = useStripe();

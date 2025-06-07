@@ -24,10 +24,8 @@ serve(async (req: Request) => {
   }
 
   try {
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) {
-      throw new Error("Missing STRIPE_SECRET_KEY");
-    }
+    // Use the new test key
+    const stripeKey = "sk_test_51N8NRUKUx3KhOjH7pY8DTjsgnlNdrJ5FYhnpstZXOqcFa6HBT39XfxMLH6yZeh9VVUrHtB6nO9OfbwBo53H2g3YH00BM867Clq";
     
     // Verify that we're using test mode
     if (!stripeKey.startsWith('sk_test_')) {
