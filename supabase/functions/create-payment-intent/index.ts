@@ -1,3 +1,4 @@
+
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@14.21.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
@@ -23,13 +24,14 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Use the live key
-    const stripeKey = "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";
+    // Get the Stripe secret key from environment variables
+    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
     
-    // Verify that we're using live mode
-    if (!stripeKey.startsWith('sk_live_')) {
-      throw new Error("Invalid API key: Must use live mode key (starts with 'sk_live_')");
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
     }
+
+    console.log('Using Stripe key:', stripeKey.substring(0, 12) + '...');
 
     // Get payment details from request body
     const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
