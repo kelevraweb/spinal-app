@@ -204,10 +204,10 @@ const PricingDiscounted: React.FC = () => {
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-lg font-bold text-green-600">
+                      <span className="text-2xl font-bold text-green-600">
                         €{plan.discountedPrice.toFixed(2)}
                       </span>
-                      <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>
+                      <span className="text-xs text-gray-500 line-through">€{plan.originalPrice}</span>
                     </div>
                   </div>
                 </div>
