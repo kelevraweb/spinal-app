@@ -19,7 +19,7 @@ const UniversityLogos: React.FC = () => {
         <div className="grid grid-cols-2 gap-6 max-w-4xl mx-auto px-4">
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-sm md:text-xl font-serif text-black font-medium tracking-wide">
                 HARVARD<br />UNIVERSITY
               </h2>
             </div>
@@ -27,7 +27,7 @@ const UniversityLogos: React.FC = () => {
           
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-sm md:text-xl font-serif text-black font-medium tracking-wide">
                 UNIVERSITY<br />OF OXFORD
               </h2>
             </div>
@@ -35,7 +35,7 @@ const UniversityLogos: React.FC = () => {
           
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-sm md:text-xl font-serif text-black font-medium tracking-wide">
                 UNIVERSITY<br />OF CAMBRIDGE
               </h2>
             </div>
@@ -43,7 +43,7 @@ const UniversityLogos: React.FC = () => {
           
           <div className="text-center">
             <div className="bg-white rounded-xl shadow-lg p-6 border border-gray-100">
-              <h2 className="text-lg md:text-xl font-serif text-black font-medium tracking-wide">
+              <h2 className="text-sm md:text-xl font-serif text-black font-medium tracking-wide">
                 STANFORD<br />UNIVERSITY
               </h2>
             </div>

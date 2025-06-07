@@ -53,7 +53,7 @@ const TopNavBar: React.FC<TopNavBarProps> = ({
         </div>
         
         <div className="w-1/3 flex justify-end text-sm text-white">
-          Domanda {currentStep + 1} di {totalSteps}
+          {currentStep + 1} di {totalSteps}
         </div>
       </div>
       

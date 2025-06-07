@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -65,8 +66,8 @@ const PricingDiscounted: React.FC = () => {
     const cents = Math.round((price - euros) * 100);
     return (
       <span>
-        <span className="text-xl font-bold">{euros}</span>
-        <span className="text-sm">,{cents.toString().padStart(2, '0')}</span>
+        <span className="text-lg font-bold">{euros}</span>
+        <span className="text-xs">,{cents.toString().padStart(2, '0')}</span>
       </span>
     );
   };
@@ -163,12 +164,12 @@ const PricingDiscounted: React.FC = () => {
   const PricingSection = ({
     compact = false
   }) => (
-    <div className={`${compact ? 'mb-8' : 'mb-12'} max-w-[580px] mx-auto px-4`}>
-      {!compact && <div className="text-center mb-12">
-          <div className="inline-block bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-medium mb-4 animate-pulse">
+    <div className={`${compact ? 'mb-6' : 'mb-8'} max-w-[580px] mx-auto px-2`} data-pricing-section>
+      {!compact && <div className="text-center mb-8">
+          <div className="inline-block bg-gradient-to-r from-red-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-medium mb-3 animate-pulse">
             🔥 OFFERTA LIMITATA - FINO AL 79% DI SCONTO!
           </div>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-3xl font-bold mb-3 bg-gradient-to-r from-gray-800 to-gray-600 bg-clip-text text-transparent">
             {userName ? `Ciao ${userName}, il` : 'Il'} tuo piano personalizzato per la salute della schiena è pronto!
           </h1>
           <p className="text-red-600 font-semibold text-lg">
@@ -176,32 +177,32 @@ const PricingDiscounted: React.FC = () => {
           </p>
         </div>}
       
-      <div className="space-y-4">
+      <div className="space-y-3">
         {Object.entries(plans).map(([key, plan]) => <div key={key} className="relative">
-            {plan.popular && <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
-                <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-1 rounded-md text-xs font-medium flex items-center shadow-lg">
+            {plan.popular && <div className="absolute -top-2 left-4 z-10">
+                <div className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-md text-xs font-medium flex items-center shadow-lg">
                   <FontAwesomeIcon icon={faStar} className="mr-1 text-xs" />
                   PIÙ POPOLARE
                 </div>
               </div>}
             
-            <div className="absolute -top-3 -right-3 z-10">
-              <div className="bg-red-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
+            <div className="absolute -top-2 -right-2 z-10">
+              <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
                 RISPARMIA {plan.savings}
               </div>
             </div>
             
-            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')} className={`relative border-2 rounded-xl p-6 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1">
-                  <div className="mr-4">
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${selectedPlan === key ? 'border-green-500 bg-green-500' : 'border-gray-300'}`}>
-                      {selectedPlan === key && <div className="w-2 h-2 bg-white rounded-full"></div>}
+                  <div className="mr-3">
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center ${selectedPlan === key ? 'border-green-500 bg-green-500' : 'border-gray-300'}`}>
+                      {selectedPlan === key && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
                     </div>
                   </div>
                   
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.title}</h3>
+                    <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
                       <span className="text-lg font-bold text-green-600">
                         €{plan.discountedPrice.toFixed(2)}
@@ -211,7 +212,7 @@ const PricingDiscounted: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
+                <div className="bg-gray-100 rounded-lg px-3 py-2 text-center">
                   <div className="text-gray-900">
                     €{formatDailyPrice(plan.dailyPrice)}
                   </div>
@@ -225,17 +226,17 @@ const PricingDiscounted: React.FC = () => {
           </div>)}
       </div>
 
-      <div className="text-center mt-8">
-        <Button onClick={handleSelectPlan} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-4 px-8 rounded-lg text-lg shadow-lg transition-all duration-300 transform hover:scale-105">
+      <div className="text-center mt-6">
+        <Button onClick={handleSelectPlan} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105">
           OTTIENI IL MIO PIANO SCONTATO
         </Button>
       </div>
 
-      <div className="text-center mt-6 text-xs text-gray-600 bg-gray-50 p-4 rounded-lg">
+      <div className="text-center mt-4 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
         <p>{disclaimers[selectedPlan]}</p>
       </div>
 
-      <div className="text-center mt-4 text-sm text-gray-600">
+      <div className="text-center mt-3 text-sm text-gray-600">
         <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
       </div>
     </div>
@@ -245,13 +246,13 @@ const PricingDiscounted: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
       <CountdownOffer onExpired={handleCountdownExpired} />
       
-      <div className="max-w-[580px] mx-auto px-4 pt-32">
+      <div className="max-w-[580px] mx-auto px-2 pt-32">
         {/* Before-After Comparison Section - Remove userGender prop */}
         <BeforeAfterComparison />
         <PricingSection />
 
-        <div className="text-center mb-16">
-          <div className="bg-white rounded-2xl p-8 shadow-lg max-w-md mx-auto">
+        <div className="text-center mb-12">
+          <div className="bg-white rounded-2xl p-6 shadow-lg max-w-md mx-auto">
             <div className="flex items-center justify-center mb-4">
               <FontAwesomeIcon icon={faShieldAlt} className="text-green-500 mr-3 text-2xl" />
               <p className="font-bold text-lg">Pagamento Sicuro e Protetto</p>
@@ -260,32 +261,32 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
+        <div className="mb-12">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
               I NOSTRI OBIETTIVI PER IL TUO BENESSERE FISICO
             </h2>
             <div className="w-24 h-1 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] mx-auto rounded-full"></div>
           </div>
-          <div className="grid grid-cols-1 gap-6">
-            {["Ti svegli con meno rigidità e più scioltezza nei movimenti", "Non vivi più giornate segnate dal mal di schiena o da fastidi continui", "Ti muovi con più fluidità, sicurezza e controllo", "Migliori la tua postura, anche quando lavori o stai seduto a lungo", "Recuperi energia fisica grazie a un corpo che si muove meglio", "Riscopri il piacere di fare gesti semplici senza dolore o sforzo"].map((objective, index) => <div key={index} className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-[#71b8bc] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="grid grid-cols-1 gap-4">
+            {["Ti svegli con meno rigidità e più scioltezza nei movimenti", "Non vivi più giornate segnate dal mal di schiena o da fastidi continui", "Ti muovi con più fluidità, sicurezza e controllo", "Migliori la tua postura, anche quando lavori o stai seduto a lungo", "Recuperi energia fisica grazie a un corpo che si muove meglio", "Riscopri il piacere di fare gesti semplici senza dolore o sforzo"].map((objective, index) => <div key={index} className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-[#71b8bc] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="flex items-start">
-                  <div className="w-8 h-8 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full flex items-center justify-center mr-4 flex-shrink-0">
-                    <FontAwesomeIcon icon={faCheck} className="text-white text-sm" />
+                  <div className="w-6 h-6 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
+                    <FontAwesomeIcon icon={faCheck} className="text-white text-xs" />
                   </div>
-                  <p className="text-gray-700 font-medium">{objective}</p>
+                  <p className="text-gray-700 text-sm font-medium">{objective}</p>
                 </div>
               </div>)}
           </div>
         </div>
 
-        <div className="mb-16">
-          <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-3xl p-8 md:p-12 text-white text-center">
-            <h2 className="text-2xl md:text-3xl font-bold mb-8">
+        <div className="mb-12">
+          <div className="bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-3xl p-6 md:p-8 text-white text-center">
+            <h2 className="text-xl md:text-2xl font-bold mb-6">
               Persone come te hanno ottenuto risultati straordinari!
             </h2>
             
-            <div className="grid grid-cols-1 gap-8">
+            <div className="grid grid-cols-1 gap-6">
               {[{
               percentage: "83%",
               text: "degli utenti è riuscito a migliorare il proprio benessere dopo sole 6 settimane"
@@ -295,90 +296,90 @@ const PricingDiscounted: React.FC = () => {
             }, {
               percentage: "45%",
               text: "degli utenti soffre degli stessi problemi tuoi"
-            }].map((stat, index) => <div key={index} className="bg-white/10 rounded-2xl p-6 backdrop-blur-sm">
-                  <div className="text-4xl md:text-5xl font-bold mb-4">{stat.percentage}</div>
-                  <p className="text-white/90">{stat.text}</p>
+            }].map((stat, index) => <div key={index} className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+                  <div className="text-3xl md:text-4xl font-bold mb-3">{stat.percentage}</div>
+                  <p className="text-white/90 text-sm">{stat.text}</p>
                 </div>)}
             </div>
           </div>
         </div>
 
-        <div className="mb-16 grid grid-cols-1 gap-8">
-          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-6 md:p-8">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-red-800">
+        <div className="mb-12 grid grid-cols-1 gap-6">
+          <div className="bg-gradient-to-br from-red-50 to-red-100 rounded-3xl p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-bold text-center mb-6 text-red-800">
               Senza il nostro piano
             </h2>
-            <div className="space-y-4">
-              {["Mal di schiena costante che rallenta le tue giornate", "Dolore o rigidità quando ti alzi dal letto o dalla sedia", "Tensione alle spalle e collo dopo ore davanti al PC", "Sensazione di blocco o fatica a fare anche movimenti semplici", "Rinunci a camminate o attività per paura del dolore", "Ti abitui al disagio fisico, pensando sia \"normale\""].map((item, index) => <div key={index} className="bg-white rounded-lg p-4 flex items-start shadow-sm">
-                  <FontAwesomeIcon icon={faCheck} className="text-red-500 mr-3 mt-1" />
-                  <p className="text-gray-700 text-sm md:text-base">{item}</p>
+            <div className="space-y-3">
+              {["Mal di schiena costante che rallenta le tue giornate", "Dolore o rigidità quando ti alzi dal letto o dalla sedia", "Tensione alle spalle e collo dopo ore davanti al PC", "Sensazione di blocco o fatica a fare anche movimenti semplici", "Rinunci a camminate o attività per paura del dolore", "Ti abitui al disagio fisico, pensando sia \"normale\""].map((item, index) => <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
+                  <FontAwesomeIcon icon={faCheck} className="text-red-500 mr-3 mt-1 text-sm" />
+                  <p className="text-gray-700 text-sm">{item}</p>
                 </div>)}
             </div>
           </div>
 
-          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-6 md:p-8">
-            <h2 className="text-xl md:text-2xl font-bold text-center mb-8 text-green-800">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-3xl p-4 md:p-6">
+            <h2 className="text-lg md:text-xl font-bold text-center mb-6 text-green-800">
               Con il nostro piano "Schiena Libera"
             </h2>
-            <div className="space-y-4">
-              {["Meno dolore lombare, cervicale o dorsale già dopo pochi giorni", "Più mobilità e fluidità nei movimenti quotidiani", "Postura migliorata senza sforzi estremi o attrezzi", "Routine semplice da seguire anche con poco tempo", "Ritorno alla libertà di muoverti senza paura o limitazioni", "Sensazione di benessere fisico costante e naturale"].map((item, index) => <div key={index} className="bg-white rounded-lg p-4 flex items-start shadow-sm">
-                  <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1" />
-                  <p className="text-gray-700 text-sm md:text-base">{item}</p>
+            <div className="space-y-3">
+              {["Meno dolore lombare, cervicale o dorsale già dopo pochi giorni", "Più mobilità e fluidità nei movimenti quotidiani", "Postura migliorata senza sforzi estremi o attrezzi", "Routine semplice da seguire anche con poco tempo", "Ritorno alla libertà di muoverti senza paura o limitazioni", "Sensazione di benessere fisico costante e naturale"].map((item, index) => <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
+                  <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1 text-sm" />
+                  <p className="text-gray-700 text-sm">{item}</p>
                 </div>)}
             </div>
           </div>
         </div>
 
-        <div className="mb-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-6 md:p-8">
-          <div className="text-center mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-800">
+        <div className="mb-12 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-3xl p-4 md:p-6">
+          <div className="text-center mb-6">
+            <h2 className="text-xl md:text-2xl font-bold mb-3 text-gray-800">
               Non aspettare oltre - inizia oggi stesso!
             </h2>
-            <p className="text-gray-600 text-lg">Scegli il piano più adatto a te</p>
+            <p className="text-gray-600 text-base">Scegli il piano più adatto a te</p>
           </div>
           <PricingSection compact={true} />
         </div>
 
-        <div className="mb-16">
-          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-6 md:p-8 border-2 border-green-200">
-            <div className="text-center mb-6">
-              <div className="inline-block bg-green-500 text-white p-4 rounded-full mb-4">
-                <FontAwesomeIcon icon={faShieldAlt} className="text-2xl" />
+        <div className="mb-12">
+          <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-3xl p-4 md:p-6 border-2 border-green-200">
+            <div className="text-center mb-4">
+              <div className="inline-block bg-green-500 text-white p-3 rounded-full mb-3">
+                <FontAwesomeIcon icon={faShieldAlt} className="text-xl" />
               </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-green-800">
+              <h2 className="text-xl md:text-2xl font-bold mb-3 text-green-800">
                 Garanzia Soddisfatti o Rimborsati – 30 Giorni
               </h2>
             </div>
-            <div className="max-w-4xl mx-auto space-y-4 text-gray-700">
-              <p className="text-lg">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
-              <p className="text-lg">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
-              <div className="bg-white rounded-xl p-6 border-l-4 border-green-500">
-                <p className="font-medium text-lg">
+            <div className="max-w-4xl mx-auto space-y-3 text-gray-700">
+              <p className="text-base">Siamo certi che il nostro piano ti aiuterà a ridurre tensioni, dolori e rigidità.</p>
+              <p className="text-base">Per questo, ti offriamo una garanzia di rimborso completa entro 30 giorni.</p>
+              <div className="bg-white rounded-xl p-4 border-l-4 border-green-500">
+                <p className="font-medium text-base">
                   👉 Se seguirai il piano come indicato e non noterai alcun miglioramento fisico percepibile (meno dolore, più mobilità, miglior postura), potrai richiedere il rimborso senza spiegazioni complicate.
                 </p>
               </div>
-              <p className="text-center">📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
+              <p className="text-center text-sm">📄 Consulta la nostra Politica di Rimborso per conoscere tutte le condizioni applicabili.</p>
             </div>
           </div>
         </div>
 
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
             Le persone spesso chiedono:
           </h2>
           
-          <div className="max-w-[580px] mx-auto space-y-4">
+          <div className="max-w-[580px] mx-auto space-y-3">
             {faqItems.map(faq => <Collapsible key={faq.id} open={openFAQ === faq.id} onOpenChange={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
                 <CollapsibleTrigger className="w-full">
-                  <div className="bg-white rounded-xl shadow-lg p-6 hover:shadow-xl transition-all duration-300 cursor-pointer">
+                  <div className="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-bold text-left text-lg">{faq.question}</h3>
-                      <ChevronDown className={`w-5 h-5 text-[#71b8bc] transition-transform duration-300 ${openFAQ === faq.id ? 'rotate-180' : ''}`} />
+                      <h3 className="font-bold text-left text-base">{faq.question}</h3>
+                      <ChevronDown className={`w-4 h-4 text-[#71b8bc] transition-transform duration-300 ${openFAQ === faq.id ? 'rotate-180' : ''}`} />
                     </div>
                   </div>
                 </CollapsibleTrigger>
                 <CollapsibleContent>
-                  <div className="bg-gray-50 rounded-xl p-6 mt-2 border-l-4 border-[#71b8bc]">
+                  <div className="bg-gray-50 rounded-xl p-4 mt-2 border-l-4 border-[#71b8bc]">
                     {faq.answer}
                   </div>
                 </CollapsibleContent>
@@ -386,12 +387,12 @@ const PricingDiscounted: React.FC = () => {
           </div>
         </div>
 
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-center mb-8 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] bg-clip-text text-transparent">
             Gli utenti adorano il nostro piano "Schiena Libera"
           </h2>
           
-          <div className="grid grid-cols-1 gap-8">
+          <div className="grid grid-cols-1 gap-6">
             {[{
             name: "Laura M., 45 anni",
             title: "Mi sveglio senza il solito blocco lombare",
@@ -408,13 +409,13 @@ const PricingDiscounted: React.FC = () => {
             name: "Gianni B., 64 anni",
             title: "Sto ricominciando a camminare senza dolori",
             text: "Dopo anni di rigidità e fastidi alla schiena, riesco a camminare a lungo senza fermarmi. Questo piano mi ha dato più risultati di fisioterapie molto più costose."
-          }].map((testimonial, index) => <div key={index} className="bg-white rounded-2xl shadow-xl p-6 md:p-8 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
-                <div className="flex text-yellow-400 mb-4">
+          }].map((testimonial, index) => <div key={index} className="bg-white rounded-2xl shadow-xl p-4 md:p-6 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+                <div className="flex text-yellow-400 mb-3">
                   <Rating rating={5} />
                 </div>
-                <h3 className="font-bold mb-3 text-lg text-gray-800">"{testimonial.title}"</h3>
-                <p className="text-sm text-[#71b8bc] mb-4 font-medium">{testimonial.name}</p>
-                <p className="text-gray-700 leading-relaxed">{testimonial.text}</p>
+                <h3 className="font-bold mb-2 text-base text-gray-800">"{testimonial.title}"</h3>
+                <p className="text-sm text-[#71b8bc] mb-3 font-medium">{testimonial.name}</p>
+                <p className="text-gray-700 leading-relaxed text-sm">{testimonial.text}</p>
               </div>)}
           </div>
         </div>
