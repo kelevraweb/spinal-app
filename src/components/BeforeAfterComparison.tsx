@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -88,8 +89,8 @@ const BeforeAfterComparison: React.FC = () => {
   );
 
   return (
-    <div className={`max-w-7xl mx-auto mb-10 px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-      <h2 className="text-2xl md:text-3xl font-bold text-center mb-12 text-gray-800">
+    <div className={`max-w-7xl mx-auto mb-6 px-4 transition-all duration-1000 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+      <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">
         {userName}, il tuo piano personalizzato è pronto!
       </h2>
       
@@ -200,7 +201,7 @@ const BeforeAfterComparison: React.FC = () => {
       </div>
       
       {/* Bottom Stats Bar */}
-      <div className="bg-[#71b8bc] text-white p-6 rounded-lg mt-12 text-center">
+      <div className="bg-[#71b8bc] text-white p-6 rounded-lg mt-8 text-center">
         <p className="font-medium text-lg">Il 94% dei nostri clienti ha notato un miglioramento dopo solo 2 settimane</p>
         <p className="text-sm opacity-90 mt-2">Basato su rilevazioni effettuate su 1.200+ utenti</p>
       </div>
