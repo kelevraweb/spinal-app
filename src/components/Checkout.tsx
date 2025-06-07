@@ -1,11 +1,5 @@
+
 import React, { useState, useEffect } from 'react';
-import { loadStripe } from '@stripe/stripe-js';
-import {
-  Elements,
-  CardElement,
-  useStripe,
-  useElements
-} from '@stripe/react-stripe-js';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,23 +7,17 @@ import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/fre
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation } from 'react-router-dom';
 
-// Updated with correct test mode key
-const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
-
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
-  const stripe = useStripe();
-  const elements = useElements();
+const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const { toast } = useToast();
   const { trackInitiateCheckout } = useFacebookPixel();
   const location = useLocation();
   
   const [isLoading, setIsLoading] = useState(false);
-  const [clientSecret, setClientSecret] = useState<string>('');
 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
@@ -91,17 +79,17 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       plan_type: selectedPlan,
       content_ids: [selectedPlan]
     });
-
-    // Create PaymentIntent
-    createPaymentIntent();
   }, [selectedPlan]);
 
-  const createPaymentIntent = async () => {
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
+
     try {
-      const { data, error } = await supabase.functions.invoke('create-payment-intent', {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: { 
           planType: selectedPlan,
-          amount: Math.round(selectedPlanDetails.price * 100) // Convert to cents
+          isDiscounted: isDiscountedPage
         },
       });
 
@@ -109,75 +97,28 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         throw new Error(error.message);
       }
 
-      if (data?.clientSecret) {
-        setClientSecret(data.clientSecret);
+      if (data?.url) {
+        // Open Stripe checkout in a new tab
+        window.open(data.url, '_blank');
+        
+        // Call onPurchase for tracking purposes
+        onPurchase({
+          planType: selectedPlan,
+          amount: selectedPlanDetails.price
+        });
       } else {
-        throw new Error('No client secret returned');
+        throw new Error('No checkout URL returned');
       }
     } catch (error) {
-      console.error('Payment intent creation error:', error);
+      console.error('Checkout error:', error);
       toast({
         title: "Errore",
-        description: "Si è verificato un errore durante la preparazione del pagamento.",
+        description: "Si è verificato un errore durante il checkout. Riprova più tardi.",
         variant: "destructive"
       });
+    } finally {
+      setIsLoading(false);
     }
-  };
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-
-    if (!stripe || !elements || !clientSecret) {
-      return;
-    }
-
-    setIsLoading(true);
-
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) return;
-
-    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: cardElement,
-      }
-    });
-
-    if (error) {
-      console.error('Payment error:', error);
-      toast({
-        title: "Errore di pagamento",
-        description: error.message || "Si è verificato un errore durante il pagamento.",
-        variant: "destructive"
-      });
-    } else if (paymentIntent.status === 'succeeded') {
-      toast({
-        title: "Pagamento completato!",
-        description: "Il tuo pagamento è stato elaborato con successo."
-      });
-      
-      // Call onPurchase with the purchase data
-      onPurchase({
-        planType: selectedPlan,
-        amount: selectedPlanDetails.price
-      });
-    }
-
-    setIsLoading(false);
-  };
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#424770',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-      },
-      invalid: {
-        color: '#9e2146',
-      },
-    },
   };
 
   return (
@@ -236,21 +177,11 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            <FontAwesomeIcon icon={faCreditCard} className="mr-2" />
-            Dettagli carta di credito
-          </label>
-          <div className="border border-gray-300 rounded-md p-3 bg-white">
-            <CardElement options={cardElementOptions} />
-          </div>
-        </div>
-
         <button
           type="submit"
-          disabled={!stripe || isLoading || !clientSecret}
+          disabled={isLoading}
           className={`w-full py-3 rounded-md font-medium ${
-            (!stripe || isLoading || !clientSecret) 
+            isLoading 
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -282,14 +213,6 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         I tuoi dati sono protetti con crittografia SSL
       </div>
     </div>
-  );
-};
-
-const Checkout: React.FC<CheckoutProps> = (props) => {
-  return (
-    <Elements stripe={stripePromise}>
-      <CheckoutForm {...props} />
-    </Elements>
   );
 };
 
