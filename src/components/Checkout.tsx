@@ -190,6 +190,14 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
     setIsLoading(true);
 
     try {
+      console.log('Starting payment process with data:', {
+        planType: selectedPlan,
+        amount: selectedPlanDetails.price,
+        email: userInfo.email,
+        name: userInfo.name,
+        isDiscounted: isDiscountedPage
+      });
+
       // First, create a payment intent for the immediate payment (setup fee)
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
         body: { 
@@ -202,6 +210,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         },
       });
 
+      console.log('Payment intent response:', { paymentData, paymentError });
+
       if (paymentError) {
         throw new Error(paymentError.message);
       }
@@ -209,6 +219,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       if (!paymentData?.clientSecret) {
         throw new Error('No payment intent client secret returned');
       }
+
+      console.log('Confirming card payment with client secret:', paymentData.clientSecret);
 
       // Confirm the payment
       const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
@@ -224,11 +236,15 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         }
       );
 
+      console.log('Payment confirmation result:', { confirmError, paymentIntent });
+
       if (confirmError) {
         throw new Error(confirmError.message);
       }
 
       if (paymentIntent?.status === 'succeeded') {
+        console.log('Payment succeeded, creating subscription...');
+        
         // Now create the subscription with trial period
         const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke('create-subscription', {
           body: { 
@@ -241,6 +257,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
             setupPaymentIntentId: paymentIntent.id
           },
         });
+
+        console.log('Subscription creation result:', { subscriptionData, subscriptionError });
 
         if (subscriptionError) {
           console.error('Subscription creation error:', subscriptionError);
@@ -297,10 +315,10 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-center">
         <div className="flex items-center justify-center space-x-2">
           <span className="font-bold text-sm">
-            🧪 MODALITÀ TEST - Nessun addebito reale
+            🧪 MODALITÀ TEST - Usa carta 4242 4242 4242 4242
           </span>
         </div>
-        <p className="text-xs mt-1">Usa 4242 4242 4242 4242 per testare i pagamenti</p>
+        <p className="text-xs mt-1">CVV: qualsiasi 3 cifre, Data: qualsiasi data futura</p>
       </div>
 
       {/* Scarcity Banner - only show on discounted page */}
