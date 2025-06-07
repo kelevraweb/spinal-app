@@ -24,8 +24,6 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-import { toast } from 'react-toastify';
-
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
   const [state, setState] = useState<QuizState>({
@@ -46,10 +44,6 @@ const Quiz: React.FC = () => {
   const [shouldAutoAdvance, setShouldAutoAdvance] = useState(false);
   const [showSessionModal, setShowSessionModal] = useState(false);
   const [sessionChecked, setSessionChecked] = useState(false);
-  const [quizData, setQuizData] = useState({
-    name: '',
-    email: ''
-  });
 
   // Check for existing session on component mount
   useEffect(() => {
@@ -406,21 +400,6 @@ const Quiz: React.FC = () => {
         return <p>Tipo di domanda non supportato</p>;
     }
   };
-
-  const handleSubmit = () => {
-    if (!quizData.name || !quizData.email) {
-      toast({
-        title: "Informazioni mancanti",
-        description: "Per favore inserisci nome e email per continuare",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    // Navigate to pricing with both name and email
-    navigate(`/pricing-discounted?name=${encodeURIComponent(quizData.name)}&email=${encodeURIComponent(quizData.email)}`);
-  };
-
   return <div className="max-w-[580px] mx-auto px-4">
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">
@@ -448,5 +427,4 @@ const Quiz: React.FC = () => {
       </div>
     </div>;
 };
-
 export default Quiz;
