@@ -61,6 +61,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         };
         
         console.log('Loaded user data:', finalUserInfo);
+        console.log('localStorage userEmail:', localStorage.getItem('userEmail'));
+        console.log('localStorage userName:', localStorage.getItem('userName'));
+        console.log('Quiz data:', quizData);
         setUserInfo(finalUserInfo);
         
       } catch (error) {
@@ -150,14 +153,19 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       return;
     }
 
-    if (!userInfo.name || !userInfo.email) {
-      toast({
-        title: "Errore",
-        description: "Dati utente non disponibili. Riprova dal quiz.",
-        variant: "destructive"
-      });
-      return;
-    }
+    // Get user data for payment - use fallbacks if userInfo is empty
+    const paymentName = userInfo.name || localStorage.getItem('userName') || searchParams.get('name') || 'Guest User';
+    const paymentEmail = userInfo.email || localStorage.getItem('userEmail') || 'guest@example.com';
+
+    console.log('Processing payment with:', { 
+      paymentName, 
+      paymentEmail,
+      userInfo,
+      localStorage: {
+        userName: localStorage.getItem('userName'),
+        userEmail: localStorage.getItem('userEmail')
+      }
+    });
 
     setIsLoading(true);
 
@@ -165,8 +173,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       console.log('Starting payment process with data:', {
         planType: selectedPlan,
         amount: selectedPlanDetails.price,
-        email: userInfo.email,
-        name: userInfo.name,
+        email: paymentEmail,
+        name: paymentName,
         isDiscounted: isDiscountedPage
       });
 
@@ -175,9 +183,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         body: { 
           planType: selectedPlan,
           amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
-          email: userInfo.email,
-          firstName: userInfo.name.split(' ')[0] || userInfo.name,
-          lastName: userInfo.name.split(' ').slice(1).join(' ') || '',
+          email: paymentEmail,
+          firstName: paymentName.split(' ')[0] || paymentName,
+          lastName: paymentName.split(' ').slice(1).join(' ') || '',
           isDiscounted: isDiscountedPage
         },
       });
@@ -202,8 +210,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         payment_method: {
           card: cardElement,
           billing_details: {
-            name: userInfo.name,
-            email: userInfo.email,
+            name: paymentName,
+            email: paymentEmail,
           },
         },
       });
@@ -317,9 +325,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
         <button
           type="submit"
-          disabled={isLoading || !stripe || !userInfo.name || !userInfo.email}
+          disabled={isLoading || !stripe}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading || !stripe || !userInfo.name || !userInfo.email
+            isLoading || !stripe
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
