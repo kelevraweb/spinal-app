@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -25,11 +24,10 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'react-toastify';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const [state, setState] = useState<QuizState>({
     currentStep: 0,
     totalSteps: quizQuestions.length,
