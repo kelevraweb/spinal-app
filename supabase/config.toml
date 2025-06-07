@@ -3,4 +3,6 @@ project_id = "smizbfjsujlnfpcwfaty"
 
 [functions.create-checkout]
 
+[functions.create-payment-intent]
+
 [functions.verify-payment]

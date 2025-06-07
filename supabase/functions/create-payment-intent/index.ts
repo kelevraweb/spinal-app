@@ -37,6 +37,8 @@ serve(async (req: Request) => {
     // Get payment details from request body
     const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
 
+    console.log('Processing payment intent for:', { planType, amount, email, isDiscounted });
+
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
@@ -63,7 +65,7 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
-    // Create payment intent for the setup fee
+    // Create payment intent for single payment
     const paymentIntent = await stripe.paymentIntents.create({
       amount: amount,
       currency: 'eur',
@@ -74,12 +76,13 @@ serve(async (req: Request) => {
         customer_email: email,
         customer_name: `${firstName} ${lastName}`
       },
-      description: `Setup fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
+      description: `Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
     });
 
     // Store order in database
     await supabaseClient.from("orders").insert({
       stripe_session_id: paymentIntent.id,
+      plan_type: planType,
       amount: amount,
       currency: 'eur',
       status: "pending",

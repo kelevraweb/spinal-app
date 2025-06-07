@@ -3,17 +3,23 @@ import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { getUserDataFromQuiz } from './QuizDataManager';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
+const stripePromise = loadStripe('pk_test_51QdZQKKmYKm25WGzO0u1LZm6sT6HJgZkNAM34IjcCLQqNOqZxTGvDyoODOHzj0lKvI5vcQGK4uSDPgfA5Y5TGlE000dSF4W3bO');
+
+const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
+  const stripe = useStripe();
+  const elements = useElements();
   const { toast } = useToast();
   const { trackInitiateCheckout } = useFacebookPixel();
   const location = useLocation();
@@ -85,27 +91,21 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
       price: 10.50,
       originalPrice: 49.99,
       dailyPrice: 1.50,
-      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)',
-      subscriptionPrice: 49.99,
-      trialDays: 7
+      description: 'Pagamento singolo',
     },
     monthly: {
       title: 'PIANO 1 MESE',
       price: 19.99,
       originalPrice: 49.99,
       dailyPrice: 0.66,
-      description: 'Fatturazione mensile',
-      subscriptionPrice: 49.99,
-      trialDays: 30
+      description: 'Pagamento singolo',
     },
     quarterly: {
       title: 'PIANO 3 MESI',
       price: 34.99,
       originalPrice: 99.99,
       dailyPrice: 0.38,
-      description: 'Fatturazione trimestrale',
-      subscriptionPrice: 99.99,
-      trialDays: 90
+      description: 'Pagamento singolo',
     }
   } : {
     trial: {
@@ -113,27 +113,21 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
       price: 49.99,
       originalPrice: null,
       dailyPrice: 7.14,
-      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)',
-      subscriptionPrice: 49.99,
-      trialDays: 7
+      description: 'Pagamento singolo',
     },
     monthly: {
       title: 'PIANO 1 MESE',
       price: 49.99,
       originalPrice: null,
       dailyPrice: 1.67,
-      description: 'Fatturazione mensile',
-      subscriptionPrice: 49.99,
-      trialDays: 30
+      description: 'Pagamento singolo',
     },
     quarterly: {
       title: 'PIANO 3 MESI',
       price: 99.99,
       originalPrice: null,
       dailyPrice: 1.11,
-      description: 'Fatturazione trimestrale',
-      subscriptionPrice: 99.99,
-      trialDays: 90
+      description: 'Pagamento singolo',
     }
   };
 
@@ -152,6 +146,10 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
+    if (!stripe || !elements) {
+      return;
+    }
+
     if (!userInfo.name || !userInfo.email) {
       toast({
         title: "Errore",
@@ -164,7 +162,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
     setIsLoading(true);
 
     try {
-      console.log('Starting checkout process with data:', {
+      console.log('Starting payment process with data:', {
         planType: selectedPlan,
         amount: selectedPlanDetails.price,
         email: userInfo.email,
@@ -172,37 +170,83 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
         isDiscounted: isDiscountedPage
       });
 
-      // Use the direct Stripe checkout function
-      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
+      // Create payment intent
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
         body: { 
           planType: selectedPlan,
+          amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
+          email: userInfo.email,
+          firstName: userInfo.name.split(' ')[0] || userInfo.name,
+          lastName: userInfo.name.split(' ').slice(1).join(' ') || '',
           isDiscounted: isDiscountedPage
         },
       });
 
-      console.log('Checkout response:', { checkoutData, checkoutError });
+      console.log('Payment intent response:', { paymentData, paymentError });
 
-      if (checkoutError) {
-        throw new Error(checkoutError.message);
+      if (paymentError) {
+        throw new Error(paymentError.message);
       }
 
-      if (!checkoutData?.url) {
-        throw new Error('No checkout URL returned');
+      if (!paymentData?.clientSecret) {
+        throw new Error('No client secret returned');
       }
 
-      // Redirect to Stripe Checkout
-      window.location.href = checkoutData.url;
+      // Confirm payment with Stripe
+      const cardElement = elements.getElement(CardElement);
+      if (!cardElement) {
+        throw new Error('Card element not found');
+      }
+
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(paymentData.clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: userInfo.name,
+            email: userInfo.email,
+          },
+        },
+      });
+
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      }
+
+      if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Payment successful
+        onPurchase({
+          planType: selectedPlan,
+          amount: selectedPlanDetails.price
+        });
+        
+        toast({
+          title: "Pagamento completato!",
+          description: "Il tuo pagamento è stato elaborato con successo.",
+        });
+      }
 
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Payment error:', error);
       toast({
         title: "Errore",
-        description: error instanceof Error ? error.message : "Si è verificato un errore durante il checkout. Riprova più tardi.",
+        description: error instanceof Error ? error.message : "Si è verificato un errore durante il pagamento. Riprova più tardi.",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const cardElementOptions = {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+      },
+    },
   };
 
   return (
@@ -259,28 +303,23 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
         </div>
       )}
 
-      {/* User Information Display (Read-only) */}
-      {userInfo.name && (
-        <div className="mb-6 bg-blue-50 p-4 rounded-lg">
-          <h3 className="font-semibold text-lg mb-2">Informazioni cliente</h3>
-          <div className="space-y-1 text-sm">
-            <p><span className="font-medium">Nome:</span> {userInfo.name}</p>
-            <p><span className="font-medium">Email:</span> {userInfo.email}</p>
-            <p><span className="font-medium">Genere:</span> {userInfo.gender}</p>
-            {userInfo.sessionId && (
-              <p className="text-xs text-gray-500">ID Sessione: {userInfo.sessionId}</p>
-            )}
-          </div>
-        </div>
-      )}
-
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Card Element */}
+        <div className="bg-white p-4 rounded-lg border border-gray-300">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Dettagli carta di credito
+          </label>
+          <div className="p-3 border border-gray-200 rounded-md">
+            <CardElement options={cardElementOptions} />
+          </div>
+        </div>
+
         <button
           type="submit"
-          disabled={isLoading || !userInfo.name || !userInfo.email}
+          disabled={isLoading || !stripe || !userInfo.name || !userInfo.email}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading || !userInfo.name || !userInfo.email
+            isLoading || !stripe || !userInfo.name || !userInfo.email
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -312,6 +351,14 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
         I tuoi dati sono protetti con crittografia SSL
       </div>
     </div>
+  );
+};
+
+const Checkout: React.FC<CheckoutProps> = (props) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <CheckoutForm {...props} />
+    </Elements>
   );
 };
 
