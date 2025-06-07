@@ -1,5 +1,8 @@
 
 import React, { useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { saveUserProfile } from './QuizDataManager';
 
 interface EmailCaptureProps {
   onSubmit: (email: string) => void;
@@ -7,89 +10,72 @@ interface EmailCaptureProps {
 
 const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
   const [email, setEmail] = useState('');
-  const [isValid, setIsValid] = useState(true);
-  const [isFocused, setIsFocused] = useState(false);
-
-  const validateEmail = (email: string) => {
-    const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
-  };
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!email || !validateEmail(email)) {
-      setIsValid(false);
-      return;
+    if (email.trim() && !isSubmitting) {
+      setIsSubmitting(true);
+      
+      // Save email to localStorage
+      const existingName = localStorage.getItem('userName') || '';
+      saveUserProfile(existingName, email.trim());
+      
+      onSubmit(email.trim());
     }
-    
-    onSubmit(email);
   };
 
-  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-    if (!isValid) {
-      setIsValid(validateEmail(e.target.value) || e.target.value === '');
-    }
+  const isValidEmail = (email: string) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   };
 
   return (
-    <div className="max-w-xl mx-auto my-12 px-6 animate-fade-in pt-16">
-      <h2 className="text-2xl font-bold text-center mb-2">
-        Inserisci la tua email per
-      </h2>
-      <h2 className="text-2xl font-bold text-center mb-6">
-        ricevere il tuo <span className="text-brand-primary">Piano di Gestione del Benessere!</span>
-      </h2>
-      
-      <form onSubmit={handleSubmit} className="mt-8">
-        <div className="relative mb-4">
-          <div className="flex border-2 rounded-lg overflow-hidden focus-within:border-[#71b8bc] transition-colors">
-            <input
-              type="email"
-              className={`flex-1 px-4 py-3 text-lg outline-none ${
-                !isValid ? 'border-red-500' : ''
-              }`}
-              placeholder="Email"
-              value={email}
-              onChange={handleEmailChange}
-              onFocus={() => setIsFocused(true)}
-              onBlur={() => setIsFocused(false)}
-            />
-            <button 
-              type="submit" 
-              className="bg-[#71b8bc] hover:bg-[#619da0] text-white px-6 py-3 transition-colors duration-300"
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
+    <div className="min-h-screen bg-[#fbfaf8] flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full flex items-center justify-center mx-auto mb-6">
+            <FontAwesomeIcon icon={faEnvelope} className="text-white text-2xl" />
           </div>
-          {!isValid && (
-            <p className="text-red-500 text-sm mt-1">Inserisci un indirizzo email valido</p>
-          )}
-        </div>
-
-        <div className="flex items-center justify-center mt-6 text-gray-500 text-sm">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
-            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
-          </svg>
-          <p>
-            Rispettiamo la tua privacy e ci impegniamo a proteggere i tuoi dati personali. I tuoi dati saranno trattati secondo la nostra Informativa sulla privacy.
+          <h1 className="text-2xl font-bold mb-4 text-gray-800">
+            Qual è la tua email?
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Ti invieremo il tuo piano personalizzato e aggiornamenti esclusivi.
           </p>
         </div>
-        
-        <div className="mt-6">
-          <button 
-            type="submit" 
-            className="w-full bg-[#71b8bc] hover:bg-[#619da0] text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg"
+
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="La tua email"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71b8bc] focus:border-transparent text-lg"
+              required
+              disabled={isSubmitting}
+            />
+          </div>
+
+          <button
+            type="submit"
+            disabled={!isValidEmail(email) || isSubmitting}
+            className={`w-full py-3 rounded-lg font-medium text-white flex items-center justify-center space-x-2 transition-all duration-200 ${
+              isValidEmail(email) && !isSubmitting
+                ? 'bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5da0a4] hover:to-[#7bb399] transform hover:scale-105'
+                : 'bg-gray-400 cursor-not-allowed'
+            }`}
           >
-            Continua
+            <span>{isSubmitting ? 'Salvando...' : 'Continua'}</span>
+            <FontAwesomeIcon icon={faArrowRight} />
           </button>
-        </div>
-      </form>
+        </form>
+
+        <p className="text-xs text-gray-500 text-center mt-4">
+          Non invieremo spam. Puoi annullare l'iscrizione in qualsiasi momento.
+        </p>
+      </div>
     </div>
   );
 };

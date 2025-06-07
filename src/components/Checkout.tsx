@@ -1,15 +1,15 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCreditCard, faLock, faCheckCircle, faEdit } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { getUserDataFromQuiz } from './QuizDataManager';
 
-const stripePromise = loadStripe('pk_test_51QYxIyP7NaJu1Y9x0U7OKzGelg0v0Rox7G52ErvzMBcFn4KcUHNJfJQDhGcjGYlqEMDjbRR3WRKRQhRANwT9Y0qv00Zh5JJ8qp');
+const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
@@ -25,15 +25,68 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   const elements = useElements();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [userInfo, setUserInfo] = useState<{
+    name: string;
+    email: string;
+    gender: string;
+    sessionId: string | null;
+  }>({
+    name: '',
+    email: '',
+    gender: 'Femmina',
+    sessionId: null
+  });
+  const [isEditingUserInfo, setIsEditingUserInfo] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [editedEmail, setEditedEmail] = useState('');
 
-  // Get user data from URL parameters
-  const userName = searchParams.get('name') || '';
-  const userGender = searchParams.get('gender') || 'male';
-  
-  // Generate email and name from URL params
-  const email = userName ? `${userName.toLowerCase()}@example.com` : 'user@example.com';
-  const firstName = userName || 'User';
-  const lastName = userGender === 'female' ? 'Donna' : 'Uomo';
+  // Load user data on component mount
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // First, try to get from quiz data
+        const quizData = await getUserDataFromQuiz();
+        
+        // Then, check URL parameters as fallback
+        const urlName = searchParams.get('name') || '';
+        const urlGender = searchParams.get('gender') || 'male';
+        
+        const finalUserInfo = {
+          name: quizData.name || urlName || '',
+          email: quizData.email || '',
+          gender: quizData.gender || (urlGender === 'female' ? 'Femmina' : 'Maschio'),
+          sessionId: quizData.sessionId
+        };
+        
+        console.log('Loaded user data:', finalUserInfo);
+        setUserInfo(finalUserInfo);
+        setEditedName(finalUserInfo.name);
+        setEditedEmail(finalUserInfo.email);
+        
+        // If we don't have complete user info, enable editing mode
+        if (!finalUserInfo.name || !finalUserInfo.email) {
+          setIsEditingUserInfo(true);
+        }
+      } catch (error) {
+        console.error('Error loading user data:', error);
+        // Fallback to URL params if database fails
+        const urlName = searchParams.get('name') || '';
+        const urlGender = searchParams.get('gender') || 'male';
+        
+        setUserInfo({
+          name: urlName,
+          email: urlName ? `${urlName.toLowerCase()}@example.com` : '',
+          gender: urlGender === 'female' ? 'Femmina' : 'Maschio',
+          sessionId: null
+        });
+        setEditedName(urlName);
+        setEditedEmail(urlName ? `${urlName.toLowerCase()}@example.com` : '');
+        setIsEditingUserInfo(true);
+      }
+    };
+
+    loadUserData();
+  }, [searchParams]);
 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
@@ -109,6 +162,22 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
     });
   }, [selectedPlan]);
 
+  const handleSaveUserInfo = () => {
+    if (editedName.trim() && editedEmail.trim()) {
+      const updatedUserInfo = {
+        ...userInfo,
+        name: editedName.trim(),
+        email: editedEmail.trim()
+      };
+      setUserInfo(updatedUserInfo);
+      setIsEditingUserInfo(false);
+      
+      // Save to localStorage for future use
+      localStorage.setItem('userName', editedName.trim());
+      localStorage.setItem('userEmail', editedEmail.trim());
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
@@ -118,6 +187,16 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         description: "Stripe non è stato caricato correttamente. Riprova.",
         variant: "destructive"
       });
+      return;
+    }
+
+    if (!userInfo.name || !userInfo.email) {
+      toast({
+        title: "Errore",
+        description: "Per favore inserisci nome ed email prima di procedere.",
+        variant: "destructive"
+      });
+      setIsEditingUserInfo(true);
       return;
     }
 
@@ -139,9 +218,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         body: { 
           planType: selectedPlan,
           amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
-          email,
-          firstName,
-          lastName,
+          email: userInfo.email,
+          firstName: userInfo.name.split(' ')[0] || userInfo.name,
+          lastName: userInfo.name.split(' ').slice(1).join(' ') || userInfo.gender,
           isDiscounted: isDiscountedPage
         },
       });
@@ -161,8 +240,8 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
           payment_method: {
             card: cardElement,
             billing_details: {
-              name: `${firstName} ${lastName}`,
-              email: email,
+              name: userInfo.name,
+              email: userInfo.email,
             },
           },
         }
@@ -177,9 +256,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke('create-subscription', {
           body: { 
             planType: selectedPlan,
-            email,
-            firstName,
-            lastName,
+            email: userInfo.email,
+            firstName: userInfo.name.split(' ')[0] || userInfo.name,
+            lastName: userInfo.name.split(' ').slice(1).join(' ') || userInfo.gender,
             paymentMethodId: paymentIntent.payment_method,
             isDiscounted: isDiscountedPage,
             setupPaymentIntentId: paymentIntent.id
@@ -289,13 +368,73 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         </div>
       )}
 
-      {/* User Information Display */}
+      {/* User Information Display/Edit */}
       <div className="mb-6 bg-blue-50 p-4 rounded-lg">
-        <h3 className="font-semibold text-lg mb-2">Informazioni cliente</h3>
-        <div className="space-y-2">
-          <p><span className="font-medium">Nome:</span> {firstName} {lastName}</p>
-          <p><span className="font-medium">Email:</span> {email}</p>
+        <div className="flex items-center justify-between mb-2">
+          <h3 className="font-semibold text-lg">Informazioni cliente</h3>
+          {!isEditingUserInfo && (
+            <button
+              onClick={() => setIsEditingUserInfo(true)}
+              className="text-[#71b8bc] hover:text-[#5da0a4] text-sm flex items-center space-x-1"
+            >
+              <FontAwesomeIcon icon={faEdit} />
+              <span>Modifica</span>
+            </button>
+          )}
         </div>
+        
+        {isEditingUserInfo ? (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <input
+                type="text"
+                value={editedName}
+                onChange={(e) => setEditedName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#71b8bc]"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+              <input
+                type="email"
+                value={editedEmail}
+                onChange={(e) => setEditedEmail(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#71b8bc]"
+                required
+              />
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={handleSaveUserInfo}
+                disabled={!editedName.trim() || !editedEmail.trim()}
+                className="px-4 py-2 bg-[#71b8bc] text-white rounded-md hover:bg-[#5da0a4] disabled:bg-gray-400"
+              >
+                Salva
+              </button>
+              <button
+                onClick={() => {
+                  setIsEditingUserInfo(false);
+                  setEditedName(userInfo.name);
+                  setEditedEmail(userInfo.email);
+                }}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+              >
+                Annulla
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-2">
+            <p><span className="font-medium">Nome:</span> {userInfo.name || 'Non specificato'}</p>
+            <p><span className="font-medium">Email:</span> {userInfo.email || 'Non specificato'}</p>
+            <p><span className="font-medium">Genere:</span> {userInfo.gender}</p>
+            {userInfo.sessionId && (
+              <p className="text-xs text-gray-500">ID Sessione: {userInfo.sessionId}</p>
+            )}
+          </div>
+        )}
       </div>
 
       {/* Payment Form */}
@@ -316,9 +455,9 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
         <button
           type="submit"
-          disabled={isLoading || !stripe}
+          disabled={isLoading || !stripe || !userInfo.name || !userInfo.email}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading || !stripe
+            isLoading || !stripe || !userInfo.name || !userInfo.email
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}

@@ -1,3 +1,4 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { QuizAnswer } from '../types/quiz';
 
@@ -24,6 +25,8 @@ export const clearQuizSession = async () => {
   localStorage.removeItem('quiz_session_id');
   localStorage.removeItem('quizAnswers');
   localStorage.removeItem('userGender');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userEmail');
   
   // Clear database records if session exists
   if (sessionId) {
@@ -61,9 +64,11 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     localStorage.setItem('userGender', gender);
   }
   
-  // Save to database
+  // Save to database with detailed logging
   try {
-    const { error } = await supabase
+    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender });
+    
+    const { data, error } = await supabase
       .from('quiz_responses')
       .upsert({
         user_session_id: sessionId,
@@ -76,6 +81,8 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     
     if (error) {
       console.error('Error saving quiz response:', error);
+    } else {
+      console.log('Quiz response saved successfully:', data);
     }
   } catch (error) {
     console.error('Error saving to database:', error);
@@ -145,4 +152,69 @@ export const getUserGender = (): string => {
   }
   
   return 'Femmina'; // Default fallback
+};
+
+// New function to get user data from quiz
+export const getUserDataFromQuiz = async (): Promise<{
+  name: string;
+  email: string;
+  gender: string;
+  sessionId: string | null;
+}> => {
+  const sessionId = localStorage.getItem('quiz_session_id');
+  
+  // Try to get stored name and email from localStorage first
+  const storedName = localStorage.getItem('userName');
+  const storedEmail = localStorage.getItem('userEmail');
+  const storedGender = localStorage.getItem('userGender');
+  
+  if (storedName && storedEmail && storedGender) {
+    return {
+      name: storedName,
+      email: storedEmail,
+      gender: storedGender,
+      sessionId
+    };
+  }
+  
+  // If not in localStorage, try to get from database
+  if (sessionId) {
+    try {
+      const { data, error } = await supabase
+        .from('quiz_responses')
+        .select('question_id, answer, gender')
+        .eq('user_session_id', sessionId);
+      
+      if (error) {
+        console.error('Error loading user data from database:', error);
+      } else if (data && data.length > 0) {
+        // Extract gender from any record
+        const gender = data[0].gender || 'Femmina';
+        
+        // For now, we'll need to get name and email from URL params or user input
+        // since they're not stored in quiz_responses table yet
+        return {
+          name: '',
+          email: '',
+          gender,
+          sessionId
+        };
+      }
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+    }
+  }
+  
+  return {
+    name: '',
+    email: '',
+    gender: 'Femmina',
+    sessionId
+  };
+};
+
+// Function to save user profile data (name, email)
+export const saveUserProfile = (name: string, email: string) => {
+  localStorage.setItem('userName', name);
+  localStorage.setItem('userEmail', email);
 };

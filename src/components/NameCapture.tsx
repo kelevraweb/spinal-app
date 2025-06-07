@@ -1,6 +1,8 @@
 
 import React, { useState } from 'react';
-import { Button } from './ui/button';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUser, faArrowRight } from '@fortawesome/free-solid-svg-icons';
+import { saveUserProfile } from './QuizDataManager';
 
 interface NameCaptureProps {
   onSubmit: (name: string) => void;
@@ -10,72 +12,60 @@ const NameCapture: React.FC<NameCaptureProps> = ({ onSubmit }) => {
   const [name, setName] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
-    
-    setIsSubmitting(true);
-    await new Promise(resolve => setTimeout(resolve, 500)); // Small delay for UX
-    onSubmit(name.trim());
+    if (name.trim() && !isSubmitting) {
+      setIsSubmitting(true);
+      
+      // Save name to localStorage
+      const existingEmail = localStorage.getItem('userEmail') || '';
+      saveUserProfile(name.trim(), existingEmail);
+      
+      onSubmit(name.trim());
+    }
   };
 
   return (
-    <div className="max-w-2xl mx-auto my-12 px-4 pt-16">
-      <div className="bg-gradient-to-br from-[#71b8bc]/5 to-[#88c2aa]/5 rounded-3xl p-8 shadow-lg">
+    <div className="min-h-screen bg-[#fbfaf8] flex items-center justify-center p-4">
+      <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <div className="inline-block bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] text-white px-6 py-2 rounded-full text-sm font-medium mb-4">
-            ✨ Personalizzazione Finale
+          <div className="w-16 h-16 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full flex items-center justify-center mx-auto mb-6">
+            <FontAwesomeIcon icon={faUser} className="text-white text-2xl" />
           </div>
-          <h2 className="text-3xl font-bold mb-4 text-gray-800">
-            Come possiamo chiamarti?
-          </h2>
-          <p className="text-gray-600 text-lg">
-            Vogliamo personalizzare la tua esperienza con il tuo nome
+          <h1 className="text-2xl font-bold mb-4 text-gray-800">
+            Come ti chiami?
+          </h1>
+          <p className="text-gray-600 mb-6">
+            Vogliamo personalizzare la tua esperienza!
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} className="max-w-md mx-auto">
-          <div className="mb-6">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
-              Il tuo nome
-            </label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
             <input
               type="text"
-              id="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Inserisci il tuo nome"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71b8bc] focus:border-transparent outline-none transition-all duration-200"
+              placeholder="Il tuo nome"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#71b8bc] focus:border-transparent text-lg"
               required
-              autoFocus
+              disabled={isSubmitting}
             />
           </div>
 
-          <Button
+          <button
             type="submit"
             disabled={!name.trim() || isSubmitting}
-            className={`w-full py-3 rounded-lg font-medium transition-all duration-200 ${
+            className={`w-full py-3 rounded-lg font-medium text-white flex items-center justify-center space-x-2 transition-all duration-200 ${
               name.trim() && !isSubmitting
-                ? 'bg-[#71b8bc] hover:bg-[#5da0a4] text-white'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                ? 'bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] hover:from-[#5da0a4] hover:to-[#7bb399] transform hover:scale-105'
+                : 'bg-gray-400 cursor-not-allowed'
             }`}
           >
-            {isSubmitting ? (
-              <div className="flex items-center justify-center">
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
-                Elaborazione...
-              </div>
-            ) : (
-              'Continua'
-            )}
-          </Button>
+            <span>{isSubmitting ? 'Salvando...' : 'Continua'}</span>
+            <FontAwesomeIcon icon={faArrowRight} />
+          </button>
         </form>
-
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-500">
-            🔒 Il tuo nome verrà utilizzato solo per personalizzare la tua esperienza
-          </p>
-        </div>
       </div>
     </div>
   );
