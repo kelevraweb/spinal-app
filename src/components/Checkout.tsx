@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,24 +6,18 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { loadStripe } from '@stripe/stripe-js';
-import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { getUserDataFromQuiz } from './QuizDataManager';
-
-const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
+const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const { toast } = useToast();
   const { trackInitiateCheckout } = useFacebookPixel();
   const location = useLocation();
   const [searchParams] = useSearchParams();
-  const stripe = useStripe();
-  const elements = useElements();
   
   const [isLoading, setIsLoading] = useState(false);
   const [userInfo, setUserInfo] = useState<{
@@ -48,15 +43,13 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         // Get quiz data from database/localStorage
         const quizData = await getUserDataFromQuiz();
         
-        // Use stored email or create fallback
-        let email = quizData.email;
-        if (!email && urlName) {
-          email = `${urlName.toLowerCase()}@temp.com`;
-        }
+        // Prioritize saved email from localStorage
+        const savedEmail = localStorage.getItem('userEmail');
+        let email = savedEmail || quizData.email || '';
         
         const finalUserInfo = {
           name: urlName || quizData.name || '',
-          email: email || '',
+          email: email,
           gender: quizData.gender || (urlGender === 'female' ? 'Femmina' : 'Maschio'),
           sessionId: quizData.sessionId
         };
@@ -72,7 +65,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         
         setUserInfo({
           name: urlName,
-          email: urlName ? `${urlName.toLowerCase()}@temp.com` : '',
+          email: '',
           gender: urlGender === 'female' ? 'Femmina' : 'Maschio',
           sessionId: null
         });
@@ -159,15 +152,6 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     
-    if (!stripe || !elements) {
-      toast({
-        title: "Errore",
-        description: "Stripe non è stato caricato correttamente. Riprova.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     if (!userInfo.name || !userInfo.email) {
       toast({
         title: "Errore",
@@ -177,20 +161,10 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       return;
     }
 
-    const cardElement = elements.getElement(CardElement);
-    if (!cardElement) {
-      toast({
-        title: "Errore",
-        description: "Elemento carta non trovato.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
-      console.log('Starting payment process with data:', {
+      console.log('Starting checkout process with data:', {
         planType: selectedPlan,
         amount: selectedPlanDetails.price,
         email: userInfo.email,
@@ -198,115 +172,37 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         isDiscounted: isDiscountedPage
       });
 
-      // First, create a payment intent for the immediate payment (setup fee)
-      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
+      // Use the direct Stripe checkout function
+      const { data: checkoutData, error: checkoutError } = await supabase.functions.invoke('create-checkout', {
         body: { 
           planType: selectedPlan,
-          amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
-          email: userInfo.email,
-          firstName: userInfo.name.split(' ')[0] || userInfo.name,
-          lastName: userInfo.name.split(' ').slice(1).join(' ') || userInfo.gender,
           isDiscounted: isDiscountedPage
         },
       });
 
-      console.log('Payment intent response:', { paymentData, paymentError });
+      console.log('Checkout response:', { checkoutData, checkoutError });
 
-      if (paymentError) {
-        throw new Error(paymentError.message);
+      if (checkoutError) {
+        throw new Error(checkoutError.message);
       }
 
-      if (!paymentData?.clientSecret) {
-        throw new Error('No payment intent client secret returned');
+      if (!checkoutData?.url) {
+        throw new Error('No checkout URL returned');
       }
 
-      console.log('Confirming card payment with client secret:', paymentData.clientSecret);
+      // Redirect to Stripe Checkout
+      window.location.href = checkoutData.url;
 
-      // Confirm the payment
-      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
-        paymentData.clientSecret,
-        {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: userInfo.name,
-              email: userInfo.email,
-            },
-          },
-        }
-      );
-
-      console.log('Payment confirmation result:', { confirmError, paymentIntent });
-
-      if (confirmError) {
-        throw new Error(confirmError.message);
-      }
-
-      if (paymentIntent?.status === 'succeeded') {
-        console.log('Payment succeeded, creating subscription...');
-        
-        // Now create the subscription with trial period
-        const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke('create-subscription', {
-          body: { 
-            planType: selectedPlan,
-            email: userInfo.email,
-            firstName: userInfo.name.split(' ')[0] || userInfo.name,
-            lastName: userInfo.name.split(' ').slice(1).join(' ') || userInfo.gender,
-            paymentMethodId: paymentIntent.payment_method,
-            isDiscounted: isDiscountedPage,
-            setupPaymentIntentId: paymentIntent.id
-          },
-        });
-
-        console.log('Subscription creation result:', { subscriptionData, subscriptionError });
-
-        if (subscriptionError) {
-          console.error('Subscription creation error:', subscriptionError);
-          // Payment succeeded but subscription failed - still show success but warn user
-          toast({
-            title: "Pagamento completato",
-            description: "Il pagamento è stato elaborato. Ti contatteremo presto per attivare il tuo abbonamento.",
-            variant: "default"
-          });
-        } else {
-          toast({
-            title: "Successo!",
-            description: "Pagamento completato e abbonamento attivato con successo!",
-            variant: "default"
-          });
-        }
-
-        // Call onPurchase for tracking purposes
-        onPurchase({
-          planType: selectedPlan,
-          amount: selectedPlanDetails.price
-        });
-
-        // Clear card
-        cardElement.clear();
-      }
     } catch (error) {
-      console.error('Payment error:', error);
+      console.error('Checkout error:', error);
       toast({
         title: "Errore",
-        description: error instanceof Error ? error.message : "Si è verificato un errore durante il pagamento. Riprova più tardi.",
+        description: error instanceof Error ? error.message : "Si è verificato un errore durante il checkout. Riprova più tardi.",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const cardElementOptions = {
-    style: {
-      base: {
-        fontSize: '16px',
-        color: '#424770',
-        '::placeholder': {
-          color: '#aab7c4',
-        },
-      },
-    },
   };
 
   return (
@@ -380,25 +276,11 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Payment Information */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-lg">Informazioni di pagamento</h3>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Dettagli carta *
-            </label>
-            <div className="p-3 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-[#71b8bc]">
-              <CardElement options={cardElementOptions} />
-            </div>
-          </div>
-        </div>
-
         <button
           type="submit"
-          disabled={isLoading || !stripe || !userInfo.name || !userInfo.email}
+          disabled={isLoading || !userInfo.name || !userInfo.email}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading || !stripe || !userInfo.name || !userInfo.email
+            isLoading || !userInfo.name || !userInfo.email
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -430,14 +312,6 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         I tuoi dati sono protetti con crittografia SSL
       </div>
     </div>
-  );
-};
-
-const Checkout: React.FC<CheckoutProps> = (props) => {
-  return (
-    <Elements stripe={stripePromise}>
-      <CheckoutForm {...props} />
-    </Elements>
   );
 };
 
