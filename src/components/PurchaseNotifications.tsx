@@ -1,9 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { useGeolocation } from '@/hooks/useGeolocation';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheckCircle, faTimes } from '@fortawesome/free-solid-svg-icons';
+import NotificationToast from './NotificationToast';
 
 const italianNames = [
   'Marco', 'Giulia', 'Alessandro', 'Francesca', 'Luca', 'Chiara', 'Andrea', 'Valentina',
@@ -23,10 +21,17 @@ interface PurchaseNotificationsProps {
   isActive: boolean;
 }
 
+interface Notification {
+  id: string;
+  name: string;
+  city: string;
+  plan: string;
+  show: boolean;
+}
+
 const PurchaseNotifications: React.FC<PurchaseNotificationsProps> = ({ isActive }) => {
-  const { toast } = useToast();
   const { location } = useGeolocation();
-  const [notifications, setNotifications] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const generateNotification = () => {
     const name = italianNames[Math.floor(Math.random() * italianNames.length)];
@@ -41,33 +46,20 @@ const PurchaseNotifications: React.FC<PurchaseNotificationsProps> = ({ isActive 
     }
 
     const notificationId = `notification-${Date.now()}`;
-    setNotifications(prev => [...prev, notificationId]);
+    
+    const newNotification: Notification = {
+      id: notificationId,
+      name,
+      city,
+      plan,
+      show: true
+    };
 
-    toast({
-      title: "🎉 Nuovo acquisto!",
-      description: (
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="font-medium">{name} da {city}</p>
-            <p className="text-sm text-gray-600">ha appena acquistato: {plan}</p>
-          </div>
-          <button
-            onClick={() => {
-              setNotifications(prev => prev.filter(id => id !== notificationId));
-            }}
-            className="ml-3 text-gray-400 hover:text-gray-600"
-          >
-            <FontAwesomeIcon icon={faTimes} className="w-3 h-3" />
-          </button>
-        </div>
-      ),
-      duration: 8000,
-    });
+    setNotifications(prev => [...prev, newNotification]);
+  };
 
-    // Rimuovi automaticamente dalla lista dopo il timeout
-    setTimeout(() => {
-      setNotifications(prev => prev.filter(id => id !== notificationId));
-    }, 8000);
+  const handleCloseNotification = (notificationId: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   useEffect(() => {
@@ -91,7 +83,20 @@ const PurchaseNotifications: React.FC<PurchaseNotificationsProps> = ({ isActive 
     };
   }, [isActive, location]);
 
-  return null;
+  return (
+    <>
+      {notifications.map((notification) => (
+        <NotificationToast
+          key={notification.id}
+          name={notification.name}
+          city={notification.city}
+          plan={notification.plan}
+          show={notification.show}
+          onClose={() => handleCloseNotification(notification.id)}
+        />
+      ))}
+    </>
+  );
 };
 
 export default PurchaseNotifications;

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import {
@@ -14,7 +13,7 @@ import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/fre
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation } from 'react-router-dom';
 
-const stripePromise = loadStripe('pk_test_51QQVkiCcP8HDsYq6qIr0cYDQ8F9hojxGJNAcCqiQLJt1cKCKNXxZZLKKEV2wgF6RKTcyIFbUXR1XG34uo5MsDzrA00bLRsH4Ri');
+const stripePromise = loadStripe('pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;

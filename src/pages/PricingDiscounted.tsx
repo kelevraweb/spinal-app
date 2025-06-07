@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -11,6 +12,7 @@ import { ChevronDown } from 'lucide-react';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import CountdownOffer from '@/components/CountdownOffer';
+import PurchaseNotifications from '@/components/PurchaseNotifications';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 
 const PricingDiscounted: React.FC = () => {
@@ -244,6 +246,7 @@ const PricingDiscounted: React.FC = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
       <CountdownOffer onExpired={handleCountdownExpired} />
+      <PurchaseNotifications isActive={true} />
       
       <div className="max-w-[580px] mx-auto px-2 pt-20">
         {/* Before-After Comparison Section - Remove userGender prop */}
