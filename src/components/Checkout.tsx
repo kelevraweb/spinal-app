@@ -10,7 +10,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faCreditCard, faLock, faClock } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCreditCard, faLock, faClock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 
 const stripePromise = loadStripe('pk_test_51QQVkiCcP8HDsYq6qIr0cYDQ8F9hojxGJNAcCqiQLJt1cKCKNXxZZLKKEV2wgF6RKTcyIFbUXR1XG34uo5MsDzrA00bLRsH4Ri');
