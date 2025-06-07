@@ -5,7 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useSearchParams } from 'react-router-dom';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -20,13 +20,20 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   const { toast } = useToast();
   const { trackInitiateCheckout } = useFacebookPixel();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const stripe = useStripe();
   const elements = useElements();
   
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+
+  // Get user data from URL parameters
+  const userName = searchParams.get('name') || '';
+  const userGender = searchParams.get('gender') || 'male';
+  
+  // Generate email and name from URL params
+  const email = userName ? `${userName.toLowerCase()}@example.com` : 'user@example.com';
+  const firstName = userName || 'User';
+  const lastName = userGender === 'female' ? 'Donna' : 'Uomo';
 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
@@ -124,15 +131,6 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       return;
     }
 
-    if (!email || !firstName || !lastName) {
-      toast({
-        title: "Errore",
-        description: "Compila tutti i campi obbligatori.",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
 
     try {
@@ -210,10 +208,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
           amount: selectedPlanDetails.price
         });
 
-        // Clear form
-        setEmail('');
-        setFirstName('');
-        setLastName('');
+        // Clear card
         cardElement.clear();
       }
     } catch (error) {
@@ -294,57 +289,17 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         </div>
       )}
 
+      {/* User Information Display */}
+      <div className="mb-6 bg-blue-50 p-4 rounded-lg">
+        <h3 className="font-semibold text-lg mb-2">Informazioni cliente</h3>
+        <div className="space-y-2">
+          <p><span className="font-medium">Nome:</span> {firstName} {lastName}</p>
+          <p><span className="font-medium">Email:</span> {email}</p>
+        </div>
+      </div>
+
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Personal Information */}
-        <div className="space-y-4">
-          <h3 className="font-semibold text-lg">Informazioni personali</h3>
-          
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
-                Nome *
-              </label>
-              <input
-                type="text"
-                id="firstName"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
-                required
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
-                Cognome *
-              </label>
-              <input
-                type="text"
-                id="lastName"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
-                required
-              />
-            </div>
-          </div>
-          
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-              Email *
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
-              required
-            />
-          </div>
-        </div>
-
         {/* Payment Information */}
         <div className="space-y-4">
           <h3 className="font-semibold text-lg">Informazioni di pagamento</h3>

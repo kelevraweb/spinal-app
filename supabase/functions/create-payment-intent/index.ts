@@ -8,12 +8,17 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-interface PaymentIntentRequest {
+interface PaymentRequest {
   planType: 'trial' | 'monthly' | 'quarterly';
   amount: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isDiscounted: boolean;
 }
 
 serve(async (req: Request) => {
+  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -23,13 +28,14 @@ serve(async (req: Request) => {
     if (!stripeKey) {
       throw new Error("Missing STRIPE_SECRET_KEY");
     }
+    
+    // Verify that we're using test mode
+    if (!stripeKey.startsWith('sk_test_')) {
+      throw new Error("Invalid API key: Must use test mode key (starts with 'sk_test_')");
+    }
 
-    const { planType, amount }: PaymentIntentRequest = await req.json();
-
-    // Get authorization header
-    const authHeader = req.headers.get("Authorization");
-    let userId = null;
-    let userEmail = "guest@example.com";
+    // Get payment details from request body
+    const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
 
     // Initialize Supabase client
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
@@ -38,56 +44,49 @@ serve(async (req: Request) => {
       auth: { persistSession: false }
     });
 
-    // Verify if the user is authenticated
-    if (authHeader) {
-      const token = authHeader.replace("Bearer ", "");
-      const { data } = await supabaseClient.auth.getUser(token);
-      if (data?.user) {
-        userId = data.user.id;
-        userEmail = data.user.email || userEmail;
-      }
-    }
-
     // Configure Stripe
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
     // Check if a Stripe customer record exists for this email
-    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
+    const customers = await stripe.customers.list({ email: email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     } else {
+      // Create a new customer if one doesn't exist
       const newCustomer = await stripe.customers.create({
-        email: userEmail,
+        email: email,
+        name: `${firstName} ${lastName}`,
       });
       customerId = newCustomer.id;
     }
 
-    // Create PaymentIntent
+    // Create payment intent for the setup fee
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount, // Amount in cents
+      amount: amount,
       currency: 'eur',
       customer: customerId,
       metadata: {
         plan_type: planType,
-        user_id: userId || 'guest'
+        is_discounted: isDiscounted.toString(),
+        customer_email: email,
+        customer_name: `${firstName} ${lastName}`
       },
-      automatic_payment_methods: {
-        enabled: true,
-      },
+      description: `Setup fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
     });
 
-    // Save order information to Supabase
+    // Store order in database
     await supabaseClient.from("orders").insert({
-      user_id: userId,
       stripe_session_id: paymentIntent.id,
-      plan_type: planType,
       amount: amount,
-      currency: "eur",
+      currency: 'eur',
       status: "pending",
+      created_at: new Date().toISOString()
     });
+
+    console.log('Payment intent created successfully:', paymentIntent.id);
 
     return new Response(JSON.stringify({ 
       clientSecret: paymentIntent.client_secret,
@@ -97,7 +96,7 @@ serve(async (req: Request) => {
       status: 200,
     });
   } catch (error) {
-    console.error("Payment Intent creation error:", error);
+    console.error("Payment intent creation error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,

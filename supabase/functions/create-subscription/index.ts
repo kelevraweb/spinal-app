@@ -32,7 +32,7 @@ serve(async (req: Request) => {
     
     // Verify that we're using test mode
     if (!stripeKey.startsWith('sk_test_')) {
-      console.warn("Warning: Not using a test mode API key. For testing use a key that starts with 'sk_test_'");
+      throw new Error("Invalid API key: Must use test mode key (starts with 'sk_test_')");
     }
 
     // Get subscription details from request body
