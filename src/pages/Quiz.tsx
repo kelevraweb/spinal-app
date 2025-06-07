@@ -24,7 +24,7 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-import { toast } from '@/hooks/use-toast';
+import { toast } from 'react-toastify';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
