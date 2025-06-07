@@ -4,7 +4,7 @@ import { useToast } from '@/hooks/use-toast';
 
 type PlanType = 'trial' | 'monthly' | 'quarterly';
 
-// Plan pricing mapping
+// Plan pricing mapping - updated to match the discounted prices
 const PLAN_AMOUNTS = {
   trial: 10.50,
   monthly: 19.99,

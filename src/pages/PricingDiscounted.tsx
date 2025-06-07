@@ -246,7 +246,7 @@ const PricingDiscounted: React.FC = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
       <CountdownOffer onExpired={handleCountdownExpired} />
       
-      <div className="max-w-[580px] mx-auto px-2 pt-32">
+      <div className="max-w-[580px] mx-auto px-2 pt-20">
         {/* Before-After Comparison Section - Remove userGender prop */}
         <BeforeAfterComparison />
         <PricingSection />

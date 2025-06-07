@@ -61,8 +61,6 @@ const CountdownOffer: React.FC<CountdownOfferProps> = ({ onExpired }) => {
                 {formatTime(timeLeft)}
               </span>
             </div>
-            
-            <span className="text-xs sm:text-sm">SCONTATO</span>
           </div>
           
           <button 

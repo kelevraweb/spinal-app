@@ -10,7 +10,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSpinner, faCreditCard, faLock } from '@fortawesome/free-solid-svg-icons';
+import { faSpinner, faCreditCard, faLock, faClock } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 
 const stripePromise = loadStripe('pk_test_51QQVkiCcP8HDsYq6qIr0cYDQ8F9hojxGJNAcCqiQLJt1cKCKNXxZZLKKEV2wgF6RKTcyIFbUXR1XG34uo5MsDzrA00bLRsH4Ri');
@@ -28,27 +28,28 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   
   const [isLoading, setIsLoading] = useState(false);
   const [clientSecret, setClientSecret] = useState<string>('');
+  const [scarcityTimer, setScarcityTimer] = useState(300); // 5 minutes countdown
 
   const plans = {
     trial: {
       title: 'PIANO 7 GIORNI',
-      price: 24.99,
+      price: 10.50,
       originalPrice: 49.99,
-      dailyPrice: 3.57,
-      description: 'Prova gratuita di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)'
+      dailyPrice: 1.50,
+      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)'
     },
     monthly: {
       title: 'PIANO 1 MESE',
-      price: 24.99,
+      price: 19.99,
       originalPrice: 49.99,
-      dailyPrice: 0.83,
+      dailyPrice: 0.66,
       description: 'Fatturazione mensile'
     },
     quarterly: {
       title: 'PIANO 3 MESI',
-      price: 49.99,
+      price: 34.99,
       originalPrice: 99.99,
-      dailyPrice: 0.55,
+      dailyPrice: 0.38,
       description: 'Fatturazione trimestrale'
     }
   };
@@ -66,7 +67,20 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
     // Create PaymentIntent
     createPaymentIntent();
+
+    // Start scarcity timer
+    const timer = setInterval(() => {
+      setScarcityTimer(prev => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, [selectedPlan]);
+
+  const formatScarcityTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    return `${minutes.toString().padStart(2, '0')}:${remainingSeconds.toString().padStart(2, '0')}`;
+  };
 
   const createPaymentIntent = async () => {
     try {
@@ -154,6 +168,17 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
   return (
     <div>
+      {/* Scarcity Banner */}
+      <div className="mb-4 bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-lg text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <FontAwesomeIcon icon={faClock} className="text-white" />
+          <span className="font-bold text-sm">
+            Offerta scade tra: {formatScarcityTime(scarcityTimer)}
+          </span>
+        </div>
+        <p className="text-xs mt-1 opacity-90">Completa l'acquisto ora per non perdere lo sconto!</p>
+      </div>
+
       {/* Order Summary */}
       <div className="mb-6 bg-gray-50 p-4 rounded-lg">
         <h3 className="font-semibold mb-2">Riepilogo ordine</h3>
@@ -164,9 +189,19 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
             <p className="text-lg font-bold text-[#71b8bc]">€{selectedPlanDetails.dailyPrice.toFixed(2)} al giorno</p>
           </div>
           <div className="text-right">
-            <p className="font-bold text-xl text-green-600">€{selectedPlanDetails.price}</p>
+            <p className="font-bold text-xl text-green-600">€{selectedPlanDetails.price.toFixed(2)}</p>
             <p className="text-sm text-gray-500 line-through">€{selectedPlanDetails.originalPrice}</p>
           </div>
+        </div>
+      </div>
+
+      {/* Limited Spots Warning */}
+      <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
+        <div className="flex items-center">
+          <FontAwesomeIcon icon={faCheckCircle} className="text-yellow-600 mr-2" />
+          <p className="text-sm text-yellow-800">
+            <span className="font-semibold">Solo 23 posti rimasti</span> a questo prezzo scontato
+          </p>
         </div>
       </div>
 
@@ -199,7 +234,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
           ) : (
             <>
               <FontAwesomeIcon icon={faLock} className="mr-2" />
-              PAGA €{selectedPlanDetails.price}
+              PAGA €{selectedPlanDetails.price.toFixed(2)}
             </>
           )}
         </button>
