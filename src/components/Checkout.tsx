@@ -6,18 +6,27 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation } from 'react-router-dom';
+import { loadStripe } from '@stripe/stripe-js';
+import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
+
+const stripePromise = loadStripe('pk_test_51QYxIyP7NaJu1Y9x0U7OKzGelg0v0Rox7G52ErvzMBcFn4KcUHNJfJQDhGcjGYlqEMDjbRR3WRKRQhRANwT9Y0qv00Zh5JJ8qp');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
+const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const { toast } = useToast();
   const { trackInitiateCheckout } = useFacebookPixel();
   const location = useLocation();
+  const stripe = useStripe();
+  const elements = useElements();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
@@ -29,21 +38,27 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
       price: 10.50,
       originalPrice: 49.99,
       dailyPrice: 1.50,
-      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)'
+      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)',
+      subscriptionPrice: 49.99,
+      trialDays: 7
     },
     monthly: {
       title: 'PIANO 1 MESE',
       price: 19.99,
       originalPrice: 49.99,
       dailyPrice: 0.66,
-      description: 'Fatturazione mensile'
+      description: 'Fatturazione mensile',
+      subscriptionPrice: 49.99,
+      trialDays: 30
     },
     quarterly: {
       title: 'PIANO 3 MESI',
       price: 34.99,
       originalPrice: 99.99,
       dailyPrice: 0.38,
-      description: 'Fatturazione trimestrale'
+      description: 'Fatturazione trimestrale',
+      subscriptionPrice: 99.99,
+      trialDays: 90
     }
   } : {
     trial: {
@@ -51,21 +66,27 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
       price: 49.99,
       originalPrice: null,
       dailyPrice: 7.14,
-      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)'
+      description: 'Prova di 7 giorni + Abbonamento mensile (inizia dopo 7 giorni)',
+      subscriptionPrice: 49.99,
+      trialDays: 7
     },
     monthly: {
       title: 'PIANO 1 MESE',
       price: 49.99,
       originalPrice: null,
       dailyPrice: 1.67,
-      description: 'Fatturazione mensile'
+      description: 'Fatturazione mensile',
+      subscriptionPrice: 49.99,
+      trialDays: 30
     },
     quarterly: {
       title: 'PIANO 3 MESI',
       price: 99.99,
       originalPrice: null,
       dailyPrice: 1.11,
-      description: 'Fatturazione trimestrale'
+      description: 'Fatturazione trimestrale',
+      subscriptionPrice: 99.99,
+      trialDays: 90
     }
   };
 
@@ -83,42 +104,140 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    
+    if (!stripe || !elements) {
+      toast({
+        title: "Errore",
+        description: "Stripe non è stato caricato correttamente. Riprova.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const cardElement = elements.getElement(CardElement);
+    if (!cardElement) {
+      toast({
+        title: "Errore",
+        description: "Elemento carta non trovato.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    if (!email || !firstName || !lastName) {
+      toast({
+        title: "Errore",
+        description: "Compila tutti i campi obbligatori.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
+      // First, create a payment intent for the immediate payment (setup fee)
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
         body: { 
           planType: selectedPlan,
+          amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
+          email,
+          firstName,
+          lastName,
           isDiscounted: isDiscountedPage
         },
       });
 
-      if (error) {
-        throw new Error(error.message);
+      if (paymentError) {
+        throw new Error(paymentError.message);
       }
 
-      if (data?.url) {
-        // Open Stripe checkout in a new tab
-        window.open(data.url, '_blank');
-        
+      if (!paymentData?.clientSecret) {
+        throw new Error('No payment intent client secret returned');
+      }
+
+      // Confirm the payment
+      const { error: confirmError, paymentIntent } = await stripe.confirmCardPayment(
+        paymentData.clientSecret,
+        {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: `${firstName} ${lastName}`,
+              email: email,
+            },
+          },
+        }
+      );
+
+      if (confirmError) {
+        throw new Error(confirmError.message);
+      }
+
+      if (paymentIntent?.status === 'succeeded') {
+        // Now create the subscription with trial period
+        const { data: subscriptionData, error: subscriptionError } = await supabase.functions.invoke('create-subscription', {
+          body: { 
+            planType: selectedPlan,
+            email,
+            firstName,
+            lastName,
+            paymentMethodId: paymentIntent.payment_method,
+            isDiscounted: isDiscountedPage,
+            setupPaymentIntentId: paymentIntent.id
+          },
+        });
+
+        if (subscriptionError) {
+          console.error('Subscription creation error:', subscriptionError);
+          // Payment succeeded but subscription failed - still show success but warn user
+          toast({
+            title: "Pagamento completato",
+            description: "Il pagamento è stato elaborato. Ti contatteremo presto per attivare il tuo abbonamento.",
+            variant: "default"
+          });
+        } else {
+          toast({
+            title: "Successo!",
+            description: "Pagamento completato e abbonamento attivato con successo!",
+            variant: "default"
+          });
+        }
+
         // Call onPurchase for tracking purposes
         onPurchase({
           planType: selectedPlan,
           amount: selectedPlanDetails.price
         });
-      } else {
-        throw new Error('No checkout URL returned');
+
+        // Clear form
+        setEmail('');
+        setFirstName('');
+        setLastName('');
+        cardElement.clear();
       }
     } catch (error) {
-      console.error('Checkout error:', error);
+      console.error('Payment error:', error);
       toast({
         title: "Errore",
-        description: "Si è verificato un errore durante il checkout. Riprova più tardi.",
+        description: error instanceof Error ? error.message : "Si è verificato un errore durante il pagamento. Riprova più tardi.",
         variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const cardElementOptions = {
+    style: {
+      base: {
+        fontSize: '16px',
+        color: '#424770',
+        '::placeholder': {
+          color: '#aab7c4',
+        },
+      },
+    },
   };
 
   return (
@@ -177,11 +296,74 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Personal Information */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Informazioni personali</h3>
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+                Nome *
+              </label>
+              <input
+                type="text"
+                id="firstName"
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
+                required
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+                Cognome *
+              </label>
+              <input
+                type="text"
+                id="lastName"
+                value={lastName}
+                onChange={(e) => setLastName(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
+                required
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email *
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#71b8bc]"
+              required
+            />
+          </div>
+        </div>
+
+        {/* Payment Information */}
+        <div className="space-y-4">
+          <h3 className="font-semibold text-lg">Informazioni di pagamento</h3>
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Dettagli carta *
+            </label>
+            <div className="p-3 border border-gray-300 rounded-md focus-within:ring-2 focus-within:ring-[#71b8bc]">
+              <CardElement options={cardElementOptions} />
+            </div>
+          </div>
+        </div>
+
         <button
           type="submit"
-          disabled={isLoading}
+          disabled={isLoading || !stripe}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading 
+            isLoading || !stripe
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -213,6 +395,14 @@ const Checkout: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarter
         I tuoi dati sono protetti con crittografia SSL
       </div>
     </div>
+  );
+};
+
+const Checkout: React.FC<CheckoutProps> = (props) => {
+  return (
+    <Elements stripe={stripePromise}>
+      <CheckoutForm {...props} />
+    </Elements>
   );
 };
 
