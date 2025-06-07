@@ -5,6 +5,7 @@ import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
 import TopNavBar from '../components/TopNavBar';
 import { saveQuizAnswer, loadQuizAnswers, hasExistingSession, clearQuizSession } from '../components/QuizDataManager';
 import QuizSessionModal from '../components/QuizSessionModal';
+import { useToast } from '@/hooks/use-toast';
 
 // Question type components
 import SingleChoice from '../components/QuestionTypes/SingleChoice';
@@ -24,10 +25,10 @@ import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
 import LoadingAnalysis from '../components/LoadingAnalysis';
-import { toast } from 'react-toastify';
 
 const Quiz: React.FC = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [state, setState] = useState<QuizState>({
     currentStep: 0,
     totalSteps: quizQuestions.length,
