@@ -13,8 +13,8 @@ import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/fre
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation } from 'react-router-dom';
 
-// Updated to test mode
-const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7CJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKK');
+// Updated with correct test mode key
+const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7Q6TftRZ3O0yuDmNlouCSdvv7h2FFdImuEPpzzIeXjdHLwAOz0mvLV1aGoLST5fbKYFkK8HN700o1qEJmCJ');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
