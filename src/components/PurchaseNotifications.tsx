@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import NotificationToast from './NotificationToast';
 
-const italianNames = [
-  'Marco', 'Giulia', 'Alessandro', 'Francesca', 'Luca', 'Chiara', 'Andrea', 'Valentina',
-  'Matteo', 'Sara', 'Davide', 'Elisa', 'Simone', 'Martina', 'Lorenzo', 'Giorgia',
-  'Stefano', 'Federica', 'Riccardo', 'Silvia', 'Michele', 'Elena', 'Fabio', 'Alessia'
+const italianNamesWithLastInitials = [
+  'Marco R.', 'Giulia B.', 'Alessandro T.', 'Francesca M.', 'Luca P.', 'Chiara S.', 
+  'Andrea C.', 'Valentina L.', 'Matteo F.', 'Sara G.', 'Davide N.', 'Elisa V.',
+  'Simone D.', 'Martina A.', 'Lorenzo H.', 'Giorgia R.', 'Stefano Q.', 'Federica Z.',
+  'Riccardo E.', 'Silvia I.', 'Michele O.', 'Elena U.', 'Fabio W.', 'Alessia K.'
 ];
 
 const italianCities = [
@@ -34,7 +35,7 @@ const PurchaseNotifications: React.FC<PurchaseNotificationsProps> = ({ isActive 
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const generateNotification = () => {
-    const name = italianNames[Math.floor(Math.random() * italianNames.length)];
+    const name = italianNamesWithLastInitials[Math.floor(Math.random() * italianNamesWithLastInitials.length)];
     const plan = plans[Math.floor(Math.random() * plans.length)];
     
     // Usa la città dell'utente o una città casuale nelle vicinanze

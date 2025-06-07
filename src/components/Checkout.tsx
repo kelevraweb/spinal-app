@@ -13,7 +13,8 @@ import { faSpinner, faCreditCard, faLock, faCheckCircle } from '@fortawesome/fre
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation } from 'react-router-dom';
 
-const stripePromise = loadStripe('pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5');
+// Updated to test mode
+const stripePromise = loadStripe('pk_test_51N8NRUKUx3KhOjH7CJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKKCJhKK');
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
@@ -181,6 +182,16 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
   return (
     <div>
+      {/* Test Mode Banner */}
+      <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-center">
+        <div className="flex items-center justify-center space-x-2">
+          <span className="font-bold text-sm">
+            🧪 MODALITÀ TEST - Nessun addebito reale
+          </span>
+        </div>
+        <p className="text-xs mt-1">Usa 4242 4242 4242 4242 per testare i pagamenti</p>
+      </div>
+
       {/* Scarcity Banner - only show on discounted page */}
       {isDiscountedPage && (
         <div className="mb-4 bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-lg text-center">
