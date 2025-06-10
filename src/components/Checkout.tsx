@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -262,11 +263,13 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
             .eq('stripe_session_id', paymentData.paymentIntentId);
         }
 
-        // Update user profile status to active
-        await supabase
-          .from('user_profiles')
-          .update({ subscription_status: 'active' })
-          .eq('user_id', paymentIntent.metadata?.user_id);
+        // Update user profile status to active - remove invalid metadata reference
+        if (paymentIntent.id) {
+          await supabase
+            .from('user_profiles')
+            .update({ subscription_status: 'active' })
+            .eq('stripe_customer_id', paymentIntent.customer);
+        }
         
         // Payment successful
         onPurchase({

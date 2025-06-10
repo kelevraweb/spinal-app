@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
-import UserAuth from '@/components/UserAuth';
 import { useAuth } from '@/contexts/AuthContext';
+import UserAuth from '@/components/UserAuth';
 
 const Index = () => {
   const navigate = useNavigate();

@@ -84,10 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setPassword = async (email: string, password: string) => {
-    // First check if user exists with this email
-    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(email);
+    // First try to get user by email from our profiles table
+    const { data: profile } = await supabase
+      .from('user_profiles')
+      .select('user_id')
+      .eq('email', email)
+      .single();
     
-    if (!existingUser) {
+    if (!profile) {
       return { error: { message: 'Nessun account trovato con questa email' } };
     }
 
