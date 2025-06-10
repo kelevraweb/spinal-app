@@ -1,12 +1,10 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Footer from '../components/Footer';
-import { useAuth } from '@/contexts/AuthContext';
-import UserAuth from '@/components/UserAuth';
 
 const Index = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [currentScreen, setCurrentScreen] = useState(0);
   const heroRef = useRef<HTMLDivElement>(null);
@@ -96,9 +94,9 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#fbfaf8]">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section ref={heroRef} className="pt-20 pb-16 px-4">
+      <section ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
           <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
             {/* Left Content */}
@@ -184,47 +182,8 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Add User Auth Section - only show if user is not logged in */}
-      {!user && (
-        <section className="py-16 px-4 bg-white">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-4 text-gray-800">
-                Accedi al tuo account
-              </h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Hai già completato il quiz e effettuato un acquisto? Accedi al tuo account o imposta la tua password per la prima volta.
-              </p>
-            </div>
-            <div className="max-w-md mx-auto">
-              <UserAuth />
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* If user is logged in, show quick access to dashboard */}
-      {user && (
-        <section className="py-16 px-4 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa]">
-          <div className="max-w-4xl mx-auto text-center text-white">
-            <h2 className="text-3xl font-bold mb-4">
-              Benvenuto nel tuo account!
-            </h2>
-            <p className="text-lg mb-6 opacity-90">
-              Il tuo piano è attivo. Accedi alla tua dashboard per gestire il tuo account.
-            </p>
-            <a
-              href="/dashboard"
-              className="inline-block bg-white text-[#71b8bc] px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
-            >
-              Vai alla Dashboard
-            </a>
-          </div>
-        </section>
-      )}
-
       {/* Stats Section */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -258,7 +217,7 @@ const Index = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -334,7 +293,7 @@ const Index = () => {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 px-4 bg-gradient-to-br from-blue-50 to-green-50">
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-green-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -398,7 +357,7 @@ const Index = () => {
       </section>
 
       {/* Target Audience */}
-      <section className="py-16 px-4 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">
@@ -438,7 +397,7 @@ const Index = () => {
       </section>
 
       {/* Quiz CTA */}
-      <section className="py-16 px-4 bg-white">
+      <section className="py-20 bg-white">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-3xl p-12">
             <div className="text-6xl mb-6">🧪</div>
@@ -459,7 +418,7 @@ const Index = () => {
       </section>
 
       {/* FAQ */}
-      <section className="py-16 px-4 bg-gray-50">
+      <section className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
