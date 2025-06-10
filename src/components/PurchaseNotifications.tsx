@@ -122,22 +122,23 @@ const PurchaseNotifications: React.FC = () => {
 
   const generateMapUrl = (coordinates: [number, number]) => {
     const [lng, lat] = coordinates;
-    // Create a simple map placeholder using a service like OpenStreetMap tiles
+    // Using your Mapbox API key and larger dimensions for better visibility
     const zoom = 8;
-    return `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-s+71b8bc(${lng},${lat})/${lng},${lat},${zoom}/60x40@2x?access_token=pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbHppY3Y3bjMwMGsyMmtvZGtkeWRyNjNrIn0.KOGbOhX2zUU8RSy7c0mzLg`;
+    return `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-s+71b8bc(${lng},${lat})/${lng},${lat},${zoom}/80x60@2x?access_token=pk.eyJ1IjoibWV0b2RvLWltbW9iaWxpYXJlMjUiLCJhIjoiY21ibWk3d3l5MTZpYzJpcGo3bGJ3YXhkaiJ9.xaPgjWAvIGVqzQpEATlHXQ`;
   };
 
   if (notifications.length === 0) return null;
 
   return (
-    <div className="fixed top-6 right-6 z-50 space-y-3 max-w-sm">
+    <div className="fixed bottom-6 right-6 z-50 space-y-3 max-w-sm">
       {notifications.map((notification) => (
         <div
           key={notification.id}
           className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 transform transition-all duration-500 ease-in-out animate-slide-in-right"
         >
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-start space-x-3 flex-1">
+          <div className="flex items-start gap-3">
+            {/* Content section - left side */}
+            <div className="flex items-start space-x-3 flex-1 min-w-0">
               <div className="w-2 h-2 bg-green-400 rounded-full mt-2 animate-pulse flex-shrink-0"></div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-gray-900 truncate">
@@ -149,30 +150,35 @@ const PurchaseNotifications: React.FC = () => {
                 <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
               </div>
             </div>
+            
+            {/* Map section - right side */}
+            <div className="flex-shrink-0">
+              <div className="w-20 h-15 rounded-lg overflow-hidden border border-gray-200 shadow-sm">
+                <img
+                  src={generateMapUrl(notification.coordinates)}
+                  alt={`Mappa di ${notification.location}`}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    // Fallback to a placeholder if map fails to load
+                    e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
+                      <svg width="80" height="60" xmlns="http://www.w3.org/2000/svg">
+                        <rect width="80" height="60" fill="#e5f6f7"/>
+                        <circle cx="40" cy="30" r="4" fill="#71b8bc"/>
+                        <text x="40" y="45" text-anchor="middle" font-size="8" fill="#666">${notification.location}</text>
+                      </svg>
+                    `)}`;
+                  }}
+                />
+              </div>
+            </div>
+            
+            {/* Close button - top right */}
             <button
               onClick={() => dismissNotification(notification.id)}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0"
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0 -mt-1 -mr-1"
             >
               <X className="w-3 h-3" />
             </button>
-          </div>
-          
-          <div className="mt-3 rounded-lg overflow-hidden border border-gray-100">
-            <img
-              src={generateMapUrl(notification.coordinates)}
-              alt={`Mappa di ${notification.location}`}
-              className="w-full h-10 object-cover"
-              onError={(e) => {
-                // Fallback to a placeholder if map fails to load
-                e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
-                  <svg width="60" height="40" xmlns="http://www.w3.org/2000/svg">
-                    <rect width="60" height="40" fill="#e5f6f7"/>
-                    <circle cx="30" cy="20" r="3" fill="#71b8bc"/>
-                    <text x="30" y="32" text-anchor="middle" font-size="8" fill="#666">${notification.location}</text>
-                  </svg>
-                `)}`;
-              }}
-            />
           </div>
         </div>
       ))}
