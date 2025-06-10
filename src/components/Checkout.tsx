@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -14,24 +15,30 @@ interface CheckoutProps {
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-// We'll dynamically set the Stripe key based on admin settings
+// Store stripe promise
 let stripePromise: Promise<any> | null = null;
 
 const getStripePromise = async () => {
   if (!stripePromise) {
-    // Check admin settings for Stripe mode
-    const { data } = await supabase
-      .from('admin_settings')
-      .select('setting_value')
-      .eq('setting_key', 'stripe_mode')
-      .single();
-    
-    const isTestMode = data?.setting_value === 'test';
-    const publicKey = isTestMode 
-      ? 'pk_test_51N8NRUKUx3KhOjH7nKCwV5k6N3wKzHa8X5aM3q2jKr7wVn4bWz9sE1dGhJ2lXp8yQ6vT4uR9iK3mF7cN1bXa5s00LzYcVwQs'
-      : 'pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5';
-    
-    stripePromise = loadStripe(publicKey);
+    try {
+      // Get Stripe configuration from our edge function
+      const { data, error } = await supabase.functions.invoke('get-stripe-config');
+      
+      if (error) {
+        console.error('Error getting Stripe config:', error);
+        throw new Error('Failed to get Stripe configuration');
+      }
+
+      if (!data?.publishableKey) {
+        throw new Error('No publishable key received');
+      }
+
+      console.log('Initializing Stripe with mode:', data.mode);
+      stripePromise = loadStripe(data.publishableKey);
+    } catch (error) {
+      console.error('Error initializing Stripe:', error);
+      throw error;
+    }
   }
   return stripePromise;
 };
@@ -398,17 +405,37 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
 const Checkout: React.FC<CheckoutProps> = (props) => {
   const [stripePromiseState, setStripePromiseState] = useState<Promise<any> | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const loadStripe = async () => {
-      const promise = await getStripePromise();
-      setStripePromiseState(promise);
+      try {
+        const promise = await getStripePromise();
+        setStripePromiseState(promise);
+      } catch (error) {
+        console.error('Failed to load Stripe:', error);
+        setError('Errore nel caricamento del sistema di pagamento. Riprova più tardi.');
+      }
     };
     loadStripe();
   }, []);
 
+  if (error) {
+    return (
+      <div className="text-center p-4">
+        <p className="text-red-600">{error}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          className="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        >
+          Riprova
+        </button>
+      </div>
+    );
+  }
+
   if (!stripePromiseState) {
-    return <div>Caricamento...</div>;
+    return <div className="text-center p-4">Caricamento sistema di pagamento...</div>;
   }
 
   return (
