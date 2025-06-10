@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,7 +6,8 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || '');
+// We'll use a hardcoded test key for now - in production this should come from an API call
+const stripePromise = loadStripe('pk_test_51234567890abcdef'); // Replace with actual test key
 
 const cardElementOptions = {
   style: {
@@ -46,8 +48,6 @@ const CheckoutForm: React.FC<{
     event.preventDefault();
 
     if (!stripe || !elements) {
-      // Stripe.js has not loaded yet. Make sure to disable
-      // form submission until Stripe.js has loaded.
       return;
     }
 
@@ -100,7 +100,6 @@ const CheckoutForm: React.FC<{
         }
 
         if (confirmResult.paymentIntent.status === 'succeeded') {
-          // Payment is successful, now verify it
           await verifyPayment(confirmResult.paymentIntent.id);
         } else {
           setError('Il pagamento non è andato a buon fine.');
@@ -132,26 +131,15 @@ const CheckoutForm: React.FC<{
       console.log('Payment verification response:', verificationData);
       
       if (verificationData?.success) {
-        // Create subscription record
-        if (paymentData.planType === 'subscription') {
-          await supabase
-            .from('subscriptions')
-            .insert({
-              stripe_subscription_id: paymentIntentId,
-              status: 'active',
-              plan_type: paymentData.planType,
-              amount: paymentData.amount / 100
-            });
-        } else {
-          await supabase
-            .from('purchases')
-            .insert({
-              stripe_payment_intent_id: paymentIntentId,
-              status: 'completed',
-              plan_type: paymentData.planType,
-              amount: paymentData.amount / 100
-            });
-        }
+        // Create order record instead of subscription/purchase
+        await supabase
+          .from('orders')
+          .insert({
+            stripe_session_id: paymentIntentId,
+            status: 'completed',
+            plan_type: paymentData.planType,
+            amount: paymentData.amount / 100
+          });
 
         // Update user profile status to active - simplified approach
         const { data: { user } } = await supabase.auth.getUser();
