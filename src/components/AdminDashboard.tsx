@@ -154,6 +154,8 @@ const AdminDashboard: React.FC = () => {
         .upsert({
           setting_key: 'stripe_mode',
           setting_value: newMode
+        }, { 
+          onConflict: 'setting_key' 
         });
 
       if (error) throw error;
