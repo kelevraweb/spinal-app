@@ -1,5 +1,4 @@
 
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -94,6 +93,10 @@
     animation-delay: 1.5s;
   }
 
+  .animate-slide-in-left {
+    animation: slide-in-left 0.5s ease-out forwards;
+  }
+
   /* Custom responsive overrides for gender selection */
   @media (max-width: 768px) {
     .h-64 {
@@ -161,5 +164,16 @@
   }
   50% {
     transform: translateY(-15px);
+  }
+}
+
+@keyframes slide-in-left {
+  0% {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
   }
 }

@@ -126,6 +126,69 @@ export type Database = {
         }
         Relationships: []
       }
+      temp_passwords: {
+        Row: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          password_hash: string
+          used: boolean
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          expires_at: string
+          id?: string
+          password_hash: string
+          used?: boolean
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          expires_at?: string
+          id?: string
+          password_hash?: string
+          used?: boolean
+        }
+        Relationships: []
+      }
+      user_profiles: {
+        Row: {
+          created_at: string
+          id: string
+          name: string
+          plan_type: string
+          purchase_date: string
+          quiz_session_id: string | null
+          subscription_status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          name: string
+          plan_type: string
+          purchase_date?: string
+          quiz_session_id?: string | null
+          subscription_status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          name?: string
+          plan_type?: string
+          purchase_date?: string
+          quiz_session_id?: string | null
+          subscription_status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       admin_dashboard_data: {
@@ -149,7 +212,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      cleanup_expired_passwords: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never

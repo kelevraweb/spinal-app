@@ -1,142 +1,110 @@
 
 import React, { useState, useEffect } from 'react';
-import { useGeolocation } from '@/hooks/useGeolocation';
-import NotificationToast from './NotificationToast';
 
-// Nomi e città per diversi paesi europei
-const europeanData = {
-  italia: {
-    names: ['Marco R.', 'Giulia B.', 'Alessandro T.', 'Francesca M.', 'Luca P.', 'Chiara S.', 
-             'Andrea C.', 'Valentina L.', 'Matteo F.', 'Sara G.', 'Davide N.', 'Elisa V.',
-             'Simone D.', 'Martina A.', 'Lorenzo H.', 'Giorgia R.', 'Stefano Q.', 'Federica Z.',
-             'Riccardo E.', 'Silvia I.', 'Michele O.', 'Elena U.', 'Fabio W.', 'Alessia K.'],
-    cities: ['Milano', 'Roma', 'Napoli', 'Torino', 'Palermo', 'Genova', 'Bologna', 'Firenze',
-             'Catania', 'Venezia', 'Verona', 'Messina', 'Padova', 'Trieste', 'Brescia', 'Parma']
-  },
-  francia: {
-    names: ['Pierre L.', 'Marie D.', 'Jean-Paul M.', 'Sophie R.', 'Antoine B.', 'Camille G.',
-            'Nicolas T.', 'Emma C.', 'Julien V.', 'Léa S.', 'Thomas H.', 'Chloé P.',
-            'Alexandre F.', 'Marine N.', 'Maxime Q.', 'Pauline Z.'],
-    cities: ['Parigi', 'Lione', 'Marsiglia', 'Nizza', 'Tolosa', 'Strasburgo', 'Bordeaux', 'Lille']
-  },
-  svizzera: {
-    names: ['Hans M.', 'Anna S.', 'Marco B.', 'Sarah L.', 'Peter W.', 'Lisa K.',
-            'David R.', 'Elena F.', 'Michael T.', 'Julia H.', 'Stefan G.', 'Nicole P.'],
-    cities: ['Zurigo', 'Ginevra', 'Basilea', 'Berna', 'Losanna', 'Lucerna', 'San Gallo']
-  },
-  austria: {
-    names: ['Wolfgang A.', 'Ingrid H.', 'Klaus S.', 'Petra M.', 'Franz L.', 'Sabine R.',
-            'Andreas W.', 'Martina K.', 'Georg F.', 'Daniela B.', 'Thomas G.', 'Barbara P.'],
-    cities: ['Vienna', 'Salisburgo', 'Innsbruck', 'Graz', 'Linz', 'Klagenfurt']
-  },
-  slovenia: {
-    names: ['Marko J.', 'Ana K.', 'Luka S.', 'Nina P.', 'Matej L.', 'Eva R.',
-            'Jan M.', 'Sara T.', 'David H.', 'Maja F.', 'Miha G.', 'Tina B.'],
-    cities: ['Lubiana', 'Maribor', 'Celje', 'Kranj', 'Velenje', 'Koper']
-  },
-  germania: {
-    names: ['Hans M.', 'Greta S.', 'Klaus W.', 'Emma B.', 'Stefan L.', 'Anna K.',
-            'Michael R.', 'Sophie F.', 'Thomas H.', 'Lisa G.', 'Andreas P.', 'Marie T.'],
-    cities: ['Monaco di Baviera', 'Stoccarda', 'Norimberga', 'Augusta', 'Ratisbona', 'Würzburg']
-  }
-};
+const PurchaseNotifications: React.FC = () => {
+  const [notifications, setNotifications] = useState<Array<{
+    id: number;
+    name: string;
+    location: string;
+    plan: string;
+    timeAgo: string;
+  }>>([]);
 
-const plans = ['Piano 7 Giorni', 'Piano 1 Mese', 'Piano 3 Mesi'];
+  const names = [
+    "Marco R.", "Giulia S.", "Alessandro M.", "Francesca B.", "Luca T.", 
+    "Elena C.", "Matteo F.", "Chiara L.", "Andrea P.", "Silvia G.",
+    "Roberto V.", "Valentina N.", "Davide Z.", "Martina K.", "Simone Q.",
+    "Laura A.", "Federico D.", "Giorgia M.", "Nicola W.", "Alessia J.",
+    "Giovanni H.", "Sara Y.", "Fabio X.", "Michela U.", "Paolo I."
+  ];
 
-interface PurchaseNotificationsProps {
-  isActive: boolean;
-}
+  const cities = [
+    // Major cities
+    "Milano", "Roma", "Napoli", "Torino", "Palermo", "Genova", "Bologna", "Firenze", "Bari", "Catania",
+    "Venezia", "Verona", "Messina", "Padova", "Trieste", "Brescia", "Parma", "Taranto", "Prato", "Reggio Calabria",
+    
+    // Provincial capitals and important centers
+    "Bergamo", "Vicenza", "Perugia", "Ancona", "La Spezia", "Rimini", "Salerno", "Sassari", "Monza", "Varese",
+    "Como", "Lecco", "Cremona", "Mantova", "Pavia", "Sondrio", "Treviso", "Belluno", "Rovigo", "Udine",
+    "Pordenone", "Gorizia", "Bolzano", "Trento", "Aosta", "Cuneo", "Asti", "Alessandria", "Novara", "Vercelli",
+    "Biella", "Verbania", "Imperia", "Savona", "Piacenza", "Reggio Emilia", "Modena", "Ferrara", "Ravenna",
+    "Forlì", "Cesena", "Pesaro", "Urbino", "Macerata", "Ascoli Piceno", "Fermo", "Terni", "Viterbo", "Rieti",
+    "Latina", "Frosinone", "L'Aquila", "Teramo", "Pescara", "Chieti", "Campobasso", "Isernia", "Caserta",
+    "Benevento", "Avellino", "Foggia", "Lecce", "Brindisi", "Potenza", "Matera", "Cosenza", "Catanzaro",
+    "Reggio Calabria", "Crotone", "Vibo Valentia", "Trapani", "Agrigento", "Caltanissetta", "Enna", "Ragusa",
+    "Siracusa", "Cagliari", "Nuoro", "Oristano", "Tempio Pausania",
+    
+    // Smaller towns and municipalities
+    "Seregno", "Desio", "Lissone", "Cesano Maderno", "Limbiate", "Saronno", "Busto Arsizio", "Gallarate",
+    "Rho", "Bollate", "Cinisello Balsamo", "Sesto San Giovanni", "Cologno Monzese", "Brugherio", "Vimercate",
+    "Carate Brianza", "Giussano", "Mariano Comense", "Cantù", "Erba", "Menaggio", "Bellagio", "Lecco",
+    "Merate", "Casatenovo", "Osnago", "Olgiate Comasco", "Luino", "Somma Lombardo", "Castellanza",
+    "Legnano", "Magenta", "Abbiategrasso", "Corsico", "Buccinasco", "Trezzano sul Naviglio", "Rozzano",
+    "Peschiera Borromeo", "San Donato Milanese", "Melegnano", "Lodi", "Codogno", "Casalpusterlengo",
+    "Sant'Angelo Lodigiano", "Crema", "Treviglio", "Romano di Lombardia", "Dalmine", "Albino", "Nembro",
+    "Alzano Lombardo", "Gazzaniga", "Ponte San Pietro", "Mapello", "Bonate Sopra", "Stezzano", "Osio Sotto"
+  ];
 
-interface Notification {
-  id: string;
-  name: string;
-  city: string;
-  country: string;
-  plan: string;
-  show: boolean;
-}
-
-const PurchaseNotifications: React.FC<PurchaseNotificationsProps> = ({ isActive }) => {
-  const { location } = useGeolocation();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const plans = ["Piano Mensile", "Piano Trimestrale", "Piano Prova"];
+  const timeOptions = ["2 minuti fa", "5 minuti fa", "8 minuti fa", "12 minuti fa", "15 minuti fa", "18 minuti fa"];
 
   const generateNotification = () => {
-    const plan = plans[Math.floor(Math.random() * plans.length)];
+    const randomName = names[Math.floor(Math.random() * names.length)];
+    const randomCity = cities[Math.floor(Math.random() * cities.length)];
+    const randomPlan = plans[Math.floor(Math.random() * plans.length)];
+    const randomTime = timeOptions[Math.floor(Math.random() * timeOptions.length)];
     
-    // Determina il paese base dall'utente (default Italia)
-    const userCountry = location?.country?.toLowerCase().includes('ital') ? 'italia' : 'italia';
-    
-    // 60% probabilità di usare il paese dell'utente, 40% paesi limitrofi
-    let selectedCountry;
-    let countryName;
-    
-    if (Math.random() < 0.6) {
-      selectedCountry = europeanData.italia;
-      countryName = 'Italia';
-    } else {
-      // Scegli un paese limitrofo casuale
-      const neighboringCountries = ['francia', 'svizzera', 'austria', 'slovenia', 'germania'];
-      const randomCountry = neighboringCountries[Math.floor(Math.random() * neighboringCountries.length)];
-      selectedCountry = europeanData[randomCountry];
-      countryName = randomCountry.charAt(0).toUpperCase() + randomCountry.slice(1);
-    }
-    
-    const name = selectedCountry.names[Math.floor(Math.random() * selectedCountry.names.length)];
-    const city = selectedCountry.cities[Math.floor(Math.random() * selectedCountry.cities.length)];
-
-    const notificationId = `notification-${Date.now()}`;
-    
-    const newNotification: Notification = {
-      id: notificationId,
-      name,
-      city,
-      country: countryName,
-      plan,
-      show: true
+    return {
+      id: Date.now() + Math.random(),
+      name: randomName,
+      location: randomCity,
+      plan: randomPlan,
+      timeAgo: randomTime
     };
-
-    setNotifications(prev => [...prev, newNotification]);
-  };
-
-  const handleCloseNotification = (notificationId: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== notificationId));
   };
 
   useEffect(() => {
-    if (!isActive) return;
+    // Generate initial notification
+    const initialNotification = generateNotification();
+    setNotifications([initialNotification]);
 
-    // Prima notifica dopo 3-8 secondi
-    const firstTimeout = setTimeout(() => {
-      generateNotification();
-    }, Math.random() * 5000 + 3000);
-
-    // Notifiche successive ogni 15-45 secondi
+    // Set up interval for new notifications
     const interval = setInterval(() => {
-      if (Math.random() < 0.7) { // 70% di probabilità
-        generateNotification();
-      }
-    }, Math.random() * 30000 + 15000);
+      const newNotification = generateNotification();
+      
+      setNotifications(prev => {
+        const updated = [newNotification, ...prev].slice(0, 5); // Keep only 5 latest
+        return updated;
+      });
+    }, Math.random() * 8000 + 7000); // Random interval between 7-15 seconds
 
-    return () => {
-      clearTimeout(firstTimeout);
-      clearInterval(interval);
-    };
-  }, [isActive, location]);
+    return () => clearInterval(interval);
+  }, []);
+
+  if (notifications.length === 0) return null;
 
   return (
-    <>
+    <div className="fixed bottom-6 left-6 z-50 space-y-3 max-w-sm">
       {notifications.map((notification) => (
-        <NotificationToast
+        <div
           key={notification.id}
-          name={notification.name}
-          city={notification.city}
-          country={notification.country}
-          plan={notification.plan}
-          show={notification.show}
-          onClose={() => handleCloseNotification(notification.id)}
-        />
+          className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 transform transition-all duration-500 ease-in-out animate-slide-in-left"
+        >
+          <div className="flex items-start space-x-3">
+            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 animate-pulse"></div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-gray-900">
+                <span className="text-[#71b8bc] font-semibold">{notification.name}</span> da {notification.location}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                Ha appena acquistato il <span className="font-medium">{notification.plan}</span>
+              </p>
+              <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
+            </div>
+          </div>
+        </div>
       ))}
-    </>
+    </div>
   );
 };
 
