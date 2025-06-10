@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -218,7 +219,7 @@ const Pricing: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
-      <PurchaseNotifications isActive={true} />
+      <PurchaseNotifications />
       
       <div className="max-w-[580px] mx-auto px-2 pt-8">
         {/* Before-After Comparison Section */}

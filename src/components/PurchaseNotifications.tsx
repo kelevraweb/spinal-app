@@ -1,14 +1,17 @@
-
 import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
+
+interface Notification {
+  id: number;
+  name: string;
+  location: string;
+  plan: string;
+  timeAgo: string;
+  coordinates: [number, number];
+}
 
 const PurchaseNotifications: React.FC = () => {
-  const [notifications, setNotifications] = useState<Array<{
-    id: number;
-    name: string;
-    location: string;
-    plan: string;
-    timeAgo: string;
-  }>>([]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const names = [
     "Marco R.", "Giulia S.", "Alessandro M.", "Francesca B.", "Luca T.", 
@@ -18,89 +21,158 @@ const PurchaseNotifications: React.FC = () => {
     "Giovanni H.", "Sara Y.", "Fabio X.", "Michela U.", "Paolo I."
   ];
 
-  const cities = [
+  const citiesWithCoordinates = [
     // Major cities
-    "Milano", "Roma", "Napoli", "Torino", "Palermo", "Genova", "Bologna", "Firenze", "Bari", "Catania",
-    "Venezia", "Verona", "Messina", "Padova", "Trieste", "Brescia", "Parma", "Taranto", "Prato", "Reggio Calabria",
-    
-    // Provincial capitals and important centers
-    "Bergamo", "Vicenza", "Perugia", "Ancona", "La Spezia", "Rimini", "Salerno", "Sassari", "Monza", "Varese",
-    "Como", "Lecco", "Cremona", "Mantova", "Pavia", "Sondrio", "Treviso", "Belluno", "Rovigo", "Udine",
-    "Pordenone", "Gorizia", "Bolzano", "Trento", "Aosta", "Cuneo", "Asti", "Alessandria", "Novara", "Vercelli",
-    "Biella", "Verbania", "Imperia", "Savona", "Piacenza", "Reggio Emilia", "Modena", "Ferrara", "Ravenna",
-    "Forlì", "Cesena", "Pesaro", "Urbino", "Macerata", "Ascoli Piceno", "Fermo", "Terni", "Viterbo", "Rieti",
-    "Latina", "Frosinone", "L'Aquila", "Teramo", "Pescara", "Chieti", "Campobasso", "Isernia", "Caserta",
-    "Benevento", "Avellino", "Foggia", "Lecce", "Brindisi", "Potenza", "Matera", "Cosenza", "Catanzaro",
-    "Reggio Calabria", "Crotone", "Vibo Valentia", "Trapani", "Agrigento", "Caltanissetta", "Enna", "Ragusa",
-    "Siracusa", "Cagliari", "Nuoro", "Oristano", "Tempio Pausania",
-    
-    // Smaller towns and municipalities
-    "Seregno", "Desio", "Lissone", "Cesano Maderno", "Limbiate", "Saronno", "Busto Arsizio", "Gallarate",
-    "Rho", "Bollate", "Cinisello Balsamo", "Sesto San Giovanni", "Cologno Monzese", "Brugherio", "Vimercate",
-    "Carate Brianza", "Giussano", "Mariano Comense", "Cantù", "Erba", "Menaggio", "Bellagio", "Lecco",
-    "Merate", "Casatenovo", "Osnago", "Olgiate Comasco", "Luino", "Somma Lombardo", "Castellanza",
-    "Legnano", "Magenta", "Abbiategrasso", "Corsico", "Buccinasco", "Trezzano sul Naviglio", "Rozzano",
-    "Peschiera Borromeo", "San Donato Milanese", "Melegnano", "Lodi", "Codogno", "Casalpusterlengo",
-    "Sant'Angelo Lodigiano", "Crema", "Treviglio", "Romano di Lombardia", "Dalmine", "Albino", "Nembro",
-    "Alzano Lombardo", "Gazzaniga", "Ponte San Pietro", "Mapello", "Bonate Sopra", "Stezzano", "Osio Sotto"
+    { name: "Milano", coordinates: [9.1900, 45.4642] },
+    { name: "Roma", coordinates: [12.4964, 41.9028] },
+    { name: "Napoli", coordinates: [14.2681, 40.8518] },
+    { name: "Torino", coordinates: [7.6869, 45.0703] },
+    { name: "Palermo", coordinates: [13.3614, 38.1157] },
+    { name: "Genova", coordinates: [8.9463, 44.4056] },
+    { name: "Bologna", coordinates: [11.3426, 44.4949] },
+    { name: "Firenze", coordinates: [11.2558, 43.7696] },
+    { name: "Bari", coordinates: [16.8719, 41.1171] },
+    { name: "Catania", coordinates: [15.0873, 37.5079] },
+    { name: "Venezia", coordinates: [12.3155, 45.4408] },
+    { name: "Verona", coordinates: [10.9916, 45.4384] },
+    { name: "Messina", coordinates: [15.5518, 38.1938] },
+    { name: "Padova", coordinates: [11.8767, 45.4064] },
+    { name: "Trieste", coordinates: [13.7681, 45.6495] },
+    { name: "Brescia", coordinates: [10.2113, 45.5416] },
+    { name: "Parma", coordinates: [10.3279, 44.8015] },
+    { name: "Prato", coordinates: [11.0948, 43.8777] },
+    { name: "Bergamo", coordinates: [9.6699, 45.6983] },
+    { name: "Vicenza", coordinates: [11.5444, 45.5455] },
+    { name: "Perugia", coordinates: [12.3828, 43.1122] },
+    { name: "Ancona", coordinates: [13.5188, 43.6158] },
+    { name: "La Spezia", coordinates: [9.8186, 44.1024] },
+    { name: "Rimini", coordinates: [12.5681, 44.0678] },
+    { name: "Salerno", coordinates: [14.7681, 40.6824] },
+    { name: "Sassari", coordinates: [8.5596, 40.7259] },
+    { name: "Monza", coordinates: [9.2744, 45.5845] },
+    { name: "Como", coordinates: [9.0832, 45.8081] },
+    { name: "Lecco", coordinates: [9.3931, 45.8566] },
+    { name: "Cremona", coordinates: [10.0227, 45.1335] },
+    { name: "Mantova", coordinates: [10.7915, 45.1564] },
+    { name: "Pavia", coordinates: [9.1585, 45.1847] },
+    { name: "Treviso", coordinates: [12.2433, 45.6669] },
+    { name: "Udine", coordinates: [13.2335, 46.0748] },
+    { name: "Bolzano", coordinates: [11.3548, 46.4983] },
+    { name: "Trento", coordinates: [11.1217, 46.0748] },
+    { name: "Aosta", coordinates: [7.3156, 45.7373] }
   ];
 
   const plans = ["Piano Mensile", "Piano Trimestrale", "Piano Prova"];
   const timeOptions = ["2 minuti fa", "5 minuti fa", "8 minuti fa", "12 minuti fa", "15 minuti fa", "18 minuti fa"];
 
-  const generateNotification = () => {
+  const generateNotification = (): Notification => {
     const randomName = names[Math.floor(Math.random() * names.length)];
-    const randomCity = cities[Math.floor(Math.random() * cities.length)];
+    const randomCity = citiesWithCoordinates[Math.floor(Math.random() * citiesWithCoordinates.length)];
     const randomPlan = plans[Math.floor(Math.random() * plans.length)];
     const randomTime = timeOptions[Math.floor(Math.random() * timeOptions.length)];
     
     return {
       id: Date.now() + Math.random(),
       name: randomName,
-      location: randomCity,
+      location: randomCity.name,
       plan: randomPlan,
-      timeAgo: randomTime
+      timeAgo: randomTime,
+      coordinates: randomCity.coordinates as [number, number]
     };
   };
 
-  useEffect(() => {
-    // Generate initial notification
-    const initialNotification = generateNotification();
-    setNotifications([initialNotification]);
+  const dismissNotification = (id: number) => {
+    setNotifications(prev => prev.filter(notif => notif.id !== id));
+  };
 
-    // Set up interval for new notifications
+  useEffect(() => {
+    // Initial delay of 10 seconds before first notification
+    const initialTimeout = setTimeout(() => {
+      const initialNotification = generateNotification();
+      setNotifications([initialNotification]);
+
+      // Auto-dismiss after 7 seconds
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(notif => notif.id !== initialNotification.id));
+      }, 7000);
+    }, 10000);
+
+    // Set up interval for new notifications (15-25 seconds)
     const interval = setInterval(() => {
       const newNotification = generateNotification();
       
       setNotifications(prev => {
-        const updated = [newNotification, ...prev].slice(0, 5); // Keep only 5 latest
+        // Keep only 3 most recent notifications
+        const updated = [newNotification, ...prev].slice(0, 3);
+        
+        // Auto-dismiss the new notification after 7 seconds
+        setTimeout(() => {
+          setNotifications(current => current.filter(notif => notif.id !== newNotification.id));
+        }, 7000);
+        
         return updated;
       });
-    }, Math.random() * 8000 + 7000); // Random interval between 7-15 seconds
+    }, Math.random() * 10000 + 15000); // 15-25 seconds
 
-    return () => clearInterval(interval);
+    return () => {
+      clearTimeout(initialTimeout);
+      clearInterval(interval);
+    };
   }, []);
+
+  const generateMapUrl = (coordinates: [number, number]) => {
+    const [lng, lat] = coordinates;
+    // Create a simple map placeholder using a service like OpenStreetMap tiles
+    const zoom = 8;
+    return `https://api.mapbox.com/styles/v1/mapbox/light-v11/static/pin-s+71b8bc(${lng},${lat})/${lng},${lat},${zoom}/60x40@2x?access_token=pk.eyJ1IjoibG92YWJsZSIsImEiOiJjbHppY3Y3bjMwMGsyMmtvZGtkeWRyNjNrIn0.KOGbOhX2zUU8RSy7c0mzLg`;
+  };
 
   if (notifications.length === 0) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 z-50 space-y-3 max-w-sm">
+    <div className="fixed top-6 right-6 z-50 space-y-3 max-w-sm">
       {notifications.map((notification) => (
         <div
           key={notification.id}
-          className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 transform transition-all duration-500 ease-in-out animate-slide-in-left"
+          className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 transform transition-all duration-500 ease-in-out animate-slide-in-right"
         >
-          <div className="flex items-start space-x-3">
-            <div className="w-2 h-2 bg-green-400 rounded-full mt-2 animate-pulse"></div>
-            <div className="flex-1">
-              <p className="text-sm font-medium text-gray-900">
-                <span className="text-[#71b8bc] font-semibold">{notification.name}</span> da {notification.location}
-              </p>
-              <p className="text-xs text-gray-600 mt-1">
-                Ha appena acquistato il <span className="font-medium">{notification.plan}</span>
-              </p>
-              <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
+          <div className="flex items-start justify-between mb-2">
+            <div className="flex items-start space-x-3 flex-1">
+              <div className="w-2 h-2 bg-green-400 rounded-full mt-2 animate-pulse flex-shrink-0"></div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-gray-900 truncate">
+                  <span className="text-[#71b8bc] font-semibold">{notification.name}</span> da {notification.location}
+                </p>
+                <p className="text-xs text-gray-600 mt-1">
+                  Ha acquistato il <span className="font-medium">{notification.plan}</span>
+                </p>
+                <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
+              </div>
             </div>
+            <button
+              onClick={() => dismissNotification(notification.id)}
+              className="text-gray-400 hover:text-gray-600 transition-colors p-1 flex-shrink-0"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </div>
+          
+          <div className="mt-3 rounded-lg overflow-hidden border border-gray-100">
+            <img
+              src={generateMapUrl(notification.coordinates)}
+              alt={`Mappa di ${notification.location}`}
+              className="w-full h-10 object-cover"
+              onError={(e) => {
+                // Fallback to a placeholder if map fails to load
+                e.currentTarget.src = `data:image/svg+xml,${encodeURIComponent(`
+                  <svg width="60" height="40" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="60" height="40" fill="#e5f6f7"/>
+                    <circle cx="30" cy="20" r="3" fill="#71b8bc"/>
+                    <text x="30" y="32" text-anchor="middle" font-size="8" fill="#666">${notification.location}</text>
+                  </svg>
+                `)}`;
+              }}
+            />
           </div>
         </div>
       ))}

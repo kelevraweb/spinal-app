@@ -97,6 +97,10 @@
     animation: slide-in-left 0.5s ease-out forwards;
   }
 
+  .animate-slide-in-right {
+    animation: slide-in-right 0.5s ease-out forwards;
+  }
+
   /* Custom responsive overrides for gender selection */
   @media (max-width: 768px) {
     .h-64 {
@@ -170,6 +174,17 @@
 @keyframes slide-in-left {
   0% {
     transform: translateX(-100%);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-right {
+  0% {
+    transform: translateX(100%);
     opacity: 0;
   }
   100% {
