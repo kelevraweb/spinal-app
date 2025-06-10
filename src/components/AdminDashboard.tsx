@@ -14,7 +14,7 @@ import { faDownload, faSignOutAlt, faToggleOn, faToggleOff } from '@fortawesome/
 
 interface AdminData {
   user_session_id: string;
-  ip_address: string;
+  ip_address: string | null;
   started_at: string;
   last_activity_at: string;
   session_status: string;
@@ -65,8 +65,27 @@ const AdminDashboard: React.FC = () => {
 
       if (error) throw error;
 
-      setData(adminData || []);
-      calculateDropOffStats(adminData || []);
+      // Transform the data to match our interface
+      const transformedData = (adminData || []).map(item => ({
+        ...item,
+        ip_address: item.ip_address ? String(item.ip_address) : null,
+        user_session_id: item.user_session_id || '',
+        started_at: item.started_at || '',
+        last_activity_at: item.last_activity_at || '',
+        session_status: item.session_status || '',
+        user_name: item.user_name || '',
+        user_email: item.user_email || '',
+        last_question_id: item.last_question_id || '',
+        completion_time_seconds: item.completion_time_seconds || 0,
+        purchased_plan: item.purchased_plan || '',
+        purchase_amount: item.purchase_amount || 0,
+        payment_status: item.payment_status || '',
+        purchase_date: item.purchase_date || '',
+        questions_answered: Number(item.questions_answered) || 0
+      }));
+
+      setData(transformedData);
+      calculateDropOffStats(transformedData);
     } catch (error) {
       console.error('Error fetching admin data:', error);
       toast({
