@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -266,7 +267,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         await supabase
           .from('user_profiles')
           .update({ subscription_status: 'active' })
-          .eq('user_id', paymentIntent.metadata?.user_id);
+          .eq('user_id', paymentIntent.id);
         
         // Payment successful
         onPurchase({
