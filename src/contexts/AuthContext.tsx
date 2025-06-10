@@ -84,7 +84,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const setPassword = async (email: string, password: string) => {
-    // For existing users, we need to use updateUser since they already exist
+    // First check if user exists with this email
+    const { data: existingUser } = await supabase.auth.admin.getUserByEmail(email);
+    
+    if (!existingUser) {
+      return { error: { message: 'Nessun account trovato con questa email' } };
+    }
+
+    // Update password for existing user
     const { error } = await supabase.auth.updateUser({
       password: password
     });

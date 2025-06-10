@@ -33,10 +33,9 @@ const Footer: React.FC = () => {
           </div>
           
           <div>
-            <h4 className="font-semibold mb-4">Account</h4>
+            <h4 className="font-semibold mb-4">Admin</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/auth" className="text-gray-400 hover:text-white">Accedi</Link></li>
-              <li><Link to="/admin/login" className="text-gray-400 hover:text-white">Admin</Link></li>
+              <li><Link to="/admin/login" className="text-gray-400 hover:text-white">Login</Link></li>
             </ul>
           </div>
         </div>
