@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -292,15 +291,17 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
   return (
     <div>
-      {/* Test/Live Mode Banner */}
-      <div className={`mb-4 ${stripeMode === 'test' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-green-50 border-green-200 text-green-800'} border p-3 rounded-lg text-center`}>
-        <div className="flex items-center justify-center space-x-2">
-          <span className="font-bold text-sm">
-            {stripeMode === 'test' ? '🧪 MODALITÀ TEST - Usa carta 4242 4242 4242 4242' : '✅ MODALITÀ LIVE - Pagamenti reali'}
-          </span>
+      {/* Test Mode Banner - only show when in test mode */}
+      {stripeMode === 'test' && (
+        <div className="mb-4 bg-yellow-50 border-yellow-200 text-yellow-800 border p-3 rounded-lg text-center">
+          <div className="flex items-center justify-center space-x-2">
+            <span className="font-bold text-sm">
+              🧪 MODALITÀ TEST - Usa carta 4242 4242 4242 4242
+            </span>
+          </div>
+          <p className="text-xs mt-1">CVV: qualsiasi 3 cifre, Data: qualsiasi data futura</p>
         </div>
-        {stripeMode === 'test' && <p className="text-xs mt-1">CVV: qualsiasi 3 cifre, Data: qualsiasi data futura</p>}
-      </div>
+      )}
 
       {/* Scarcity Banner - only show on discounted page */}
       {isDiscountedPage && (
@@ -418,3 +419,5 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
+
+}

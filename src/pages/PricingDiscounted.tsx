@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -13,6 +12,7 @@ import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import CountdownOffer from '@/components/CountdownOffer';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
+import TestModeWarning from '@/components/TestModeWarning';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 
 const PricingDiscounted: React.FC = () => {
@@ -249,6 +249,9 @@ const PricingDiscounted: React.FC = () => {
       <PurchaseNotifications isActive={true} />
       
       <div className="max-w-[580px] mx-auto px-2 pt-20">
+        {/* Test Mode Warning */}
+        <TestModeWarning />
+        
         {/* Before-After Comparison Section - Remove userGender prop */}
         <BeforeAfterComparison />
         <PricingSection />
