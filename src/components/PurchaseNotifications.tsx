@@ -5,7 +5,6 @@ interface Notification {
   id: number;
   name: string;
   location: string;
-  plan: string;
   timeAgo: string;
   coordinates: [number, number];
 }
@@ -62,20 +61,17 @@ const PurchaseNotifications: React.FC = () => {
     { name: "Aosta", coordinates: [7.3156, 45.7373] }
   ];
 
-  const plans = ["Piano Mensile", "Piano Trimestrale", "Piano Prova"];
   const timeOptions = ["2 minuti fa", "5 minuti fa", "8 minuti fa", "12 minuti fa", "15 minuti fa", "18 minuti fa"];
 
   const generateNotification = (): Notification => {
     const randomName = names[Math.floor(Math.random() * names.length)];
     const randomCity = citiesWithCoordinates[Math.floor(Math.random() * citiesWithCoordinates.length)];
-    const randomPlan = plans[Math.floor(Math.random() * plans.length)];
     const randomTime = timeOptions[Math.floor(Math.random() * timeOptions.length)];
     
     return {
       id: Date.now() + Math.random(),
       name: randomName,
       location: randomCity.name,
-      plan: randomPlan,
       timeAgo: randomTime,
       coordinates: randomCity.coordinates as [number, number]
     };
@@ -145,7 +141,7 @@ const PurchaseNotifications: React.FC = () => {
                   <span className="text-[#71b8bc] font-semibold">{notification.name}</span> da {notification.location}
                 </p>
                 <p className="text-xs text-gray-600 mt-1">
-                  Ha acquistato il <span className="font-medium">{notification.plan}</span>
+                  Si è registrato/a a <span className="font-medium">Spinal</span>
                 </p>
                 <p className="text-xs text-gray-400 mt-1">{notification.timeAgo}</p>
               </div>

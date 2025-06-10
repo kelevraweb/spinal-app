@@ -38,6 +38,7 @@ const AdminDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [stripeMode, setStripeMode] = useState('live');
+  const [showTestProduct, setShowTestProduct] = useState(false);
   const [dropOffStats, setDropOffStats] = useState<Record<string, number>>({});
 
   useEffect(() => {
@@ -49,7 +50,7 @@ const AdminDashboard: React.FC = () => {
     }
 
     fetchData();
-    fetchStripeMode();
+    fetchSettings();
   }, [navigate]);
 
   useEffect(() => {
@@ -98,18 +99,27 @@ const AdminDashboard: React.FC = () => {
     }
   };
 
-  const fetchStripeMode = async () => {
+  const fetchSettings = async () => {
     try {
+      // Fetch both Stripe mode and test product setting
       const { data, error } = await supabase
         .from('admin_settings')
-        .select('setting_value')
-        .eq('setting_key', 'stripe_mode')
-        .single();
+        .select('setting_key, setting_value')
+        .in('setting_key', ['stripe_mode', 'show_test_product']);
 
       if (error) throw error;
-      if (data) setStripeMode(data.setting_value);
+      
+      if (data) {
+        data.forEach(setting => {
+          if (setting.setting_key === 'stripe_mode') {
+            setStripeMode(setting.setting_value);
+          } else if (setting.setting_key === 'show_test_product') {
+            setShowTestProduct(setting.setting_value === 'true');
+          }
+        });
+      }
     } catch (error) {
-      console.error('Error fetching Stripe mode:', error);
+      console.error('Error fetching settings:', error);
     }
   };
 
@@ -170,6 +180,35 @@ const AdminDashboard: React.FC = () => {
       toast({
         title: "Errore",
         description: "Errore nell'aggiornamento della modalità Stripe",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const toggleTestProduct = async () => {
+    const newValue = !showTestProduct;
+    try {
+      const { error } = await supabase
+        .from('admin_settings')
+        .upsert({
+          setting_key: 'show_test_product',
+          setting_value: newValue.toString()
+        }, { 
+          onConflict: 'setting_key' 
+        });
+
+      if (error) throw error;
+
+      setShowTestProduct(newValue);
+      toast({
+        title: "Prodotto TEST aggiornato",
+        description: `Prodotto TEST ${newValue ? 'attivato' : 'disattivato'}`,
+      });
+    } catch (error) {
+      console.error('Error updating test product setting:', error);
+      toast({
+        title: "Errore",
+        description: "Errore nell'aggiornamento del prodotto TEST",
         variant: "destructive"
       });
     }
@@ -244,6 +283,13 @@ const AdminDashboard: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Dashboard Amministratore</h1>
           <div className="flex items-center space-x-4">
+            <Button onClick={toggleTestProduct} variant="outline">
+              <FontAwesomeIcon 
+                icon={showTestProduct ? faToggleOn : faToggleOff} 
+                className={`mr-2 ${showTestProduct ? 'text-blue-500' : 'text-gray-400'}`}
+              />
+              Prodotto TEST: {showTestProduct ? 'ON' : 'OFF'}
+            </Button>
             <Button onClick={toggleStripeMode} variant="outline">
               <FontAwesomeIcon 
                 icon={stripeMode === 'live' ? faToggleOn : faToggleOff} 

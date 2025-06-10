@@ -12,7 +12,7 @@ import { Elements, CardElement, useStripe, useElements } from '@stripe/react-str
 
 interface CheckoutProps {
   onPurchase: (purchaseData: { planType: string; amount: number }) => void;
-  selectedPlan?: 'trial' | 'monthly' | 'quarterly';
+  selectedPlan?: 'trial' | 'monthly' | 'quarterly' | 'test';
 }
 
 // Store stripe promise
@@ -53,6 +53,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   
   const [isLoading, setIsLoading] = useState(false);
   const [stripeMode, setStripeMode] = useState('live');
+  const [showTestProduct, setShowTestProduct] = useState(false);
   const [userInfo, setUserInfo] = useState<{
     name: string;
     email: string;
@@ -65,7 +66,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
     sessionId: null
   });
 
-  // Load user data and stripe mode on component mount
+  // Load user data and settings on component mount
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -105,22 +106,32 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       }
     };
 
-    const loadStripeMode = async () => {
+    const loadSettings = async () => {
       try {
-        const { data } = await supabase
+        // Load Stripe mode
+        const { data: stripeData } = await supabase
           .from('admin_settings')
           .select('setting_value')
           .eq('setting_key', 'stripe_mode')
           .single();
         
-        if (data) setStripeMode(data.setting_value);
+        if (stripeData) setStripeMode(stripeData.setting_value);
+
+        // Load test product setting
+        const { data: testData } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'show_test_product')
+          .single();
+        
+        if (testData) setShowTestProduct(testData.setting_value === 'true');
       } catch (error) {
-        console.error('Error loading Stripe mode:', error);
+        console.error('Error loading settings:', error);
       }
     };
 
     loadUserData();
-    loadStripeMode();
+    loadSettings();
   }, [searchParams]);
 
   // Determine if we're on the discounted page
@@ -148,6 +159,13 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       originalPrice: 99.99,
       dailyPrice: 0.38,
       description: 'Pagamento singolo',
+    },
+    test: {
+      title: 'PIANO TEST',
+      price: 0,
+      originalPrice: null,
+      dailyPrice: 0,
+      description: 'Solo per test',
     }
   } : {
     trial: {
@@ -170,6 +188,13 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       originalPrice: null,
       dailyPrice: 1.11,
       description: 'Pagamento singolo',
+    },
+    test: {
+      title: 'PIANO TEST',
+      price: 0,
+      originalPrice: null,
+      dailyPrice: 0,
+      description: 'Solo per test',
     }
   };
 
@@ -177,16 +202,51 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
   useEffect(() => {
     // Track InitiateCheckout when component mounts
-    trackInitiateCheckout({
-      value: selectedPlanDetails.price,
-      currency: 'EUR',
-      plan_type: selectedPlan,
-      content_ids: [selectedPlan]
-    });
+    if (selectedPlan !== 'test') {
+      trackInitiateCheckout({
+        value: selectedPlanDetails.price,
+        currency: 'EUR',
+        plan_type: selectedPlan,
+        content_ids: [selectedPlan]
+      });
+    }
   }, [selectedPlan]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    
+    // Handle TEST product - bypass payment
+    if (selectedPlan === 'test') {
+      setIsLoading(true);
+      try {
+        // Mark quiz as completed
+        await markQuizCompleted();
+        
+        // Simulate a quick processing time
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        // Call success callback
+        onPurchase({
+          planType: selectedPlan,
+          amount: 0
+        });
+        
+        toast({
+          title: "Test completato!",
+          description: "Piano TEST attivato con successo.",
+        });
+      } catch (error) {
+        console.error('Test error:', error);
+        toast({
+          title: "Errore",
+          description: "Errore durante l'attivazione del piano TEST.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
     
     if (!stripe || !elements) {
       return;
@@ -299,7 +359,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   return (
     <div>
       {/* Test Mode Banner - only show when in test mode */}
-      {stripeMode === 'test' && (
+      {stripeMode === 'test' && selectedPlan !== 'test' && (
         <div className="mb-4 bg-yellow-50 border-yellow-200 text-yellow-800 border p-3 rounded-lg text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="font-bold text-sm">
@@ -310,8 +370,20 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         </div>
       )}
 
+      {/* Test Product Banner */}
+      {selectedPlan === 'test' && (
+        <div className="mb-4 bg-blue-50 border-blue-200 text-blue-800 border p-3 rounded-lg text-center">
+          <div className="flex items-center justify-center space-x-2">
+            <span className="font-bold text-sm">
+              🧪 PIANO TEST - Nessun pagamento richiesto
+            </span>
+          </div>
+          <p className="text-xs mt-1">Questo è un piano di test per verificare il funzionamento</p>
+        </div>
+      )}
+
       {/* Scarcity Banner - only show on discounted page */}
-      {isDiscountedPage && (
+      {isDiscountedPage && selectedPlan !== 'test' && (
         <div className="mb-4 bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-lg text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="font-bold text-sm">
@@ -341,7 +413,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       </div>
 
       {/* Limited Spots Warning - only show on discounted page */}
-      {isDiscountedPage && (
+      {isDiscountedPage && selectedPlan !== 'test' && (
         <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
           <div className="flex items-center">
             <FontAwesomeIcon icon={faCheckCircle} className="text-yellow-600 mr-2" />
@@ -354,21 +426,23 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
       {/* Payment Form */}
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Card Element */}
-        <div className="bg-white p-4 rounded-lg border border-gray-300">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            Dettagli carta di credito
-          </label>
-          <div className="p-3 border border-gray-200 rounded-md">
-            <CardElement options={cardElementOptions} />
+        {/* Card Element - hide for test product */}
+        {selectedPlan !== 'test' && (
+          <div className="bg-white p-4 rounded-lg border border-gray-300">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Dettagli carta di credito
+            </label>
+            <div className="p-3 border border-gray-200 rounded-md">
+              <CardElement options={cardElementOptions} />
+            </div>
           </div>
-        </div>
+        )}
 
         <button
           type="submit"
-          disabled={isLoading || !stripe}
+          disabled={isLoading || (!stripe && selectedPlan !== 'test')}
           className={`w-full py-3 rounded-md font-medium ${
-            isLoading || !stripe
+            isLoading || (!stripe && selectedPlan !== 'test')
               ? 'bg-gray-400 cursor-not-allowed' 
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
@@ -376,29 +450,42 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
           {isLoading ? (
             <>
               <FontAwesomeIcon icon={faSpinner} spin className="mr-2" />
-              ELABORAZIONE...
+              {selectedPlan === 'test' ? 'ATTIVAZIONE...' : 'ELABORAZIONE...'}
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={faLock} className="mr-2" />
-              PAGA €{selectedPlanDetails.price.toFixed(2)}
+              {selectedPlan === 'test' ? (
+                <>
+                  <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
+                  ATTIVA PIANO TEST
+                </>
+              ) : (
+                <>
+                  <FontAwesomeIcon icon={faLock} className="mr-2" />
+                  PAGA €{selectedPlanDetails.price.toFixed(2)}
+                </>
+              )}
             </>
           )}
         </button>
       </form>
       
-      <div className="flex justify-center mt-4">
-        <img 
-          src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
-          alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
-          className="h-6 w-auto"
-        />
-      </div>
+      {selectedPlan !== 'test' && (
+        <>
+          <div className="flex justify-center mt-4">
+            <img 
+              src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
+              alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
+              className="h-6 w-auto"
+            />
+          </div>
 
-      <div className="text-center mt-4 text-xs text-gray-500">
-        <FontAwesomeIcon icon={faLock} className="mr-1" />
-        I tuoi dati sono protetti con crittografia SSL
-      </div>
+          <div className="text-center mt-4 text-xs text-gray-500">
+            <FontAwesomeIcon icon={faLock} className="mr-1" />
+            I tuoi dati sono protetti con crittografia SSL
+          </div>
+        </>
+      )}
     </div>
   );
 };
@@ -408,6 +495,11 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Skip Stripe loading for test product
+    if (props.selectedPlan === 'test') {
+      return;
+    }
+
     const loadStripe = async () => {
       try {
         const promise = await getStripePromise();
@@ -418,7 +510,7 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
       }
     };
     loadStripe();
-  }, []);
+  }, [props.selectedPlan]);
 
   if (error) {
     return (
@@ -432,6 +524,11 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
         </button>
       </div>
     );
+  }
+
+  // For test product, render without Stripe
+  if (props.selectedPlan === 'test') {
+    return <CheckoutForm {...props} />;
   }
 
   if (!stripePromiseState) {
