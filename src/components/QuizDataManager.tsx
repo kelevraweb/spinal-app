@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { QuizAnswer } from '../types/quiz';
 
@@ -15,6 +14,18 @@ const getSessionId = () => {
     localStorage.setItem('quiz_session_id', sessionId);
   }
   return sessionId;
+};
+
+// Get user's IP address
+const getUserIP = async (): Promise<string | null> => {
+  try {
+    const response = await fetch('https://api.ipify.org?format=json');
+    const data = await response.json();
+    return data.ip;
+  } catch (error) {
+    console.error('Error getting IP:', error);
+    return null;
+  }
 };
 
 // Clear all quiz session data
@@ -58,13 +69,30 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
   const genderAnswer = allAnswers.find(a => a.questionId === 'gender');
   const gender = genderAnswer ? String(genderAnswer.answer) : null;
   
+  // Get name and email if available
+  const userName = localStorage.getItem('userName');
+  const userEmail = localStorage.getItem('userEmail');
+  
+  // Get IP address
+  const ipAddress = await getUserIP();
+  
+  // Calculate completion time
+  const startTime = localStorage.getItem('quiz_start_time');
+  let completionTime = null;
+  if (startTime) {
+    completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+  } else {
+    // Set start time if not set
+    localStorage.setItem('quiz_start_time', Date.now().toString());
+  }
+  
   // Save to localStorage
   localStorage.setItem('quizAnswers', JSON.stringify(allAnswers));
   if (gender) {
     localStorage.setItem('userGender', gender);
   }
   
-  // Save to database with detailed logging
+  // Save to database with detailed logging and enhanced tracking
   try {
     console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender });
     
@@ -74,7 +102,14 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
         user_session_id: sessionId,
         question_id: questionId,
         answer: answerString,
-        gender: gender
+        gender: gender,
+        user_name: userName,
+        user_email: userEmail,
+        ip_address: ipAddress,
+        last_question_id: questionId,
+        last_activity_at: new Date().toISOString(),
+        session_status: 'in_progress',
+        completion_time_seconds: completionTime
       }, {
         onConflict: 'user_session_id,question_id'
       });
@@ -86,6 +121,46 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     }
   } catch (error) {
     console.error('Error saving to database:', error);
+  }
+};
+
+// Mark quiz as completed
+export const markQuizCompleted = async () => {
+  const sessionId = localStorage.getItem('quiz_session_id');
+  if (!sessionId) return;
+  
+  const startTime = localStorage.getItem('quiz_start_time');
+  const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : null;
+  
+  try {
+    await supabase
+      .from('quiz_responses')
+      .update({
+        session_status: 'completed',
+        completion_time_seconds: completionTime,
+        last_activity_at: new Date().toISOString()
+      })
+      .eq('user_session_id', sessionId);
+  } catch (error) {
+    console.error('Error marking quiz as completed:', error);
+  }
+};
+
+// Mark quiz as abandoned
+export const markQuizAbandoned = async () => {
+  const sessionId = localStorage.getItem('quiz_session_id');
+  if (!sessionId) return;
+  
+  try {
+    await supabase
+      .from('quiz_responses')
+      .update({
+        session_status: 'abandoned',
+        last_activity_at: new Date().toISOString()
+      })
+      .eq('user_session_id', sessionId);
+  } catch (error) {
+    console.error('Error marking quiz as abandoned:', error);
   }
 };
 
@@ -214,7 +289,24 @@ export const getUserDataFromQuiz = async (): Promise<{
 };
 
 // Function to save user profile data (name, email)
-export const saveUserProfile = (name: string, email: string) => {
+export const saveUserProfile = async (name: string, email: string) => {
   localStorage.setItem('userName', name);
   localStorage.setItem('userEmail', email);
+  
+  // Also update the database records
+  const sessionId = localStorage.getItem('quiz_session_id');
+  if (sessionId) {
+    try {
+      await supabase
+        .from('quiz_responses')
+        .update({
+          user_name: name,
+          user_email: email,
+          last_activity_at: new Date().toISOString()
+        })
+        .eq('user_session_id', sessionId);
+    } catch (error) {
+      console.error('Error updating user profile in database:', error);
+    }
+  }
 };

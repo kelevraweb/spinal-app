@@ -24,26 +24,41 @@ serve(async (req: Request) => {
   }
 
   try {
-    // Get the Stripe secret key from environment variables
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    
-    if (!stripeKey) {
-      throw new Error("STRIPE_SECRET_KEY is not configured");
-    }
-
-    console.log('Using Stripe key:', stripeKey.substring(0, 12) + '...');
-
-    // Get payment details from request body
-    const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
-
-    console.log('Processing payment intent for:', { planType, amount, email, isDiscounted });
-
-    // Initialize Supabase client
+    // Initialize Supabase client to check admin settings
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
       auth: { persistSession: false }
     });
+
+    // Check Stripe mode from admin settings
+    const { data: adminSetting } = await supabaseClient
+      .from('admin_settings')
+      .select('setting_value')
+      .eq('setting_key', 'stripe_mode')
+      .single();
+
+    const isTestMode = adminSetting?.setting_value === 'test';
+    
+    // Get the appropriate Stripe secret key
+    let stripeKey: string;
+    if (isTestMode) {
+      stripeKey = Deno.env.get("STRIPE_TEST_SECRET_KEY") || Deno.env.get("STRIPE_SECRET_KEY") || "";
+    } else {
+      stripeKey = Deno.env.get("STRIPE_SECRET_KEY") || "";
+    }
+    
+    if (!stripeKey) {
+      throw new Error("STRIPE_SECRET_KEY is not configured");
+    }
+
+    console.log('Using Stripe mode:', isTestMode ? 'TEST' : 'LIVE');
+    console.log('Using Stripe key:', stripeKey.substring(0, 12) + '...');
+
+    // Get payment details from request body
+    const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
+
+    console.log('Processing payment intent for:', { planType, amount, email, isDiscounted, stripeMode: isTestMode ? 'TEST' : 'LIVE' });
 
     // Configure Stripe
     const stripe = new Stripe(stripeKey, {
@@ -73,9 +88,10 @@ serve(async (req: Request) => {
         plan_type: planType,
         is_discounted: isDiscounted.toString(),
         customer_email: email,
-        customer_name: `${firstName} ${lastName}`
+        customer_name: `${firstName} ${lastName}`,
+        stripe_mode: isTestMode ? 'test' : 'live'
       },
-      description: `Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
+      description: `${isTestMode ? '[TEST] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
     });
 
     // Store order in database

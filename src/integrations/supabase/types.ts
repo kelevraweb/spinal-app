@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_settings: {
+        Row: {
+          created_at: string
+          id: string
+          setting_key: string
+          setting_value: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          setting_key: string
+          setting_value: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          setting_key?: string
+          setting_value?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           amount: number
@@ -16,6 +40,7 @@ export type Database = {
           currency: string | null
           id: string
           plan_type: string
+          quiz_session_id: string | null
           status: string | null
           stripe_session_id: string | null
           updated_at: string
@@ -27,6 +52,7 @@ export type Database = {
           currency?: string | null
           id?: string
           plan_type: string
+          quiz_session_id?: string | null
           status?: string | null
           stripe_session_id?: string | null
           updated_at?: string
@@ -38,6 +64,7 @@ export type Database = {
           currency?: string | null
           id?: string
           plan_type?: string
+          quiz_session_id?: string | null
           status?: string | null
           stripe_session_id?: string | null
           updated_at?: string
@@ -48,36 +75,78 @@ export type Database = {
       quiz_responses: {
         Row: {
           answer: string
+          completion_time_seconds: number | null
           created_at: string
           gender: string | null
           id: string
+          ip_address: unknown | null
+          last_activity_at: string | null
+          last_question_id: string | null
           question_id: string
+          session_status: string | null
+          started_at: string | null
           updated_at: string
+          user_email: string | null
+          user_name: string | null
           user_session_id: string
         }
         Insert: {
           answer: string
+          completion_time_seconds?: number | null
           created_at?: string
           gender?: string | null
           id?: string
+          ip_address?: unknown | null
+          last_activity_at?: string | null
+          last_question_id?: string | null
           question_id: string
+          session_status?: string | null
+          started_at?: string | null
           updated_at?: string
+          user_email?: string | null
+          user_name?: string | null
           user_session_id: string
         }
         Update: {
           answer?: string
+          completion_time_seconds?: number | null
           created_at?: string
           gender?: string | null
           id?: string
+          ip_address?: unknown | null
+          last_activity_at?: string | null
+          last_question_id?: string | null
           question_id?: string
+          session_status?: string | null
+          started_at?: string | null
           updated_at?: string
+          user_email?: string | null
+          user_name?: string | null
           user_session_id?: string
         }
         Relationships: []
       }
     }
     Views: {
-      [_ in never]: never
+      admin_dashboard_data: {
+        Row: {
+          completion_time_seconds: number | null
+          ip_address: unknown | null
+          last_activity_at: string | null
+          last_question_id: string | null
+          payment_status: string | null
+          purchase_amount: number | null
+          purchase_date: string | null
+          purchased_plan: string | null
+          questions_answered: number | null
+          session_status: string | null
+          started_at: string | null
+          user_email: string | null
+          user_name: string | null
+          user_session_id: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       [_ in never]: never

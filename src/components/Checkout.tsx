@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -5,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { getUserDataFromQuiz } from './QuizDataManager';
+import { getUserDataFromQuiz, markQuizCompleted } from './QuizDataManager';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 
@@ -14,7 +15,27 @@ interface CheckoutProps {
   selectedPlan?: 'trial' | 'monthly' | 'quarterly';
 }
 
-const stripePromise = loadStripe('pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5');
+// We'll dynamically set the Stripe key based on admin settings
+let stripePromise: Promise<any> | null = null;
+
+const getStripePromise = async () => {
+  if (!stripePromise) {
+    // Check admin settings for Stripe mode
+    const { data } = await supabase
+      .from('admin_settings')
+      .select('setting_value')
+      .eq('setting_key', 'stripe_mode')
+      .single();
+    
+    const isTestMode = data?.setting_value === 'test';
+    const publicKey = isTestMode 
+      ? 'pk_test_51N8NRUKUx3KhOjH7nKCwV5k6N3wKzHa8X5aM3q2jKr7wVn4bWz9sE1dGhJ2lXp8yQ6vT4uR9iK3mF7cN1bXa5s00LzYcVwQs'
+      : 'pk_live_51N8NRUKUx3KhOjH7cVFBPdhv1IsJj7ZWGIGSY55yNmfduHSzLxF9lDGOFJcYGRFT6U7KZJjKpwZhcuiOrTCuE5vA003l9XZgM5';
+    
+    stripePromise = loadStripe(publicKey);
+  }
+  return stripePromise;
+};
 
 const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const stripe = useStripe();
@@ -25,6 +46,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
   const [searchParams] = useSearchParams();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [stripeMode, setStripeMode] = useState('live');
   const [userInfo, setUserInfo] = useState<{
     name: string;
     email: string;
@@ -37,7 +59,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
     sessionId: null
   });
 
-  // Load user data on component mount
+  // Load user data and stripe mode on component mount
   useEffect(() => {
     const loadUserData = async () => {
       try {
@@ -60,9 +82,6 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         };
         
         console.log('Loaded user data:', finalUserInfo);
-        console.log('localStorage userEmail:', localStorage.getItem('userEmail'));
-        console.log('localStorage userName:', localStorage.getItem('userName'));
-        console.log('Quiz data:', quizData);
         setUserInfo(finalUserInfo);
         
       } catch (error) {
@@ -80,7 +99,22 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       }
     };
 
+    const loadStripeMode = async () => {
+      try {
+        const { data } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'stripe_mode')
+          .single();
+        
+        if (data) setStripeMode(data.setting_value);
+      } catch (error) {
+        console.error('Error loading Stripe mode:', error);
+      }
+    };
+
     loadUserData();
+    loadStripeMode();
   }, [searchParams]);
 
   // Determine if we're on the discounted page
@@ -160,23 +194,12 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       paymentName, 
       paymentEmail,
       userInfo,
-      localStorage: {
-        userName: localStorage.getItem('userName'),
-        userEmail: localStorage.getItem('userEmail')
-      }
+      stripeMode
     });
 
     setIsLoading(true);
 
     try {
-      console.log('Starting payment process with data:', {
-        planType: selectedPlan,
-        amount: selectedPlanDetails.price,
-        email: paymentEmail,
-        name: paymentName,
-        isDiscounted: isDiscountedPage
-      });
-
       // Create payment intent
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
         body: { 
@@ -220,6 +243,17 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
       }
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
+        // Mark quiz as completed and link purchase to session
+        await markQuizCompleted();
+        
+        // Update order with quiz session ID
+        if (userInfo.sessionId) {
+          await supabase
+            .from('orders')
+            .update({ quiz_session_id: userInfo.sessionId })
+            .eq('stripe_session_id', paymentData.paymentIntentId);
+        }
+        
         // Payment successful
         onPurchase({
           planType: selectedPlan,
@@ -258,14 +292,14 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 
   return (
     <div>
-      {/* Test Mode Banner */}
-      <div className="mb-4 bg-yellow-50 border border-yellow-200 text-yellow-800 p-3 rounded-lg text-center">
+      {/* Test/Live Mode Banner */}
+      <div className={`mb-4 ${stripeMode === 'test' ? 'bg-yellow-50 border-yellow-200 text-yellow-800' : 'bg-green-50 border-green-200 text-green-800'} border p-3 rounded-lg text-center`}>
         <div className="flex items-center justify-center space-x-2">
           <span className="font-bold text-sm">
-            🧪 MODALITÀ TEST - Usa carta 4242 4242 4242 4242
+            {stripeMode === 'test' ? '🧪 MODALITÀ TEST - Usa carta 4242 4242 4242 4242' : '✅ MODALITÀ LIVE - Pagamenti reali'}
           </span>
         </div>
-        <p className="text-xs mt-1">CVV: qualsiasi 3 cifre, Data: qualsiasi data futura</p>
+        {stripeMode === 'test' && <p className="text-xs mt-1">CVV: qualsiasi 3 cifre, Data: qualsiasi data futura</p>}
       </div>
 
       {/* Scarcity Banner - only show on discounted page */}
@@ -362,8 +396,22 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
 };
 
 const Checkout: React.FC<CheckoutProps> = (props) => {
+  const [stripePromiseState, setStripePromiseState] = useState<Promise<any> | null>(null);
+
+  useEffect(() => {
+    const loadStripe = async () => {
+      const promise = await getStripePromise();
+      setStripePromiseState(promise);
+    };
+    loadStripe();
+  }, []);
+
+  if (!stripePromiseState) {
+    return <div>Caricamento...</div>;
+  }
+
   return (
-    <Elements stripe={stripePromise}>
+    <Elements stripe={stripePromiseState}>
       <CheckoutForm {...props} />
     </Elements>
   );
