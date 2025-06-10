@@ -97,8 +97,6 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-[#fbfaf8]">
-      <TopNavBar />
-      
       {/* Hero Section */}
       <section ref={heroRef} className="pt-20 pb-16 px-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
