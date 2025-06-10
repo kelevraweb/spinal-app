@@ -1,253 +1,452 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Footer from '../components/Footer';
 
 const Index = () => {
   const navigate = useNavigate();
-  const [userGender, setUserGender] = useState<'male' | 'female'>('female');
-  
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [currentScreen, setCurrentScreen] = useState(0);
+  const heroRef = useRef<HTMLDivElement>(null);
+
+  const phoneScreens = [
+    {
+      title: "Posture Analysis",
+      content: (
+        <div className="p-4 text-center">
+          <div className="w-16 h-16 bg-green-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+            <span className="text-white text-2xl">📊</span>
+          </div>
+          <h3 className="font-bold text-sm mb-1">Analisi Postura</h3>
+          <p className="text-xs text-gray-600">Valutazione completa della tua postura</p>
+          <div className="mt-2 bg-gray-200 rounded-full h-2">
+            <div className="bg-green-500 h-2 rounded-full w-3/4"></div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Daily Exercises",
+      content: (
+        <div className="p-4 text-center">
+          <div className="w-16 h-16 bg-blue-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+            <span className="text-white text-2xl">🏃</span>
+          </div>
+          <h3 className="font-bold text-sm mb-1">Esercizi Giornalieri</h3>
+          <p className="text-xs text-gray-600">15 min di esercizi personalizzati</p>
+          <div className="flex justify-center mt-2 space-x-1">
+            <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+            <div className="w-2 h-2 bg-blue-300 rounded-full"></div>
+            <div className="w-2 h-2 bg-blue-300 rounded-full"></div>
+          </div>
+        </div>
+      )
+    },
+    {
+      title: "Progress Tracking",
+      content: (
+        <div className="p-4 text-center">
+          <div className="w-16 h-16 bg-purple-500 rounded-full mx-auto mb-2 flex items-center justify-center">
+            <span className="text-white text-2xl">📈</span>
+          </div>
+          <h3 className="font-bold text-sm mb-1">Progressi</h3>
+          <p className="text-xs text-gray-600">Dolore ridotto del 75%</p>
+          <div className="mt-2 flex justify-between text-xs">
+            <span>Inizio</span>
+            <span>Oggi</span>
+          </div>
+        </div>
+      )
+    }
+  ];
+
   useEffect(() => {
-    // Get user gender from quiz answers
-    const quizAnswers = localStorage.getItem('quizAnswers');
-    if (quizAnswers) {
-      try {
-        const answers = JSON.parse(quizAnswers);
-        const genderAnswer = answers.find((answer: any) => answer.questionId === 'gender');
-        if (genderAnswer && genderAnswer.answer === 'Maschio') {
-          setUserGender('male');
-        } else {
-          setUserGender('female');
-        }
-      } catch (error) {
-        console.log('Error parsing quiz answers:', error);
+    const handleMouseMove = (e: MouseEvent) => {
+      if (heroRef.current) {
+        const rect = heroRef.current.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
+        setMousePosition({ x, y });
       }
+    };
+
+    const hero = heroRef.current;
+    if (hero) {
+      hero.addEventListener('mousemove', handleMouseMove);
+      return () => hero.removeEventListener('mousemove', handleMouseMove);
     }
   }, []);
-  
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentScreen((prev) => (prev + 1) % phoneScreens.length);
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const phoneTransform = {
+    transform: `perspective(1000px) rotateY(${(mousePosition.x - 0.5) * 20}deg) rotateX(${(mousePosition.y - 0.5) * -10}deg)`,
+    transition: 'transform 0.1s ease-out'
+  };
+
   const startQuiz = () => {
     navigate('/quiz');
   };
 
-  // Image URLs based on gender
-  const heroImage = userGender === 'male' 
-    ? 'https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo
-    : 'https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna
-
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="bg-gradient-to-b from-brand-light to-white py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <div className="text-center md:text-left">
-              <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-                Scopri il tuo <span className="text-brand-primary">Piano Personalizzato</span> per il Benessere Emotivo
-              </h1>
+      <section ref={heroRef} className="relative min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-20">
+          <div className="grid lg:grid-cols-2 gap-12 items-center min-h-[80vh]">
+            {/* Left Content */}
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h1 className="text-5xl lg:text-6xl font-bold text-gray-900">
+                  Ciao, Sono{' '}
+                  <span className="bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent">
+                    Spinal
+                  </span>
+                </h1>
+                <p className="text-xl text-gray-600 leading-relaxed">
+                  Il tuo compagno digitale per scoprire e migliorare la tua postura. 
+                  Trasforma la tua salute spinale con esercizi personalizzati e 
+                  monitoraggio intelligente.
+                </p>
+              </div>
               
-              <p className="text-xl text-gray-700 mb-10">
-                Basato su decenni di ricerca scientifica e sviluppato da esperti, il nostro quiz ti aiuta a comprendere le tue relazioni e a migliorare il tuo benessere emotivo.
-              </p>
-              
-              <button
-                onClick={startQuiz}
-                className="btn-primary text-lg px-8 py-4"
-              >
-                Inizia il Quiz Gratuito
-              </button>
-              
-              <div className="mt-6 text-gray-500">
-                Richiede solo 5 minuti • Risultati personalizzati
+              <div className="flex flex-col sm:flex-row gap-4">
+                <button
+                  onClick={startQuiz}
+                  className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-8 py-4 rounded-full font-semibold text-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+                >
+                  Inizia il Test Posturale
+                </button>
+              </div>
+
+              <div className="flex items-center space-x-8 pt-8">
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">1M+</div>
+                  <div className="text-sm text-gray-600">Utenti attivi</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">4.8★</div>
+                  <div className="text-sm text-gray-600">Valutazione App</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-bold text-gray-900">90%</div>
+                  <div className="text-sm text-gray-600">Miglioramento</div>
+                </div>
               </div>
             </div>
-            
-            <div className="flex justify-center">
-              <img 
-                src={heroImage}
-                alt="Persona felice e in salute" 
-                className="w-64 h-64 md:w-80 md:h-80 object-contain rounded-lg"
-                onError={(e) => console.log('Error loading hero image:', heroImage)}
-                onLoad={() => console.log('Successfully loaded hero image:', heroImage)}
-              />
+
+            {/* Right Phone */}
+            <div className="flex justify-center lg:justify-end">
+              <div 
+                className="relative"
+                style={phoneTransform}
+              >
+                {/* Phone Frame */}
+                <div className="w-64 h-[520px] bg-gradient-to-b from-gray-800 to-gray-900 rounded-[3rem] p-2 shadow-2xl">
+                  {/* Screen */}
+                  <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
+                    {/* Status Bar */}
+                    <div className="bg-gray-50 h-8 flex items-center justify-between px-6 text-xs">
+                      <span className="font-semibold">9:41</span>
+                      <div className="flex space-x-1">
+                        <div className="w-4 h-2 bg-green-500 rounded-sm"></div>
+                        <div className="w-6 h-2 bg-green-500 rounded-sm"></div>
+                      </div>
+                    </div>
+                    
+                    {/* Dynamic Content */}
+                    <div className="h-full pt-4">
+                      {phoneScreens[currentScreen].content}
+                    </div>
+                  </div>
+                  
+                  {/* Home Indicator */}
+                  <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 w-32 h-1 bg-gray-600 rounded-full"></div>
+                </div>
+                
+                {/* Floating Elements */}
+                <div className="absolute -top-4 -right-4 w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white text-xl animate-bounce-slow">
+                  💪
+                </div>
+                <div className="absolute -bottom-4 -left-4 w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white animate-pulse">
+                  ✅
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Features */}
-      <div className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            Come funziona
-          </h2>
+      </section>
+
+      {/* Stats Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Supporto Reale per una Colonna Vertebrale Reale
+            </h2>
+            <p className="text-xl text-gray-600">
+              Risultati comprovati da migliaia di utenti
+            </p>
+          </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-brand-muted rounded-xl p-6 text-center">
-              <div className="w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                  <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Completa il Quiz</h3>
-              <p className="text-gray-600">
-                Rispondi a domande sviluppate da esperti per identificare i tuoi schemi relazionali ed emotivi.
-              </p>
+            <div className="bg-white rounded-2xl p-8 text-center shadow-lg">
+              <div className="text-4xl font-bold text-blue-600 mb-2">1M</div>
+              <div className="text-lg font-semibold text-gray-900 mb-2">Persone hanno migliorato</div>
+              <div className="text-gray-600">la loro postura con Spinal</div>
             </div>
             
-            <div className="bg-brand-muted rounded-xl p-6 text-center">
-              <div className="w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Ricevi il Tuo Piano</h3>
-              <p className="text-gray-600">
-                Ottieni un piano personalizzato basato sulle tue risposte, con strategie pratiche e consigli specifici.
-              </p>
+            <div className="bg-white rounded-2xl p-8 text-center shadow-lg">
+              <div className="text-4xl font-bold text-green-600 mb-2">~30K</div>
+              <div className="text-lg font-semibold text-gray-900 mb-2">Esercizi completati</div>
+              <div className="text-gray-600">ogni giorno dai nostri utenti</div>
             </div>
             
-            <div className="bg-brand-muted rounded-xl p-6 text-center">
-              <div className="w-16 h-16 bg-brand-accent rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-                  <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
-                  <polyline points="14 2 14 8 20 8"></polyline>
-                  <line x1="16" y1="13" x2="8" y2="13"></line>
-                  <line x1="16" y1="17" x2="8" y2="17"></line>
-                  <line x1="10" y1="9" x2="8" y2="9"></line>
-                </svg>
-              </div>
-              <h3 className="text-lg font-semibold mb-2">Trasforma la Tua Vita</h3>
-              <p className="text-gray-600">
-                Segui il piano passo dopo passo per migliorare le tue relazioni e il tuo benessere emotivo.
-              </p>
+            <div className="bg-white rounded-2xl p-8 text-center shadow-lg">
+              <div className="text-4xl font-bold text-purple-600 mb-2">90%</div>
+              <div className="text-lg font-semibold text-gray-900 mb-2">Riduzione del dolore</div>
+              <div className="text-gray-600">entro le prime 4 settimane</div>
             </div>
           </div>
         </div>
-      </div>
-      
-      {/* Trust Indicators */}
-      <div className="py-16 bg-gray-50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-6">
-            Basato sulla Scienza
-          </h2>
-          
-          <p className="text-center text-xl text-gray-700 max-w-3xl mx-auto mb-12">
-            Il nostro metodo è stato sviluppato in collaborazione con esperti di psicologia relazionale e benessere emotivo delle migliori università.
-          </p>
-          
-          <div className="flex flex-wrap justify-center gap-8">
-            <div className="university-logo">
-              <div className="text-center font-serif">
-                <div className="text-sm">UNIVERSITY OF</div>
-                <div className="text-xl font-bold">OXFORD</div>
-              </div>
-            </div>
-            
-            <div className="university-logo">
-              <div className="text-center font-serif">
-                <div className="text-sm">HARVARD</div>
-                <div className="text-xl font-bold">UNIVERSITY</div>
-              </div>
-            </div>
-            
-            <div className="university-logo">
-              <div className="text-center font-serif">
-                <div className="text-sm">UNIVERSITY OF</div>
-                <div className="text-xl font-bold">CAMBRIDGE</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      
+      </section>
+
       {/* Testimonials */}
-      <div className="py-16 bg-white">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl font-bold text-center mb-12">
-            La Nostra Community
-          </h2>
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Ascolta gli Utenti di Spinal
+            </h2>
+            <p className="text-xl text-gray-600">
+              Storie reali di trasformazione
+            </p>
+          </div>
           
-          <div className="text-center mb-10">
-            <p className="text-2xl font-bold text-brand-primary">Oltre 1,000,000 di persone</p>
-            <p className="text-xl">hanno scelto Liven</p>
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center text-white font-bold">
+                  M
+                </div>
+                <div className="ml-3">
+                  <div className="font-semibold">Marco R.</div>
+                  <div className="text-sm text-gray-600">Developer</div>
+                </div>
+              </div>
+              <p className="text-gray-700 italic">
+                "Dopo anni di mal di schiena da ufficio, Spinal mi ha aiutato a recuperare una postura corretta. Il dolore è sparito in 3 settimane!"
+              </p>
+              <div className="flex mt-4">
+                {[1,2,3,4,5].map(star => (
+                  <span key={star} className="text-yellow-400">★</span>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center text-white font-bold">
+                  L
+                </div>
+                <div className="ml-3">
+                  <div className="font-semibold">Laura B.</div>
+                  <div className="text-sm text-gray-600">Studentessa</div>
+                </div>
+              </div>
+              <p className="text-gray-700 italic">
+                "Gli esercizi sono semplici ma efficaci. La mia postura è migliorata incredibilmente e mi sento più sicura di me stessa."
+              </p>
+              <div className="flex mt-4">
+                {[1,2,3,4,5].map(star => (
+                  <span key={star} className="text-yellow-400">★</span>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-gray-50 rounded-2xl p-6">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-purple-500 rounded-full flex items-center justify-center text-white font-bold">
+                  G
+                </div>
+                <div className="ml-3">
+                  <div className="font-semibold">Giovanni T.</div>
+                  <div className="text-sm text-gray-600">Manager</div>
+                </div>
+              </div>
+              <p className="text-gray-700 italic">
+                "L'app mi ricorda di fare gli esercizi e monitora i miei progressi. È come avere un fisioterapista personale sempre con me."
+              </p>
+              <div className="flex mt-4">
+                {[1,2,3,4,5].map(star => (
+                  <span key={star} className="text-yellow-400">★</span>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Features Section */}
+      <section className="py-20 bg-gradient-to-br from-blue-50 to-green-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Spinal App è un sistema di strumenti
+            </h2>
+            <p className="text-xl text-gray-600">
+              Tutto quello che ti serve per una schiena sana
+            </p>
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[
-              {
-                name: "Marco R.",
-                quote: "Il quiz ha identificato perfettamente i miei schemi relazionali distruttivi e mi ha dato strumenti pratici per superarli."
-              },
-              {
-                name: "Laura B.",
-                quote: "Ho capito perché le mie relazioni fallivano sempre nello stesso modo. Ora ho gli strumenti per costruire legami più sani."
-              },
-              {
-                name: "Giovanni T.",
-                quote: "Mi ha aiutato ad uscire da un periodo di solitudine e a ritrovare fiducia nelle relazioni. Incredibilmente accurato!"
-              }
-            ].map((testimonial, index) => (
-              <div key={index} className="bg-brand-muted rounded-xl p-6 border-l-4 border-brand-primary">
-                <div className="flex mb-4">
-                  <div className="rating-stars">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <svg key={star} xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#FFB129" stroke="#FFB129" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round">
-                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-                
-                <p className="italic mb-4">"{testimonial.quote}"</p>
-                
-                <p className="font-semibold">{testimonial.name}</p>
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">📋</span>
               </div>
-            ))}
+              <h3 className="text-lg font-semibold mb-2">Valutazione Postura</h3>
+              <p className="text-gray-600">Analisi completa della tua postura attuale</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🏃</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Esercizi Personalizzati</h3>
+              <p className="text-gray-600">Routine create su misura per te</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">📊</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Tracking Dolore</h3>
+              <p className="text-gray-600">Monitora i tuoi sintomi e progressi</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-yellow-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">📚</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Educazione</h3>
+              <p className="text-gray-600">Impara le basi della salute spinale</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">⏰</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Promemoria</h3>
+              <p className="text-gray-600">Non dimenticare mai i tuoi esercizi</p>
+            </div>
+            
+            <div className="bg-white rounded-2xl p-6 text-center shadow-lg hover:shadow-xl transition-shadow">
+              <div className="w-16 h-16 bg-indigo-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                <span className="text-2xl">🎯</span>
+              </div>
+              <h3 className="text-lg font-semibold mb-2">Obiettivi</h3>
+              <p className="text-gray-600">Raggiungi i tuoi traguardi di salute</p>
+            </div>
           </div>
         </div>
-      </div>
-      
-      {/* CTA */}
-      <div className="py-16 bg-brand-light">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-6">
-            Pronto a Trasformare le Tue Relazioni?
-          </h2>
-          
-          <p className="text-xl text-gray-700 mb-10">
-            Inizia oggi il percorso verso un benessere emotivo duraturo e relazioni più soddisfacenti.
-          </p>
-          
-          <button
-            onClick={startQuiz}
-            className="btn-primary text-lg px-10 py-4"
-          >
-            Inizia il Quiz Gratuito
-          </button>
-          
-          <p className="mt-6 text-sm text-gray-600">
-            Non preoccuparti, è completamente gratuito e richiede solo 5 minuti
-          </p>
-        </div>
-      </div>
-      
-      {/* Footer */}
-      <footer className="bg-gray-100 py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-gray-500 text-sm">
-            <p>&copy; {new Date().getFullYear()} Lovable. Tutti i diritti riservati.</p>
-            <p className="mt-2">
-              <a href="/privacy-policy" className="underline hover:text-gray-700 mr-4">Privacy Policy</a>
-              <a href="/terms-of-use" className="underline hover:text-gray-700 mr-4">Termini e Condizioni</a>
-              <a href="/subscription-policy" className="underline hover:text-gray-700 mr-4">Policy Abbonamento</a>
-              <a href="/money-back-guarantee" className="underline hover:text-gray-700 mr-4">Garanzia Rimborso</a>
-              <a href="/contact" className="underline hover:text-gray-700">Contatti</a>
+      </section>
+
+      {/* Target Audience */}
+      <section className="py-20 bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">
+              Per chi è Spinal?
+            </h2>
+            <p className="text-xl opacity-90">
+              La soluzione per tutti i tipi di problemi posturali
             </p>
           </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="text-center">
+              <div className="text-4xl mb-3">💼</div>
+              <h3 className="font-semibold mb-2">Lavoratori da Ufficio</h3>
+              <p className="text-sm opacity-80">Combatti la postura da scrivania</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-4xl mb-3">🎓</div>
+              <h3 className="font-semibold mb-2">Studenti</h3>
+              <p className="text-sm opacity-80">Mantieni una buona postura durante lo studio</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-4xl mb-3">🏃‍♂️</div>
+              <h3 className="font-semibold mb-2">Atleti</h3>
+              <p className="text-sm opacity-80">Ottimizza le performance e previeni infortuni</p>
+            </div>
+            
+            <div className="text-center">
+              <div className="text-4xl mb-3">👴</div>
+              <h3 className="font-semibold mb-2">Adulti 50+</h3>
+              <p className="text-sm opacity-80">Mantieni la mobilità e riduci il dolore</p>
+            </div>
+          </div>
         </div>
-      </footer>
+      </section>
+
+      {/* Quiz CTA */}
+      <section className="py-20 bg-white">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-green-50 rounded-3xl p-12">
+            <div className="text-6xl mb-6">🧪</div>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Fai il Test
+            </h2>
+            <p className="text-xl text-gray-600 mb-8">
+              Scopri il tuo livello di salute posturale in 5 minuti
+            </p>
+            <button
+              onClick={startQuiz}
+              className="bg-gradient-to-r from-blue-600 to-green-600 text-white px-10 py-4 rounded-full font-semibold text-lg hover:shadow-lg transition-all duration-300 transform hover:scale-105"
+            >
+              Inizia il Test Gratuito
+            </button>
+          </div>
+        </div>
+      </section>
+
+      {/* FAQ */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              Domande Frequenti
+            </h2>
+          </div>
+          
+          <div className="space-y-6">
+            <div className="bg-white rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-2">Quanto tempo ci vuole per vedere risultati?</h3>
+              <p className="text-gray-600">La maggior parte degli utenti nota miglioramenti nella postura entro 2-3 settimane di uso costante.</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-2">Gli esercizi sono adatti a tutti?</h3>
+              <p className="text-gray-600">Sì, i nostri esercizi sono progettati per essere sicuri e adattabili a tutti i livelli di fitness.</p>
+            </div>
+            
+            <div className="bg-white rounded-lg p-6">
+              <h3 className="text-lg font-semibold mb-2">Quanto tempo devo dedicare agli esercizi?</h3>
+              <p className="text-gray-600">Bastano 10-15 minuti al giorno per ottenere risultati significativi.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
