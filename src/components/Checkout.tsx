@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -252,13 +251,22 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         // Mark quiz as completed and link purchase to session
         await markQuizCompleted();
         
-        // Update order with quiz session ID
+        // Update order with quiz session ID and mark as successful
         if (userInfo.sessionId) {
           await supabase
             .from('orders')
-            .update({ quiz_session_id: userInfo.sessionId })
+            .update({ 
+              quiz_session_id: userInfo.sessionId,
+              status: 'completed'
+            })
             .eq('stripe_session_id', paymentData.paymentIntentId);
         }
+
+        // Update user profile status to active
+        await supabase
+          .from('user_profiles')
+          .update({ subscription_status: 'active' })
+          .eq('user_id', paymentIntent.metadata?.user_id);
         
         // Payment successful
         onPurchase({
@@ -268,7 +276,7 @@ const CheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'qua
         
         toast({
           title: "Pagamento completato!",
-          description: "Il tuo pagamento è stato elaborato con successo.",
+          description: "Il tuo pagamento è stato elaborato con successo. Torna alla home per impostare la tua password.",
         });
       }
 

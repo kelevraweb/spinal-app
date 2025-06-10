@@ -94,6 +94,31 @@ serve(async (req: Request) => {
       description: `${isTestMode ? '[TEST] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
     });
 
+    // Create Supabase Auth user (without password for now)
+    const { data: authData, error: authError } = await supabaseClient.auth.admin.createUser({
+      email: email,
+      user_metadata: {
+        name: `${firstName} ${lastName}`,
+        plan_type: planType
+      },
+      email_confirm: true
+    });
+
+    console.log('Auth user creation result:', { authData, authError });
+
+    let userId = null;
+    if (authData.user && !authError) {
+      userId = authData.user.id;
+      
+      // Create user profile
+      await supabaseClient.from('user_profiles').insert({
+        user_id: userId,
+        name: `${firstName} ${lastName}`,
+        plan_type: planType,
+        subscription_status: 'pending'
+      });
+    }
+
     // Store order in database
     await supabaseClient.from("orders").insert({
       stripe_session_id: paymentIntent.id,
@@ -101,6 +126,7 @@ serve(async (req: Request) => {
       amount: amount,
       currency: 'eur',
       status: "pending",
+      user_id: userId,
       created_at: new Date().toISOString()
     });
 
