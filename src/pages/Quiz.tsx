@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -446,3 +445,5 @@ const Quiz: React.FC = () => {
 };
 
 export default Quiz;
+
+}

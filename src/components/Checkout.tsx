@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -70,7 +69,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Get name, email, and gender from URL parameters with ABSOLUTE PRIORITY
+        // Get name and email from URL parameters with ABSOLUTE PRIORITY
         const urlName = searchParams.get('name') || '';
         const urlEmail = searchParams.get('email') || '';
         const urlGender = searchParams.get('gender') || 'male';
@@ -504,3 +503,5 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
+
+}
