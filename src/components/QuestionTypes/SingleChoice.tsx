@@ -95,9 +95,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             {/* Image container positioned to touch the footer from bottom */}
             <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
               <img 
-                src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
+                src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png" 
                 alt="Uomo" 
                 className="w-full h-full object-contain object-bottom drop-shadow-lg" 
+                loading="lazy"
               />
             </div>
             
@@ -126,9 +127,10 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             {/* Image container positioned to touch the footer from bottom */}
             <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
               <img 
-                src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
+                src="/lovable-uploads/c99bbbe1-5997-45bd-a1ff-752a4a9049f1.png" 
                 alt="Donna" 
                 className="w-full h-full object-contain object-bottom drop-shadow-lg" 
+                loading="lazy"
               />
             </div>
             
@@ -190,6 +192,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
               src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" 
               alt="Quasi nulla" 
               className="w-full h-full object-contain" 
+              loading="lazy"
             />
           </div>
         </button>
@@ -207,6 +210,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
               src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png" 
               alt="Solo camminate leggere" 
               className="w-full h-full object-contain" 
+              loading="lazy"
             />
           </div>
         </button>
@@ -224,6 +228,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
               src="/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png" 
               alt="Faccio sport" 
               className="w-full h-full object-contain" 
+              loading="lazy"
             />
           </div>
         </button>
@@ -241,6 +246,7 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
               src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" 
               alt="Alterno periodi" 
               className="w-full h-full object-contain" 
+              loading="lazy"
             />
           </div>
         </button>
