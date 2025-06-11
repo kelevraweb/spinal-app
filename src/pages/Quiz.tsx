@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -55,6 +54,7 @@ const Quiz: React.FC = () => {
       setSessionChecked(true);
     }
   }, [sessionChecked]);
+  
   const handleContinueSession = async () => {
     const existingAnswers = await loadQuizAnswers();
     if (existingAnswers.length > 0) {
@@ -67,6 +67,7 @@ const Quiz: React.FC = () => {
     setShowSessionModal(false);
     setSessionChecked(true);
   };
+  
   const handleRestartSession = async () => {
     await clearQuizSession();
     setState(prevState => ({
@@ -125,6 +126,7 @@ const Quiz: React.FC = () => {
       if (timer) clearTimeout(timer);
     };
   }, [state.showSpecialPage]);
+  
   useEffect(() => {
     const existingAnswer = state.answers.find(answer => answer.questionId === state.currentQuestion?.id);
     if (existingAnswer) {
@@ -149,6 +151,7 @@ const Quiz: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [currentAnswer, shouldAutoAdvance]);
+  
   const handleAnswerChange = (answer: string | string[] | number) => {
     setCurrentAnswer(answer);
     if (Array.isArray(answer) && answer.length === 0 || typeof answer === 'string' && answer.trim() === '' || answer === undefined) {
@@ -157,6 +160,7 @@ const Quiz: React.FC = () => {
       setIsNextEnabled(true);
     }
   };
+  
   const handleNext = async () => {
     if (!isNextEnabled || isAnimating) return;
     const updatedAnswers = [...state.answers];
@@ -223,6 +227,7 @@ const Quiz: React.FC = () => {
       }, 200);
     }
   };
+  
   const handleBack = () => {
     if (state.currentStep <= 0 || isAnimating) return;
     setIsAnimating(true);
@@ -238,6 +243,7 @@ const Quiz: React.FC = () => {
       setIsAnimating(false);
     }, 200);
   };
+  
   const handleSpecialPageComplete = () => {
     const nextStep = state.currentStep + 1;
     setIsAnimating(false);
@@ -248,30 +254,35 @@ const Quiz: React.FC = () => {
       showSpecialPage: undefined
     }));
   };
+  
   const handleWorldCommunityComplete = () => {
     setState(prevState => ({
       ...prevState,
       showSpecialPage: 'wellbeingLevel'
     }));
   };
+  
   const handleWellbeingLevelComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'loadingAnalysis'
     });
   };
+  
   const handleLoadingAnalysisComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'progressChart'
     });
   };
+  
   const handleProgressChartComplete = () => {
     setState({
       ...state,
       showSpecialPage: 'emailCapture'
     });
   };
+  
   const handleEmailCapture = (email: string) => {
     const updatedProfile = {
       ...state.userProfile,
@@ -283,6 +294,7 @@ const Quiz: React.FC = () => {
       showSpecialPage: 'nameCapture'
     });
   };
+  
   const handleNameCapture = (name: string) => {
     const updatedProfile = {
       ...state.userProfile,
@@ -294,13 +306,23 @@ const Quiz: React.FC = () => {
       showSpecialPage: 'sinusoidalGraph'
     });
   };
+  
   const handleSinusoidalComplete = async () => {
     // Clear the quiz session when completed
     await clearQuizSession();
 
-    // Pass the name to pricing page via URL params and scroll to top
+    // Get name, email, and gender for URL params
     const userName = state.userProfile.name || '';
-    navigate(`/pricing-discounted?name=${encodeURIComponent(userName)}`);
+    const userEmail = state.userProfile.email || '';
+    const selectedGender = getSelectedGender();
+    
+    // Pass name, email, and gender to pricing page via URL params and scroll to top
+    const params = new URLSearchParams();
+    if (userName) params.append('name', userName);
+    if (userEmail) params.append('email', userEmail);
+    if (selectedGender) params.append('gender', selectedGender === 'Femmina' ? 'female' : 'male');
+    
+    navigate(`/pricing-discounted?${params.toString()}`);
     // Ensure page starts from top
     setTimeout(() => {
       window.scrollTo(0, 0);

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -70,7 +69,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Get name and email from URL parameters with ABSOLUTE PRIORITY
+        // Get name, email, and gender from URL parameters with ABSOLUTE PRIORITY
         const urlName = searchParams.get('name') || '';
         const urlEmail = searchParams.get('email') || '';
         const urlGender = searchParams.get('gender') || 'male';
@@ -231,7 +230,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           email: paymentEmail,
           firstName: paymentName.split(' ')[0] || paymentName,
           lastName: paymentName.split(' ').slice(1).join(' ') || '',
-          isDiscounted: isDiscountedPage
+          isDiscounted: isDiscountedPage,
+          quizSessionId: userInfo.sessionId // Pass the quiz session ID
         },
       });
 
@@ -269,14 +269,6 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Mark quiz as completed and link purchase to session
         await markQuizCompleted();
-        
-        // Update order with quiz session ID
-        if (userInfo.sessionId) {
-          await supabase
-            .from('orders')
-            .update({ quiz_session_id: userInfo.sessionId })
-            .eq('stripe_session_id', paymentData.paymentIntentId);
-        }
         
         // Payment successful
         onPurchase({
