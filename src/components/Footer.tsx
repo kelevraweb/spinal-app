@@ -20,6 +20,7 @@ const Footer: React.FC = () => {
               <li><Link to="/privacy-policy" className="text-gray-400 hover:text-white">Privacy Policy</Link></li>
               <li><Link to="/terms-of-use" className="text-gray-400 hover:text-white">Termini di Uso</Link></li>
               <li><Link to="/cookie-policy" className="text-gray-400 hover:text-white">Cookie Policy</Link></li>
+              <li><Link to="/subscription-policy" className="text-gray-400 hover:text-white">Politica di Abbonamento</Link></li>
             </ul>
           </div>
           
@@ -28,23 +29,20 @@ const Footer: React.FC = () => {
             <ul className="space-y-2 text-sm">
               <li><Link to="/contact" className="text-gray-400 hover:text-white">Contatti</Link></li>
               <li><Link to="/money-back-guarantee" className="text-gray-400 hover:text-white">Garanzia Rimborso</Link></li>
-              <li><Link to="/subscription-policy" className="text-gray-400 hover:text-white">Politica di Abbonamento</Link></li>
               <li><Link to="/manage-subscription" className="text-gray-400 hover:text-white">Gestione Piano</Link></li>
             </ul>
           </div>
           
           <div>
-            <h4 className="font-semibold mb-4">Accesso</h4>
+            <h4 className="font-semibold mb-4">Admin</h4>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/admin/login" className="text-gray-400 hover:text-white">Accesso Admin</Link></li>
-              <li><Link to="/manage-subscription" className="text-gray-400 hover:text-white">Gestione Piano</Link></li>
-              <li><a href="https://spinal.systeme.io/dashboard/it/login" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Area Riservata</a></li>
+              <li><Link to="/admin/login" className="text-gray-400 hover:text-white">Login</Link></li>
             </ul>
           </div>
         </div>
         
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-sm text-gray-400">
-          <p>SpinalApp. Tutti i diritti riservati © 2025 | Ambitioned Ltd 24 Tax Suite 137 b Westlink House 981 Great West Road Brentford - UK | È vietata qualsiasi riproduzione.</p>
+          <p>&copy; 2024 SpinalApp. Tutti i diritti riservati.</p>
         </div>
       </div>
     </footer>

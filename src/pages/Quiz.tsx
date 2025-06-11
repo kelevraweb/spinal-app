@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
 import { quizQuestions, additionalQuestions } from '../data/quizQuestions';
 import TopNavBar from '../components/TopNavBar';
-import { saveQuizAnswer, loadQuizAnswers, hasExistingSession, clearQuizSession, markQuizCompleted } from '../components/QuizDataManager';
+import { saveQuizAnswer, loadQuizAnswers, hasExistingSession, clearQuizSession } from '../components/QuizDataManager';
 import QuizSessionModal from '../components/QuizSessionModal';
 
 // Question type components
@@ -198,8 +198,6 @@ const Quiz: React.FC = () => {
     }
     let nextStep = state.currentStep + 1;
     if (nextStep >= state.totalSteps) {
-      // Mark quiz as completed when reaching the end
-      await markQuizCompleted();
       setState({
         ...state,
         answers: updatedAnswers,
@@ -310,8 +308,7 @@ const Quiz: React.FC = () => {
   };
   
   const handleSinusoidalComplete = async () => {
-    // Mark quiz as completed and clear the session when finished
-    await markQuizCompleted();
+    // Clear the quiz session when completed
     await clearQuizSession();
 
     // Get name, email, and gender for URL params
@@ -427,7 +424,6 @@ const Quiz: React.FC = () => {
         return <p>Tipo di domanda non supportato</p>;
     }
   };
-  
   return <div className="max-w-[580px] mx-auto px-4">
       <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={state.currentStep > 0} />
       <div className="quiz-container pt-24">

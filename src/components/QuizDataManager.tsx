@@ -1,10 +1,19 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { QuizAnswer } from '../types/quiz';
 
 // Generate a unique session ID for this quiz session
 const generateSessionId = () => {
   return `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+};
+
+// Get or create session ID
+const getSessionId = () => {
+  let sessionId = localStorage.getItem('quiz_session_id');
+  if (!sessionId) {
+    sessionId = generateSessionId();
+    localStorage.setItem('quiz_session_id', sessionId);
+  }
+  return sessionId;
 };
 
 // Get user's IP address
@@ -19,46 +28,6 @@ const getUserIP = async (): Promise<string | null> => {
   }
 };
 
-// Get or create session ID with IP-based logic
-const getOrCreateSessionId = async (): Promise<string> => {
-  let sessionId = localStorage.getItem('quiz_session_id');
-  
-  // If no session in localStorage, check if there's an existing session for this IP
-  if (!sessionId) {
-    const ipAddress = await getUserIP();
-    if (ipAddress) {
-      try {
-        // Check for existing session with this IP
-        const { data, error } = await supabase
-          .from('quiz_responses')
-          .select('user_session_id')
-          .eq('ip_address', ipAddress)
-          .eq('session_status', 'in_progress')
-          .order('created_at', { ascending: false })
-          .limit(1);
-        
-        if (!error && data && data.length > 0) {
-          sessionId = data[0].user_session_id;
-          localStorage.setItem('quiz_session_id', sessionId);
-          console.log('Found existing session for IP:', sessionId);
-        }
-      } catch (error) {
-        console.error('Error checking existing session:', error);
-      }
-    }
-  }
-  
-  // If still no session, create new one
-  if (!sessionId) {
-    sessionId = generateSessionId();
-    localStorage.setItem('quiz_session_id', sessionId);
-    localStorage.setItem('quiz_start_time', Date.now().toString());
-    console.log('Created new session:', sessionId);
-  }
-  
-  return sessionId;
-};
-
 // Clear all quiz session data
 export const clearQuizSession = async () => {
   const sessionId = localStorage.getItem('quiz_session_id');
@@ -69,7 +38,6 @@ export const clearQuizSession = async () => {
   localStorage.removeItem('userGender');
   localStorage.removeItem('userName');
   localStorage.removeItem('userEmail');
-  localStorage.removeItem('quiz_start_time');
   
   // Clear database records if session exists
   if (sessionId) {
@@ -78,7 +46,6 @@ export const clearQuizSession = async () => {
         .from('quiz_responses')
         .delete()
         .eq('user_session_id', sessionId);
-      console.log('Cleared database session:', sessionId);
     } catch (error) {
       console.error('Error clearing database session:', error);
     }
@@ -93,7 +60,7 @@ export const hasExistingSession = () => {
 };
 
 export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
-  const sessionId = await getOrCreateSessionId();
+  const sessionId = getSessionId();
   
   // Convert answer to string for storage
   const answerString = Array.isArray(answer) ? answer.join(',') : String(answer);
@@ -114,6 +81,9 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
   let completionTime = null;
   if (startTime) {
     completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+  } else {
+    // Set start time if not set
+    localStorage.setItem('quiz_start_time', Date.now().toString());
   }
   
   // Save to localStorage
@@ -122,11 +92,10 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     localStorage.setItem('userGender', gender);
   }
   
-  // Save to database with IP-based session management
+  // Save to database with detailed logging and enhanced tracking
   try {
-    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender, ipAddress });
+    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender });
     
-    // Use upsert with proper conflict resolution based on session_id and question_id
     const { data, error } = await supabase
       .from('quiz_responses')
       .upsert({
@@ -140,36 +109,13 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
         last_question_id: questionId,
         last_activity_at: new Date().toISOString(),
         session_status: 'in_progress',
-        completion_time_seconds: completionTime,
-        started_at: startTime ? new Date(parseInt(startTime)).toISOString() : new Date().toISOString()
+        completion_time_seconds: completionTime
       }, {
         onConflict: 'user_session_id,question_id'
       });
     
     if (error) {
       console.error('Error saving quiz response:', error);
-      // If there's a conflict, try to update existing record
-      if (error.code === '23505') {
-        const { error: updateError } = await supabase
-          .from('quiz_responses')
-          .update({
-            answer: answerString,
-            gender: gender,
-            user_name: userName,
-            user_email: userEmail,
-            last_question_id: questionId,
-            last_activity_at: new Date().toISOString(),
-            completion_time_seconds: completionTime
-          })
-          .eq('user_session_id', sessionId)
-          .eq('question_id', questionId);
-        
-        if (updateError) {
-          console.error('Error updating quiz response:', updateError);
-        } else {
-          console.log('Quiz response updated successfully');
-        }
-      }
     } else {
       console.log('Quiz response saved successfully:', data);
     }
@@ -195,8 +141,6 @@ export const markQuizCompleted = async () => {
         last_activity_at: new Date().toISOString()
       })
       .eq('user_session_id', sessionId);
-    
-    console.log('Quiz marked as completed:', sessionId);
   } catch (error) {
     console.error('Error marking quiz as completed:', error);
   }
@@ -215,8 +159,6 @@ export const markQuizAbandoned = async () => {
         last_activity_at: new Date().toISOString()
       })
       .eq('user_session_id', sessionId);
-    
-    console.log('Quiz marked as abandoned:', sessionId);
   } catch (error) {
     console.error('Error marking quiz as abandoned:', error);
   }
@@ -324,6 +266,8 @@ export const getUserDataFromQuiz = async (): Promise<{
         // Extract gender from any record
         const gender = data[0].gender || 'Femmina';
         
+        // For now, we'll need to get name and email from URL params or user input
+        // since they're not stored in quiz_responses table yet
         return {
           name: '',
           email: '',
@@ -361,8 +305,6 @@ export const saveUserProfile = async (name: string, email: string) => {
           last_activity_at: new Date().toISOString()
         })
         .eq('user_session_id', sessionId);
-      
-      console.log('User profile updated in database');
     } catch (error) {
       console.error('Error updating user profile in database:', error);
     }
