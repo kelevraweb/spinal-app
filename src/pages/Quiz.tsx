@@ -250,24 +250,50 @@ const Quiz: React.FC = () => {
 
     const currentAnswer = getCurrentAnswer();
 
-    const questionProps = {
-      question: state.currentQuestion,
-      answer: currentAnswer,
-      onAnswer: handleAnswer
-    };
-
     switch (state.currentQuestion.type) {
       case 'single':
-        return <SingleChoice {...questionProps} />;
+        return (
+          <SingleChoice 
+            options={state.currentQuestion.options || []}
+            value={typeof currentAnswer === 'string' ? currentAnswer : ''}
+            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
+            useImages={state.currentQuestion.id === 'gender'}
+            questionId={state.currentQuestion.id}
+            question={state.currentQuestion.question}
+          />
+        );
       case 'multiple':
-        return <MultipleChoice {...questionProps} />;
+        return (
+          <MultipleChoice 
+            options={state.currentQuestion.options || []}
+            value={Array.isArray(currentAnswer) ? currentAnswer : []}
+            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
+            maxSelections={state.currentQuestion.maxSelections}
+          />
+        );
       case 'text':
       case 'email':
-        return <TextInput {...questionProps} />;
+        return (
+          <TextInput 
+            value={typeof currentAnswer === 'string' ? currentAnswer : ''}
+            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
+            placeholder="La tua risposta..."
+          />
+        );
       case 'scale':
-        return <ScaleInput {...questionProps} />;
+        return (
+          <ScaleInput 
+            value={typeof currentAnswer === 'number' ? currentAnswer : 5}
+            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
+          />
+        );
       case 'color':
-        return <ColorSelection {...questionProps} />;
+        return (
+          <ColorSelection 
+            value={Array.isArray(currentAnswer) ? currentAnswer : []}
+            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
+          />
+        );
       default:
         return <div>Tipo di domanda non supportato</div>;
     }
@@ -278,49 +304,34 @@ const Quiz: React.FC = () => {
     
     switch (state.showSpecialPage) {
       case 'trustMap':
-        return <TrustMapAnimation onComplete={handleSpecialPageComplete} />;
+        return <TrustMapAnimation onContinue={handleSpecialPageComplete} />;
       case 'universities':
-        return <UniversityLogos onComplete={handleSpecialPageComplete} />;
+        return <UniversityLogos onContinue={handleSpecialPageComplete} />;
       case 'expert':
-        return <ExpertReview onComplete={handleSpecialPageComplete} />;
+        return <ExpertReview onContinue={handleSpecialPageComplete} />;
       case 'progressChart':
-        return <ProgressChart onComplete={handleSpecialPageComplete} />;
+        return <ProgressChart onContinue={handleSpecialPageComplete} />;
       case 'wellbeingLevel':
-        return <WellbeingLevelIndicator 
-          score={calculateWellbeingScore()} 
-          onComplete={handleSpecialPageComplete} 
-        />;
+        return <WellbeingLevelIndicator onContinue={handleSpecialPageComplete} />;
       case 'emailCapture':
-        return <EmailCapture onComplete={handleEmailCapture} />;
+        return <EmailCapture onSubmit={handleEmailCapture} />;
       case 'sinusoidalGraph':
-        return <SinusoidalGraph onComplete={handleSpecialPageComplete} />;
+        return <SinusoidalGraph onContinue={handleSpecialPageComplete} />;
       case 'worldCommunity':
-        return <WorldCommunity onComplete={handleSpecialPageComplete} />;
+        return <WorldCommunity onContinue={handleSpecialPageComplete} />;
       case 'loadingAnalysis':
         return <LoadingAnalysis onComplete={handleSpecialPageComplete} />;
       case 'nameCapture':
-        return <NameCapture onComplete={handleNameCapture} />;
+        return <NameCapture onSubmit={handleNameCapture} />;
       case 'checkout':
-        return <Checkout 
-          userProfile={state.userProfile} 
-          wellbeingScore={calculateWellbeingScore()}
-          gender={gender}
-        />;
+        return <Checkout />;
       default:
         return null;
     }
   };
 
   if (showSessionModal) {
-    return <QuizSessionModal onChoice={handleSessionChoice} />;
-  }
-
-  if (state.showSpecialPage) {
-    return (
-      <div className="min-h-screen">
-        {renderSpecialPage()}
-      </div>
-    );
+    return <QuizSessionModal isOpen={showSessionModal} onContinue={() => handleSessionChoice('continue')} onRestart={() => handleSessionChoice('restart')} />;
   }
 
   const progressPercentage = (state.currentStep / state.totalSteps) * 100;
@@ -378,3 +389,5 @@ const Quiz: React.FC = () => {
 };
 
 export default Quiz;
+
+}

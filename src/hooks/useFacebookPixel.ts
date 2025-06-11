@@ -23,6 +23,17 @@ interface AddToCartData {
   plan_type?: string;
 }
 
+interface ViewContentData {
+  content_name: string;
+  content_category: string;
+  content_ids?: string[];
+}
+
+interface CompleteRegistrationData {
+  content_name: string;
+  content_category: string;
+}
+
 declare global {
   interface Window {
     fbq: any;
@@ -60,6 +71,27 @@ export const useFacebookPixel = () => {
       window.fbq('track', 'PageView');
     }
   }, []);
+
+  const trackViewContent = (data: ViewContentData) => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      console.log('Tracking ViewContent:', data);
+      window.fbq('track', 'ViewContent', {
+        content_name: data.content_name,
+        content_category: data.content_category,
+        content_ids: data.content_ids || ['unknown']
+      });
+    }
+  };
+
+  const trackCompleteRegistration = (data: CompleteRegistrationData) => {
+    if (typeof window !== 'undefined' && window.fbq) {
+      console.log('Tracking CompleteRegistration:', data);
+      window.fbq('track', 'CompleteRegistration', {
+        content_name: data.content_name,
+        content_category: data.content_category
+      });
+    }
+  };
 
   const trackAddToCart = (data: AddToCartData) => {
     if (typeof window !== 'undefined' && window.fbq) {
@@ -140,6 +172,8 @@ export const useFacebookPixel = () => {
   };
 
   return {
+    trackViewContent,
+    trackCompleteRegistration,
     trackAddToCart,
     trackInitiateCheckout,
     trackPurchase
