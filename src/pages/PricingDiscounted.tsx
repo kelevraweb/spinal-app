@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,19 +8,22 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import CountdownOffer from '@/components/CountdownOffer';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
 import TestModeWarning from '@/components/TestModeWarning';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { supabase } from '@/integrations/supabase/client';
 
 const PricingDiscounted: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('quarterly');
+  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+  const [showTestProduct, setShowTestProduct] = useState(false);
   const { trackAddToCart } = useFacebookPixel();
 
   // Get user name and gender from URL params
@@ -31,6 +33,27 @@ const PricingDiscounted: React.FC = () => {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Fetch test product setting
+  useEffect(() => {
+    const fetchTestProductSetting = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'show_test_product')
+          .single();
+
+        if (!error && data) {
+          setShowTestProduct(data.setting_value === 'true');
+        }
+      } catch (error) {
+        console.error('Error fetching test product setting:', error);
+      }
+    };
+
+    fetchTestProductSetting();
   }, []);
 
   const plans = {
@@ -60,7 +83,19 @@ const PricingDiscounted: React.FC = () => {
       dailyPrice: 0.38,
       popular: false,
       savings: '65%'
-    }
+    },
+    ...(showTestProduct && {
+      test: {
+        title: 'PIANO TEST',
+        originalPrice: 0.00,
+        discountedPrice: 0.00,
+        originalDailyPrice: 0.00,
+        dailyPrice: 0.00,
+        popular: false,
+        savings: '0%',
+        isTest: true
+      }
+    })
   };
 
   const formatDailyPrice = (price: number) => {
@@ -108,7 +143,8 @@ const PricingDiscounted: React.FC = () => {
   const disclaimers = {
     trial: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. La prima settimana costa 10,50€, poi 49,99 €/mese (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
     monthly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. Il primo mese costa 19,99€, poi 49,99 €/mese (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
-    quarterly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. I primi 3 mesi costano 34,99€, poi 99,99 € ogni trimestre (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli."
+    quarterly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. I primi 3 mesi costano 34,99€, poi 99,99 € ogni trimestre (prezzi IVA inclusa). Puoi annullare tramite il link che riceverai via mail oppure inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
+    test: "Questo è un piano di test gratuito. Non verrà addebitato alcun costo. Utilizzato solo per scopi di testing."
   };
 
   const faqItems = [
@@ -188,13 +224,23 @@ const PricingDiscounted: React.FC = () => {
                 </div>
               </div>}
             
-            <div className="absolute -top-2 -right-2 z-10">
-              <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
-                RISPARMIA {plan.savings}
+            {!plan.isTest && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <div className="bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                  RISPARMIA {plan.savings}
+                </div>
               </div>
-            </div>
+            )}
+
+            {plan.isTest && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <Badge variant="secondary" className="bg-blue-500 text-white px-2 py-1 text-xs font-bold shadow-lg">
+                  🧪 TEST
+                </Badge>
+              </div>
+            )}
             
-            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly' | 'test')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'} ${plan.isTest ? 'border-blue-200 bg-blue-50' : ''}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1">
                   <div className="mr-3">
@@ -206,22 +252,25 @@ const PricingDiscounted: React.FC = () => {
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-lg font-bold text-green-600">
+                      <span className={`text-lg font-bold ${plan.isTest ? 'text-blue-600' : 'text-green-600'}`}>
                         €{plan.discountedPrice.toFixed(2)}
                       </span>
-                      <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>
+                      {!plan.isTest && <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>}
                     </div>
+                    {plan.isTest && <p className="text-xs text-blue-600">Solo per test - Nessun pagamento richiesto</p>}
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg px-3 py-2 text-center">
+                <div className={`${plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center`}>
                   <div className="text-gray-900 text-xl font-bold">
                     €{formatDailyPrice(plan.dailyPrice)}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
-                  <div className="text-[10px] text-gray-500 line-through">
-                    €{formatDailyPrice(plan.originalDailyPrice)}
-                  </div>
+                  {!plan.isTest && (
+                    <div className="text-[10px] text-gray-500 line-through">
+                      €{formatDailyPrice(plan.originalDailyPrice)}
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -229,8 +278,8 @@ const PricingDiscounted: React.FC = () => {
       </div>
 
       <div className="text-center mt-6">
-        <Button onClick={handleSelectPlan} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105">
-          OTTIENI IL MIO PIANO SCONTATO
+        <Button onClick={handleSelectPlan} className={`w-full ${selectedPlan === 'test' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}>
+          {selectedPlan === 'test' ? 'OTTIENI PIANO TEST GRATUITO' : 'OTTIENI IL MIO PIANO SCONTATO'}
         </Button>
       </div>
 
@@ -238,9 +287,11 @@ const PricingDiscounted: React.FC = () => {
         <p>{disclaimers[selectedPlan]}</p>
       </div>
 
-      <div className="text-center mt-3 text-sm text-gray-600">
-        <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
-      </div>
+      {!selectedPlan === 'test' && (
+        <div className="text-center mt-3 text-sm text-gray-600">
+          <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
+        </div>
+      )}
     </div>
   );
 
@@ -253,7 +304,7 @@ const PricingDiscounted: React.FC = () => {
         {/* Test Mode Warning */}
         <TestModeWarning />
         
-        {/* Before-After Comparison Section - Remove userGender prop */}
+        {/* Before-After Comparison Section */}
         <BeforeAfterComparison />
         <PricingSection />
 

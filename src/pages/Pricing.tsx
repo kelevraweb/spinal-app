@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -9,17 +8,20 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { ChevronDown } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { supabase } from '@/integrations/supabase/client';
 
 const Pricing: React.FC = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly'>('monthly');
+  const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('monthly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
+  const [showTestProduct, setShowTestProduct] = useState(false);
   const { trackAddToCart } = useFacebookPixel();
 
   // Get user name and gender from URL params
@@ -29,6 +31,27 @@ const Pricing: React.FC = () => {
   // Scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
+  }, []);
+
+  // Fetch test product setting
+  useEffect(() => {
+    const fetchTestProductSetting = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('admin_settings')
+          .select('setting_value')
+          .eq('setting_key', 'show_test_product')
+          .single();
+
+        if (!error && data) {
+          setShowTestProduct(data.setting_value === 'true');
+        }
+      } catch (error) {
+        console.error('Error fetching test product setting:', error);
+      }
+    };
+
+    fetchTestProductSetting();
   }, []);
 
   // Standard pricing (non-discounted)
@@ -53,7 +76,17 @@ const Pricing: React.FC = () => {
       dailyPrice: 1.11,
       popular: false,
       description: 'Fatturazione trimestrale'
-    }
+    },
+    ...(showTestProduct && {
+      test: {
+        title: 'PIANO TEST',
+        price: 0.00,
+        dailyPrice: 0.00,
+        popular: false,
+        description: 'Solo per test - Nessun pagamento richiesto',
+        isTest: true
+      }
+    })
   };
 
   const formatDailyPrice = (price: number) => {
@@ -97,7 +130,8 @@ const Pricing: React.FC = () => {
   const disclaimers = {
     trial: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento. La prima settimana costa 49,99€, poi 49,99 €/mese (prezzi IVA inclusa). Puoi annullare inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
     monthly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento a 49,99 €/mese (prezzi IVA inclusa). Puoi annullare inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
-    quarterly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento a 99,99 € ogni trimestre (prezzi IVA inclusa). Puoi annullare inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli."
+    quarterly: "Cliccando su \"Ottieni il mio piano\", accetti il rinnovo automatico dell'abbonamento a 99,99 € ogni trimestre (prezzi IVA inclusa). Puoi annullare inviando una mail a: support@spinalapp.net. Consulta la Politica di Abbonamento per maggiori dettagli.",
+    test: "Questo è un piano di test gratuito. Non verrà addebitato alcun costo. Utilizzato solo per scopi di testing."
   };
 
   const faqItems = [
@@ -174,7 +208,15 @@ const Pricing: React.FC = () => {
                 </div>
               </div>}
             
-            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>
+            {plan.isTest && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <Badge variant="secondary" className="bg-blue-500 text-white px-2 py-1 text-xs font-bold shadow-lg">
+                  🧪 TEST
+                </Badge>
+              </div>
+            )}
+            
+            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly' | 'test')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'} ${plan.isTest ? 'border-blue-200 bg-blue-50' : ''}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1">
                   <div className="mr-3">
@@ -186,7 +228,7 @@ const Pricing: React.FC = () => {
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className="text-lg font-bold text-green-600">
+                      <span className={`text-lg font-bold ${plan.isTest ? 'text-blue-600' : 'text-green-600'}`}>
                         €{plan.price.toFixed(2)}
                       </span>
                     </div>
@@ -194,7 +236,7 @@ const Pricing: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="bg-gray-100 rounded-lg px-3 py-2 text-center">
+                <div className={`${plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center`}>
                   <div className="text-gray-900 text-xl font-bold">
                     €{formatDailyPrice(plan.dailyPrice)}
                   </div>
@@ -206,8 +248,8 @@ const Pricing: React.FC = () => {
       </div>
 
       <div className="text-center mt-6">
-        <Button onClick={handleSelectPlan} className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105">
-          OTTIENI IL MIO PIANO
+        <Button onClick={handleSelectPlan} className={`w-full ${selectedPlan === 'test' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}>
+          {selectedPlan === 'test' ? 'OTTIENI PIANO TEST GRATUITO' : 'OTTIENI IL MIO PIANO'}
         </Button>
       </div>
 
@@ -411,3 +453,5 @@ const Pricing: React.FC = () => {
 };
 
 export default Pricing;
+
+}
