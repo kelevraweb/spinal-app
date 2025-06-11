@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -24,21 +23,41 @@ const BeforeAfterComparison: React.FC = () => {
       setShowArrows(true);
     }, 1200);
     
-    // Get user gender using the new data manager
-    const gender = getUserGender();
-    console.log('Gender from getUserGender:', gender);
+    // First, try to get gender from URL parameters (priority)
+    const genderFromUrl = searchParams.get('gender');
+    console.log('Gender from URL:', genderFromUrl);
     
-    if (gender === 'Maschio') {
-      setUserGender('male');
+    if (genderFromUrl) {
+      // Convert URL gender values to internal format
+      if (genderFromUrl === 'Maschio' || genderFromUrl === 'male') {
+        console.log('Setting gender to male from URL');
+        setUserGender('male');
+      } else if (genderFromUrl === 'Femmina' || genderFromUrl === 'female') {
+        console.log('Setting gender to female from URL');
+        setUserGender('female');
+      } else {
+        console.log('Unknown gender from URL:', genderFromUrl, 'defaulting to female');
+        setUserGender('female');
+      }
     } else {
-      setUserGender('female');
+      // Fallback: Get user gender using the data manager
+      const gender = getUserGender();
+      console.log('Gender from getUserGender (fallback):', gender);
+      
+      if (gender === 'Maschio') {
+        console.log('Setting gender to male from data manager');
+        setUserGender('male');
+      } else {
+        console.log('Setting gender to female from data manager or default');
+        setUserGender('female');
+      }
     }
     
     return () => {
       clearTimeout(visibilityTimer);
       clearTimeout(arrowTimer);
     };
-  }, []);
+  }, [searchParams]);
 
   // External image URLs - these will definitely work!
   const beforeImage = userGender === 'male' 
@@ -48,6 +67,10 @@ const BeforeAfterComparison: React.FC = () => {
   const afterImage = userGender === 'male'
     ? 'https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png' // uomo dopo
     : 'https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'; // donna dopo
+
+  console.log('Final userGender:', userGender);
+  console.log('Selected beforeImage:', beforeImage);
+  console.log('Selected afterImage:', afterImage);
 
   const ProgressIndicator = ({ 
     title, 

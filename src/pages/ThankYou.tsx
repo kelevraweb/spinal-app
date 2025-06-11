@@ -1,16 +1,19 @@
-
 import React, { useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { CheckCircle, Button } from '@/components';
+import { useNavigate } from 'react-router-dom';
 
 const ThankYou: React.FC = () => {
   const [searchParams] = useSearchParams();
   const { trackPurchase } = useFacebookPixel();
+  const navigate = useNavigate();
 
   // Get purchase data from URL params
   const planType = searchParams.get('plan') || 'quarterly';
   const amount = parseFloat(searchParams.get('amount') || '34.99');
   const userName = searchParams.get('name') || '';
+  const paymentData = { amount, plan: planType };
 
   useEffect(() => {
     // Track Purchase event when component mounts
@@ -36,72 +39,102 @@ const ThankYou: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-6 text-center animate-fade-in">
-        <div className="w-16 h-16 bg-[#19f1fe] rounded-full mx-auto flex items-center justify-center mb-4">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-            <polyline points="22 4 12 14.01 9 11.01"></polyline>
-          </svg>
-        </div>
-        
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {userName ? `Grazie ${userName}!` : 'Grazie per il tuo acquisto!'}
-        </h1>
-        
-        <p className="text-gray-600 mb-6">
-          Il tuo Piano Personalizzato per il Benessere della Schiena è ora in preparazione. 
-          Riceverai a breve un'email con il tuo piano e i dettagli di accesso.
-        </p>
-        
-        <div className="bg-[#e5fcff] p-4 rounded-lg mb-6">
-          <p className="font-medium text-gray-800 mb-2">Cosa succede ora?</p>
-          <ul className="text-left text-sm space-y-2">
-            <li className="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#19f1fe] mr-2 mt-1 flex-shrink-0">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span>Riceverai un'email con il tuo piano personalizzato entro i prossimi 15 minuti.</span>
-            </li>
-            <li className="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#19f1fe] mr-2 mt-1 flex-shrink-0">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span>Il nostro team di esperti analizzerà le tue risposte e fornirà consigli aggiuntivi.</span>
-            </li>
-            <li className="flex items-start">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#19f1fe] mr-2 mt-1 flex-shrink-0">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                <polyline points="22 4 12 14.01 9 11.01"></polyline>
-              </svg>
-              <span>Avrai accesso alla nostra app mobile per monitorare i tuoi progressi.</span>
-            </li>
-          </ul>
-        </div>
-
-        {/* Purchase confirmation */}
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-          <div className="flex items-center justify-center mb-2">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-600 mr-2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-              <polyline points="22 4 12 14.01 9 11.01"></polyline>
-            </svg>
-            <p className="font-medium text-green-800">Pagamento confermato</p>
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full bg-card rounded-lg shadow-lg p-8 text-center">
+        <div className="mb-6">
+          <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <CheckCircle className="w-8 h-8 text-white" />
           </div>
-          <p className="text-sm text-green-700">
-            {getPlanDisplayName(planType)} • Importo: €{amount.toFixed(2)}
+          <h1 className="text-3xl font-bold text-foreground mb-2">
+            ✅ Grazie per il tuo ordine!
+          </h1>
+          <p className="text-xl text-muted-foreground">
+            🎉 La tua iscrizione è stata completata con successo.
           </p>
         </div>
-        
-        <Link to="/" className="block w-full bg-[#ff1aa9] hover:bg-[#e6009a] text-white font-medium py-3 px-4 rounded-full transition-all shadow-md">
-          Torna alla Home
-        </Link>
 
-        <div className="mt-6 text-xs text-gray-500">
-          <p>Hai domande? Contattaci a support@spinalapp.net</p>
-          <p className="mt-1">Il tuo acquisto è protetto dalla nostra garanzia di rimborso di 30 giorni.</p>
+        {paymentData && (
+          <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <p className="text-green-800 font-semibold">
+              Pagamento confermato: €{paymentData.amount} per il piano {paymentData.plan}
+            </p>
+          </div>
+        )}
+
+        <div className="space-y-6 text-left">
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-4">
+              🚀 Cosa succede ora?
+            </h2>
+          </div>
+
+          <div className="space-y-4">
+            <div className="border-l-4 border-[#71b8bc] pl-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                1️⃣ Controlla la tua email
+              </h3>
+              <p className="text-muted-foreground mb-2">
+                Tra pochi minuti riceverai una mail con:
+              </p>
+              <ul className="text-muted-foreground ml-4">
+                <li>• Il link per creare la tua password personale.</li>
+                <li>• Il link diretto per accedere al tuo piano di allenamento.</li>
+              </ul>
+              <p className="text-sm text-muted-foreground mt-2 italic">
+                (Se non trovi la mail, controlla anche nello spam o nella cartella promozioni.)
+              </p>
+            </div>
+
+            <div className="border-l-4 border-[#71b8bc] pl-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                2️⃣ Accedi facilmente quando vuoi
+              </h3>
+              <p className="text-muted-foreground mb-2">
+                Dopo aver impostato la password, potrai accedere al tuo piano di allenamento tutte le volte che vuoi semplicemente andando su: <strong>www.spinalapp.net</strong>
+              </p>
+              <p className="text-muted-foreground mb-2">
+                👉 Ti consigliamo di salvare il sito tra i preferiti.
+              </p>
+              <p className="text-muted-foreground">
+                Una volta sul sito, clicca su "Area Riservata" (in alto a destra) e inserisci le tue credenziali.
+              </p>
+            </div>
+
+            <div className="border-l-4 border-[#71b8bc] pl-4">
+              <h3 className="text-lg font-semibold text-foreground mb-2">
+                3️⃣ Hai bisogno di supporto?
+              </h3>
+              <p className="text-muted-foreground mb-2">
+                📩 Scrivici in qualsiasi momento a: <strong>support@spinalapp.net</strong>
+              </p>
+              <p className="text-muted-foreground mb-2">
+                🔍 Inoltre, all'interno del tuo piano di allenamento trovi la sezione FAQ dove puoi:
+              </p>
+              <ul className="text-muted-foreground ml-4">
+                <li>• Gestire il tuo abbonamento</li>
+                <li>• Risolvere eventuali dubbi</li>
+                <li>• Trovare risposte rapide alle domande più comuni</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="bg-[#71b8bc] text-white p-6 rounded-lg text-center">
+            <h3 className="text-xl font-bold mb-2">
+              👋 Benvenuto/a in Spinal!
+            </h3>
+            <p className="text-lg">
+              Siamo pronti a rimettere in moto la tua schiena.
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-8">
+          <Button 
+            onClick={() => navigate('/')}
+            className="w-full md:w-auto"
+          >
+            Torna alla Home
+          </Button>
         </div>
       </div>
     </div>
