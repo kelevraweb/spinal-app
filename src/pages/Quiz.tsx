@@ -298,24 +298,9 @@ const Quiz: React.FC = () => {
     // Clear the quiz session when completed
     await clearQuizSession();
 
-    // Get all user data to pass via URL
-    const userName = state.userProfile.name || localStorage.getItem('userName') || '';
-    const userEmail = state.userProfile.email || localStorage.getItem('userEmail') || '';
-    const genderAnswer = state.answers.find(answer => answer.questionId === 'gender');
-    const userGender = genderAnswer ? String(genderAnswer.answer) : 'Femmina';
-    
-    // Convert gender to URL format
-    const genderParam = userGender === 'Femmina' ? 'female' : 'male';
-    
-    console.log('Navigating to pricing with data:', { userName, userEmail, userGender, genderParam });
-
-    // Pass name, email, and gender to pricing page via URL params
-    const params = new URLSearchParams();
-    if (userName) params.append('name', userName);
-    if (userEmail) params.append('email', userEmail);
-    params.append('gender', genderParam);
-    
-    navigate(`/pricing-discounted?${params.toString()}`);
+    // Pass the name to pricing page via URL params and scroll to top
+    const userName = state.userProfile.name || '';
+    navigate(`/pricing-discounted?name=${encodeURIComponent(userName)}`);
     // Ensure page starts from top
     setTimeout(() => {
       window.scrollTo(0, 0);

@@ -17,14 +17,9 @@ const NameCapture: React.FC<NameCaptureProps> = ({ onSubmit }) => {
     if (name.trim() && !isSubmitting) {
       setIsSubmitting(true);
       
-      // Save name to localStorage and database
+      // Save name to localStorage
       const existingEmail = localStorage.getItem('userEmail') || '';
       saveUserProfile(name.trim(), existingEmail);
-      
-      // Also save directly to localStorage for immediate access
-      localStorage.setItem('userName', name.trim());
-      
-      console.log('Name saved to localStorage and database:', name.trim());
       
       onSubmit(name.trim());
     }
