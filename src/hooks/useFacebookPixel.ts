@@ -46,8 +46,14 @@ export const useFacebookPixel = () => {
   const TEST_EVENT_CODE = 'TEST25893';
 
   useEffect(() => {
-    // Load Facebook Pixel
-    if (typeof window !== 'undefined' && !window.fbq) {
+    // Only run in browser environment
+    if (typeof window === 'undefined') return;
+    
+    // Prevent duplicate initialization
+    if (window.fbq) return;
+
+    try {
+      // Load Facebook Pixel
       (function(f: any, b: any, e: any, v: any, n?: any, t?: any, s?: any) {
         if (f.fbq) return;
         n = f.fbq = function() {
@@ -69,94 +75,116 @@ export const useFacebookPixel = () => {
         testEventCode: TEST_EVENT_CODE
       });
       window.fbq('track', 'PageView');
+    } catch (error) {
+      console.error('Facebook Pixel initialization failed:', error);
     }
-  }, []);
+  }, [PIXEL_ID, TEST_EVENT_CODE]);
 
   const trackViewContent = (data: ViewContentData) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      console.log('Tracking ViewContent:', data);
-      window.fbq('track', 'ViewContent', {
-        content_name: data.content_name,
-        content_category: data.content_category,
-        content_ids: data.content_ids || ['unknown']
-      });
+      try {
+        console.log('Tracking ViewContent:', data);
+        window.fbq('track', 'ViewContent', {
+          content_name: data.content_name,
+          content_category: data.content_category,
+          content_ids: data.content_ids || ['unknown']
+        });
+      } catch (error) {
+        console.error('ViewContent tracking failed:', error);
+      }
     }
   };
 
   const trackCompleteRegistration = (data: CompleteRegistrationData) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      console.log('Tracking CompleteRegistration:', data);
-      window.fbq('track', 'CompleteRegistration', {
-        content_name: data.content_name,
-        content_category: data.content_category
-      });
+      try {
+        console.log('Tracking CompleteRegistration:', data);
+        window.fbq('track', 'CompleteRegistration', {
+          content_name: data.content_name,
+          content_category: data.content_category
+        });
+      } catch (error) {
+        console.error('CompleteRegistration tracking failed:', error);
+      }
     }
   };
 
   const trackAddToCart = (data: AddToCartData) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      console.log('Tracking AddToCart:', data);
-      window.fbq('track', 'AddToCart', {
-        value: data.value,
-        currency: data.currency,
-        content_ids: data.content_ids || [data.plan_type || 'unknown'],
-        content_type: 'product'
-      });
+      try {
+        console.log('Tracking AddToCart:', data);
+        window.fbq('track', 'AddToCart', {
+          value: data.value,
+          currency: data.currency,
+          content_ids: data.content_ids || [data.plan_type || 'unknown'],
+          content_type: 'product'
+        });
+      } catch (error) {
+        console.error('AddToCart tracking failed:', error);
+      }
     }
   };
 
   const trackInitiateCheckout = (data: InitiateCheckoutData) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      console.log('Tracking InitiateCheckout:', data);
-      window.fbq('track', 'InitiateCheckout', {
-        value: data.value,
-        currency: data.currency,
-        content_ids: data.content_ids || [data.plan_type || 'unknown'],
-        content_type: 'product'
-      });
+      try {
+        console.log('Tracking InitiateCheckout:', data);
+        window.fbq('track', 'InitiateCheckout', {
+          value: data.value,
+          currency: data.currency,
+          content_ids: data.content_ids || [data.plan_type || 'unknown'],
+          content_type: 'product'
+        });
+      } catch (error) {
+        console.error('InitiateCheckout tracking failed:', error);
+      }
     }
   };
 
   const trackPurchase = async (data: PurchaseData) => {
     if (typeof window !== 'undefined' && window.fbq) {
-      console.log('Tracking Purchase:', data);
-      
-      // Client-side tracking
-      window.fbq('track', 'Purchase', {
-        value: data.value,
-        currency: data.currency,
-        content_ids: data.content_ids || [data.plan_type || 'unknown'],
-        content_type: 'product'
-      });
-
-      // Server-side tracking via Conversions API
       try {
-        const response = await fetch('/api/facebook-conversion', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            event_name: 'Purchase',
-            event_time: Math.floor(Date.now() / 1000),
-            user_data: {
-              client_ip_address: await getClientIP(),
-              client_user_agent: navigator.userAgent,
-            },
-            custom_data: {
-              value: data.value,
-              currency: data.currency,
-              content_ids: data.content_ids || [data.plan_type || 'unknown'],
-              content_type: 'product'
-            }
-          })
-        });
+        console.log('Tracking Purchase:', data);
         
-        if (response.ok) {
-          console.log('Conversions API tracking successful');
+        // Client-side tracking
+        window.fbq('track', 'Purchase', {
+          value: data.value,
+          currency: data.currency,
+          content_ids: data.content_ids || [data.plan_type || 'unknown'],
+          content_type: 'product'
+        });
+
+        // Server-side tracking via Conversions API
+        try {
+          const response = await fetch('/api/facebook-conversion', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              event_name: 'Purchase',
+              event_time: Math.floor(Date.now() / 1000),
+              user_data: {
+                client_ip_address: await getClientIP(),
+                client_user_agent: navigator.userAgent,
+              },
+              custom_data: {
+                value: data.value,
+                currency: data.currency,
+                content_ids: data.content_ids || [data.plan_type || 'unknown'],
+                content_type: 'product'
+              }
+            })
+          });
+          
+          if (response.ok) {
+            console.log('Conversions API tracking successful');
+          }
+        } catch (error) {
+          console.error('Conversions API tracking failed:', error);
         }
       } catch (error) {
-        console.error('Conversions API tracking failed:', error);
+        console.error('Purchase tracking failed:', error);
       }
     }
   };
