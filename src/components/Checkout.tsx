@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -153,10 +152,10 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
     },
     test: {
       title: 'PIANO TEST',
-      price: 0,
+      price: stripeMode === 'test' ? 0 : 0.50,
       originalPrice: null,
       dailyPrice: 0,
-      description: 'Piano di test gratuito',
+      description: stripeMode === 'test' ? 'Piano di test gratuito' : 'Piano di test - €0.50 (minimo Stripe)',
     }
   } : {
     trial: {
@@ -182,10 +181,10 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
     },
     test: {
       title: 'PIANO TEST',
-      price: 0,
+      price: stripeMode === 'test' ? 0 : 0.50,
       originalPrice: null,
       dailyPrice: 0,
-      description: 'Piano di test gratuito',
+      description: stripeMode === 'test' ? 'Piano di test gratuito' : 'Piano di test - €0.50 (minimo Stripe)',
     }
   };
 
@@ -336,10 +335,15 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         <div className="mb-4 bg-blue-50 border-blue-200 text-blue-800 border p-3 rounded-lg text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="font-bold text-sm">
-              🧪 PIANO TEST - Gratuito ma tracciato in Stripe
+              🧪 PIANO TEST - {stripeMode === 'test' ? 'Gratuito' : '€0.50 (minimo Stripe)'}
             </span>
           </div>
-          <p className="text-xs mt-1">Questo piano costa €0 ma passa attraverso il sistema di pagamento per il tracking</p>
+          <p className="text-xs mt-1">
+            {stripeMode === 'test' 
+              ? 'Questo piano costa €0 ma passa attraverso il sistema di pagamento per il tracking'
+              : 'In modalità live Stripe richiede un minimo di €0.50 - ma è comunque un piano di test'
+            }
+          </p>
         </div>
       )}
 
@@ -484,3 +488,5 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
+
+}

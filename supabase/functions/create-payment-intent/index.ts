@@ -79,15 +79,15 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
-    // Handle €0 payments - Stripe requires minimum 1 cent in live mode
-    // But in test mode, €0 is allowed
+    // Handle €0 payments - Stripe requires minimum €0.50 in live mode
+    // In test mode, €0 is allowed
     let finalAmount = amount;
     let isZeroPayment = amount === 0;
     
     if (isZeroPayment && !isTestMode) {
-      // In live mode, use minimum amount of 1 cent for tracking
-      finalAmount = 1; // 1 cent
-      console.log('Converting €0 payment to €0.01 for live mode tracking');
+      // In live mode, use minimum amount of €0.50 (50 cents)
+      finalAmount = 50; // 50 cents
+      console.log('Converting €0 payment to €0.50 for live mode (Stripe minimum requirement)');
     }
 
     // Create payment intent for single payment
@@ -105,7 +105,7 @@ serve(async (req: Request) => {
         is_zero_payment: isZeroPayment.toString()
       },
       description: `${isTestMode ? '[TEST] ' : ''}${isZeroPayment ? '[€0 TRACKING] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
-      // For €0 payments, we can set automatic payment methods
+      // For €0 payments in test mode, we can set automatic payment methods
       ...(isZeroPayment && isTestMode ? {
         confirm: true,
         payment_method: 'pm_card_visa', // Auto-confirm for €0 in test mode
