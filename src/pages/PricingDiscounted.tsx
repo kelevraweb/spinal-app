@@ -5,7 +5,7 @@ import Checkout from '@/components/Checkout';
 import CountdownOffer from '@/components/CountdownOffer';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
-import Rating from '@/components/Rating';
+import { Rating } from '@/components/Rating';
 import Footer from '@/components/Footer';
 
 const PricingDiscounted: React.FC = () => {
@@ -36,6 +36,11 @@ const PricingDiscounted: React.FC = () => {
     params.append('amount', purchaseData.amount.toString());
     
     navigate(`/thank-you?${params.toString()}`);
+  };
+
+  const handleOfferExpired = () => {
+    console.log('Countdown offer expired');
+    // You can add logic here if needed when the offer expires
   };
 
   // Gender-specific content
@@ -71,7 +76,7 @@ const PricingDiscounted: React.FC = () => {
       </div>
 
       {/* Countdown Offer */}
-      <CountdownOffer />
+      <CountdownOffer onExpired={handleOfferExpired} />
 
       {/* Purchase Notifications */}
       <PurchaseNotifications />
@@ -198,7 +203,7 @@ const PricingDiscounted: React.FC = () => {
       <BeforeAfterComparison />
 
       {/* Rating */}
-      <Rating />
+      <Rating rating={5} />
 
       {/* Footer */}
       <Footer />
