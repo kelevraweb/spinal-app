@@ -312,7 +312,7 @@ const Quiz: React.FC = () => {
       case 'progressChart':
         return <ProgressChart onContinue={handleSpecialPageComplete} />;
       case 'wellbeingLevel':
-        return <WellbeingLevelIndicator onContinue={handleSpecialPageComplete} />;
+        return <WellbeingLevelIndicator level="Medium" onContinue={handleSpecialPageComplete} gender={gender} />;
       case 'emailCapture':
         return <EmailCapture onSubmit={handleEmailCapture} />;
       case 'sinusoidalGraph':
@@ -361,26 +361,28 @@ const Quiz: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {renderQuestion()}
+                {state.showSpecialPage ? renderSpecialPage() : renderQuestion()}
               </motion.div>
             </AnimatePresence>
 
-            <div className="flex justify-between mt-8">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={state.currentStep === 0}
-              >
-                Indietro
-              </Button>
-              
-              <Button
-                onClick={handleNext}
-                disabled={!isAnswerValid() || state.isSubmitting}
-              >
-                {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
-              </Button>
-            </div>
+            {!state.showSpecialPage && (
+              <div className="flex justify-between mt-8">
+                <Button
+                  variant="outline"
+                  onClick={handleBack}
+                  disabled={state.currentStep === 0}
+                >
+                  Indietro
+                </Button>
+                
+                <Button
+                  onClick={handleNext}
+                  disabled={!isAnswerValid() || state.isSubmitting}
+                >
+                  {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -389,5 +391,3 @@ const Quiz: React.FC = () => {
 };
 
 export default Quiz;
-
-}
