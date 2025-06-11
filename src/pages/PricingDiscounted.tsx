@@ -5,7 +5,7 @@ import Checkout from '@/components/Checkout';
 import CountdownOffer from '@/components/CountdownOffer';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
-import Rating from '@/components/Rating';
+import { Rating } from '@/components/Rating';
 import Footer from '@/components/Footer';
 
 const PricingDiscounted: React.FC = () => {
@@ -13,7 +13,7 @@ const PricingDiscounted: React.FC = () => {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('quarterly');
 
-  // Get user data from URL
+  // Get user data from URL with improved logging
   const userName = searchParams.get('name') || '';
   const userEmail = searchParams.get('email') || '';
   const userGender = searchParams.get('gender') || 'female';
@@ -21,13 +21,14 @@ const PricingDiscounted: React.FC = () => {
   console.log('PricingDiscounted loaded with params:', { userName, userEmail, userGender });
 
   useEffect(() => {
-    // Log the gender parameter usage
+    // Log the gender parameter usage for debugging
     console.log('User gender for pricing:', userGender);
+    console.log('Gender conditional will use:', userGender === 'female' ? 'female content' : 'male content');
   }, [userGender]);
 
   const handlePurchase = (purchaseData: { planType: string; amount: number }) => {
     console.log('Purchase completed:', purchaseData);
-    // Navigate to thank you page with all user data
+    // Navigate to thank you page with all user data including email
     const params = new URLSearchParams();
     if (userName) params.append('name', userName);
     if (userEmail) params.append('email', userEmail);
@@ -35,10 +36,15 @@ const PricingDiscounted: React.FC = () => {
     params.append('plan', purchaseData.planType);
     params.append('amount', purchaseData.amount.toString());
     
+    console.log('Navigating to thank-you with params:', params.toString());
     navigate(`/thank-you?${params.toString()}`);
   };
 
-  // Gender-specific content
+  const handleCountdownExpired = () => {
+    console.log('Countdown expired - could redirect or show different content');
+  };
+
+  // Gender-specific content with improved debugging
   const genderSpecificContent = {
     female: {
       title: "Offerta Esclusiva per Te!",
@@ -52,7 +58,11 @@ const PricingDiscounted: React.FC = () => {
     }
   };
 
-  const content = genderSpecificContent[userGender as 'female' | 'male'] || genderSpecificContent.female;
+  // Ensure we get the right content based on gender
+  const currentGender = userGender === 'female' ? 'female' : 'male';
+  const content = genderSpecificContent[currentGender];
+  
+  console.log('Using content for gender:', currentGender, content);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fbfaf8] to-white">
@@ -71,7 +81,7 @@ const PricingDiscounted: React.FC = () => {
       </div>
 
       {/* Countdown Offer */}
-      <CountdownOffer />
+      <CountdownOffer onExpired={handleCountdownExpired} />
 
       {/* Purchase Notifications */}
       <PurchaseNotifications />
@@ -198,7 +208,7 @@ const PricingDiscounted: React.FC = () => {
       <BeforeAfterComparison />
 
       {/* Rating */}
-      <Rating />
+      <Rating rating={4.8} />
 
       {/* Footer */}
       <Footer />

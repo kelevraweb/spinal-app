@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -74,6 +75,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         const urlEmail = searchParams.get('email') || '';
         const urlGender = searchParams.get('gender') || 'male';
         
+        console.log('URL parameters:', { urlName, urlEmail, urlGender });
+        
         // Get quiz data from database/localStorage
         const quizData = await getUserDataFromQuiz();
         
@@ -85,7 +88,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           sessionId: quizData.sessionId
         };
         
-        console.log('Loaded user data:', finalUserInfo);
+        console.log('Final user data loaded:', finalUserInfo);
         setUserInfo(finalUserInfo);
         
       } catch (error) {
@@ -231,7 +234,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           email: paymentEmail,
           firstName: paymentName.split(' ')[0] || paymentName,
           lastName: paymentName.split(' ').slice(1).join(' ') || '',
-          isDiscounted: isDiscountedPage
+          isDiscounted: isDiscountedPage,
+          sessionId: userInfo.sessionId // Pass session ID to link with quiz
         },
       });
 
@@ -274,21 +278,6 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         
         // Mark quiz as completed and link purchase to session
         await markQuizCompleted();
-        
-        // Update order with quiz session ID if available
-        if (userInfo.sessionId && paymentData.paymentIntentId) {
-          console.log('Updating order with quiz session ID:', userInfo.sessionId);
-          const { data: updateData, error: updateError } = await supabase
-            .from('orders')
-            .update({ quiz_session_id: userInfo.sessionId })
-            .eq('stripe_session_id', paymentData.paymentIntentId);
-          
-          if (updateError) {
-            console.error('Error updating order with quiz session:', updateError);
-          } else {
-            console.log('Order updated with quiz session ID:', updateData);
-          }
-        }
         
         // Payment successful
         console.log('Calling onPurchase callback');
@@ -503,5 +492,3 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
-
-}
