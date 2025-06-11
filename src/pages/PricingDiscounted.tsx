@@ -13,7 +13,7 @@ const PricingDiscounted: React.FC = () => {
   const navigate = useNavigate();
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('quarterly');
 
-  // Get user data from URL with improved logging
+  // Get user data from URL
   const userName = searchParams.get('name') || '';
   const userEmail = searchParams.get('email') || '';
   const userGender = searchParams.get('gender') || 'female';
@@ -21,14 +21,13 @@ const PricingDiscounted: React.FC = () => {
   console.log('PricingDiscounted loaded with params:', { userName, userEmail, userGender });
 
   useEffect(() => {
-    // Log the gender parameter usage for debugging
+    // Log the gender parameter usage
     console.log('User gender for pricing:', userGender);
-    console.log('Gender conditional will use:', userGender === 'female' ? 'female content' : 'male content');
   }, [userGender]);
 
   const handlePurchase = (purchaseData: { planType: string; amount: number }) => {
     console.log('Purchase completed:', purchaseData);
-    // Navigate to thank you page with all user data including email
+    // Navigate to thank you page with all user data
     const params = new URLSearchParams();
     if (userName) params.append('name', userName);
     if (userEmail) params.append('email', userEmail);
@@ -36,15 +35,15 @@ const PricingDiscounted: React.FC = () => {
     params.append('plan', purchaseData.planType);
     params.append('amount', purchaseData.amount.toString());
     
-    console.log('Navigating to thank-you with params:', params.toString());
     navigate(`/thank-you?${params.toString()}`);
   };
 
-  const handleCountdownExpired = () => {
-    console.log('Countdown expired - could redirect or show different content');
+  const handleOfferExpired = () => {
+    console.log('Countdown offer expired');
+    // You can add logic here if needed when the offer expires
   };
 
-  // Gender-specific content with improved debugging
+  // Gender-specific content
   const genderSpecificContent = {
     female: {
       title: "Offerta Esclusiva per Te!",
@@ -58,11 +57,7 @@ const PricingDiscounted: React.FC = () => {
     }
   };
 
-  // Ensure we get the right content based on gender
-  const currentGender = userGender === 'female' ? 'female' : 'male';
-  const content = genderSpecificContent[currentGender];
-  
-  console.log('Using content for gender:', currentGender, content);
+  const content = genderSpecificContent[userGender as 'female' | 'male'] || genderSpecificContent.female;
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#fbfaf8] to-white">
@@ -81,7 +76,7 @@ const PricingDiscounted: React.FC = () => {
       </div>
 
       {/* Countdown Offer */}
-      <CountdownOffer onExpired={handleCountdownExpired} />
+      <CountdownOffer onExpired={handleOfferExpired} />
 
       {/* Purchase Notifications */}
       <PurchaseNotifications />
@@ -208,7 +203,7 @@ const PricingDiscounted: React.FC = () => {
       <BeforeAfterComparison />
 
       {/* Rating */}
-      <Rating rating={4.8} />
+      <Rating rating={5} />
 
       {/* Footer */}
       <Footer />
