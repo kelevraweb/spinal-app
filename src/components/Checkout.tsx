@@ -488,5 +488,3 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
-
-}
