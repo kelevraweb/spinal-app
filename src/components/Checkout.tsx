@@ -43,70 +43,7 @@ const getStripePromise = async () => {
   return stripePromise;
 };
 
-// Test Product Form (no Stripe needed)
-const TestProductForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'test' }) => {
-  const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (event: React.FormEvent) => {
-    event.preventDefault();
-    
-    setIsLoading(true);
-    try {
-      // Mark quiz as completed
-      await markQuizCompleted();
-      
-      // Simulate a quick processing time
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      // Call success callback
-      onPurchase({
-        planType: selectedPlan,
-        amount: 0
-      });
-      
-      toast({
-        title: "Test completato!",
-        description: "Piano TEST attivato con successo.",
-      });
-    } catch (error) {
-      console.error('Test error:', error);
-      toast({
-        title: "Errore",
-        description: "Errore durante l'attivazione del piano TEST.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <button
-        type="submit"
-        disabled={isLoading}
-        className={`w-full py-3 rounded-md font-medium ${
-          isLoading ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-        } text-white`}
-      >
-        {isLoading ? (
-          <>
-            <FontAwesomeIcon icon={faSpinner} spin className="mr-2" />
-            ATTIVAZIONE...
-          </>
-        ) : (
-          <>
-            <FontAwesomeIcon icon={faCheckCircle} className="mr-2" />
-            ATTIVA PIANO TEST
-          </>
-        )}
-      </button>
-    </form>
-  );
-};
-
-// Regular Payment Form (with Stripe)
+// Unified Payment Form (all plans go through Stripe now)
 const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan = 'quarterly' }) => {
   const stripe = useStripe();
   const elements = useElements();
@@ -191,7 +128,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   // Determine if we're on the discounted page
   const isDiscountedPage = location.pathname === '/pricing-discounted';
 
-  // Define pricing based on the page
+  // Define pricing based on the page - including TEST plan
   const plans = isDiscountedPage ? {
     trial: {
       title: 'PIANO 7 GIORNI',
@@ -213,6 +150,13 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       originalPrice: 99.99,
       dailyPrice: 0.38,
       description: 'Pagamento singolo',
+    },
+    test: {
+      title: 'PIANO TEST',
+      price: 0,
+      originalPrice: null,
+      dailyPrice: 0,
+      description: 'Piano di test gratuito',
     }
   } : {
     trial: {
@@ -235,6 +179,13 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       originalPrice: null,
       dailyPrice: 1.11,
       description: 'Pagamento singolo',
+    },
+    test: {
+      title: 'PIANO TEST',
+      price: 0,
+      originalPrice: null,
+      dailyPrice: 0,
+      description: 'Piano di test gratuito',
     }
   };
 
@@ -265,17 +216,19 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       paymentName, 
       paymentEmail,
       userInfo,
-      stripeMode
+      stripeMode,
+      selectedPlan,
+      amount: selectedPlanDetails.price
     });
 
     setIsLoading(true);
 
     try {
-      // Create payment intent
+      // Create payment intent (including €0 for test plan)
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-payment-intent', {
         body: { 
           planType: selectedPlan,
-          amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents
+          amount: Math.round(selectedPlanDetails.price * 100), // Convert to cents (0 for test plan)
           email: paymentEmail,
           firstName: paymentName.split(' ')[0] || paymentName,
           lastName: paymentName.split(' ').slice(1).join(' ') || '',
@@ -293,7 +246,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         throw new Error('No client secret returned');
       }
 
-      // Confirm payment with Stripe
+      // For €0 payments (test plan), Stripe will auto-succeed
+      // But we still go through the flow for tracking
       const cardElement = elements.getElement(CardElement);
       if (!cardElement) {
         throw new Error('Card element not found');
@@ -333,7 +287,9 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         
         toast({
           title: "Pagamento completato!",
-          description: "Il tuo pagamento è stato elaborato con successo.",
+          description: selectedPlan === 'test' 
+            ? "Piano TEST attivato con successo e tracciato in Stripe." 
+            : "Il tuo pagamento è stato elaborato con successo.",
         });
       }
 
@@ -363,7 +319,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
 
   return (
     <div>
-      {/* Test Mode Banner - only show when in test mode */}
+      {/* Test Mode Banner - show when in test mode */}
       {stripeMode === 'test' && (
         <div className="mb-4 bg-yellow-50 border-yellow-200 text-yellow-800 border p-3 rounded-lg text-center">
           <div className="flex items-center justify-center space-x-2">
@@ -375,8 +331,20 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         </div>
       )}
 
-      {/* Scarcity Banner - only show on discounted page */}
-      {isDiscountedPage && (
+      {/* Test Product Banner - show for test plan */}
+      {selectedPlan === 'test' && (
+        <div className="mb-4 bg-blue-50 border-blue-200 text-blue-800 border p-3 rounded-lg text-center">
+          <div className="flex items-center justify-center space-x-2">
+            <span className="font-bold text-sm">
+              🧪 PIANO TEST - Gratuito ma tracciato in Stripe
+            </span>
+          </div>
+          <p className="text-xs mt-1">Questo piano costa €0 ma passa attraverso il sistema di pagamento per il tracking</p>
+        </div>
+      )}
+
+      {/* Scarcity Banner - only show on discounted page for paid plans */}
+      {isDiscountedPage && selectedPlan !== 'test' && (
         <div className="mb-4 bg-gradient-to-r from-red-500 to-orange-500 text-white p-3 rounded-lg text-center">
           <div className="flex items-center justify-center space-x-2">
             <span className="font-bold text-sm">
@@ -397,7 +365,9 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
             <p className="text-lg font-bold text-[#71b8bc]">€{selectedPlanDetails.dailyPrice.toFixed(2)} al giorno</p>
           </div>
           <div className="text-right">
-            <p className="font-bold text-xl text-green-600">€{selectedPlanDetails.price.toFixed(2)}</p>
+            <p className={`font-bold text-xl ${selectedPlan === 'test' ? 'text-blue-600' : 'text-green-600'}`}>
+              €{selectedPlanDetails.price.toFixed(2)}
+            </p>
             {selectedPlanDetails.originalPrice && (
               <p className="text-sm text-gray-500 line-through">€{selectedPlanDetails.originalPrice}</p>
             )}
@@ -405,8 +375,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         </div>
       </div>
 
-      {/* Limited Spots Warning - only show on discounted page */}
-      {isDiscountedPage && (
+      {/* Limited Spots Warning - only show on discounted page for paid plans */}
+      {isDiscountedPage && selectedPlan !== 'test' && (
         <div className="mb-4 bg-yellow-50 border-l-4 border-yellow-400 p-3 rounded">
           <div className="flex items-center">
             <FontAwesomeIcon icon={faCheckCircle} className="text-yellow-600 mr-2" />
@@ -422,7 +392,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         {/* Card Element */}
         <div className="bg-white p-4 rounded-lg border border-gray-300">
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Dettagli carta di credito
+            {selectedPlan === 'test' ? 'Dettagli carta (per tracking - nessun addebito)' : 'Dettagli carta di credito'}
           </label>
           <div className="p-3 border border-gray-200 rounded-md">
             <CardElement options={cardElementOptions} />
@@ -435,6 +405,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           className={`w-full py-3 rounded-md font-medium ${
             isLoading || !stripe
               ? 'bg-gray-400 cursor-not-allowed' 
+              : selectedPlan === 'test'
+              ? 'bg-blue-500 hover:bg-blue-600'
               : 'bg-[#71b8bc] hover:bg-[#5da0a4]'
           } text-white`}
         >
@@ -445,8 +417,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
             </>
           ) : (
             <>
-              <FontAwesomeIcon icon={faLock} className="mr-2" />
-              PAGA €{selectedPlanDetails.price.toFixed(2)}
+              <FontAwesomeIcon icon={selectedPlan === 'test' ? faCheckCircle : faLock} className="mr-2" />
+              {selectedPlan === 'test' ? 'ATTIVA PIANO TEST' : `PAGA €${selectedPlanDetails.price.toFixed(2)}`}
             </>
           )}
         </button>
@@ -471,38 +443,9 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
 const Checkout: React.FC<CheckoutProps> = (props) => {
   const [stripePromiseState, setStripePromiseState] = useState<Promise<any> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const { toast } = useToast();
-  const location = useLocation();
-  const [searchParams] = useSearchParams();
-
-  // Determine if we're on the discounted page
-  const isDiscountedPage = location.pathname === '/pricing-discounted';
-
-  // Define pricing based on the page for test product banner and order summary
-  const plans = isDiscountedPage ? {
-    test: {
-      title: 'PIANO TEST',
-      price: 0,
-      originalPrice: null,
-      dailyPrice: 0,
-      description: 'Solo per test',
-    }
-  } : {
-    test: {
-      title: 'PIANO TEST',
-      price: 0,
-      originalPrice: null,
-      dailyPrice: 0,
-      description: 'Solo per test',
-    }
-  };
 
   useEffect(() => {
-    // Skip Stripe loading for test product
-    if (props.selectedPlan === 'test') {
-      return;
-    }
-
+    // Now ALL plans go through Stripe, including test
     const loadStripe = async () => {
       try {
         const promise = await getStripePromise();
@@ -513,7 +456,7 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
       }
     };
     loadStripe();
-  }, [props.selectedPlan]);
+  }, []);
 
   if (error) {
     return (
@@ -525,42 +468,6 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
         >
           Riprova
         </button>
-      </div>
-    );
-  }
-
-  // For test product, render without Stripe
-  if (props.selectedPlan === 'test') {
-    const selectedPlanDetails = plans.test;
-    
-    return (
-      <div>
-        {/* Test Product Banner */}
-        <div className="mb-4 bg-blue-50 border-blue-200 text-blue-800 border p-3 rounded-lg text-center">
-          <div className="flex items-center justify-center space-x-2">
-            <span className="font-bold text-sm">
-              🧪 PIANO TEST - Nessun pagamento richiesto
-            </span>
-          </div>
-          <p className="text-xs mt-1">Questo è un piano di test per verificare il funzionamento</p>
-        </div>
-
-        {/* Order Summary */}
-        <div className="mb-6 bg-gray-50 p-4 rounded-lg">
-          <h3 className="font-semibold mb-2">Riepilogo ordine</h3>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-medium">{selectedPlanDetails.title}</p>
-              <p className="text-sm text-gray-500">{selectedPlanDetails.description}</p>
-              <p className="text-lg font-bold text-blue-600">€{selectedPlanDetails.dailyPrice.toFixed(2)} al giorno</p>
-            </div>
-            <div className="text-right">
-              <p className="font-bold text-xl text-blue-600">€{selectedPlanDetails.price.toFixed(2)}</p>
-            </div>
-          </div>
-        </div>
-
-        <TestProductForm {...props} />
       </div>
     );
   }

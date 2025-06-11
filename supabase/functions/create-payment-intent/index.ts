@@ -9,7 +9,7 @@ const corsHeaders = {
 };
 
 interface PaymentRequest {
-  planType: 'trial' | 'monthly' | 'quarterly';
+  planType: 'trial' | 'monthly' | 'quarterly' | 'test';
   amount: number;
   email: string;
   firstName: string;
@@ -79,9 +79,20 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
+    // Handle €0 payments - Stripe requires minimum 1 cent in live mode
+    // But in test mode, €0 is allowed
+    let finalAmount = amount;
+    let isZeroPayment = amount === 0;
+    
+    if (isZeroPayment && !isTestMode) {
+      // In live mode, use minimum amount of 1 cent for tracking
+      finalAmount = 1; // 1 cent
+      console.log('Converting €0 payment to €0.01 for live mode tracking');
+    }
+
     // Create payment intent for single payment
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: amount,
+      amount: finalAmount,
       currency: 'eur',
       customer: customerId,
       metadata: {
@@ -89,26 +100,36 @@ serve(async (req: Request) => {
         is_discounted: isDiscounted.toString(),
         customer_email: email,
         customer_name: `${firstName} ${lastName}`,
-        stripe_mode: isTestMode ? 'test' : 'live'
+        stripe_mode: isTestMode ? 'test' : 'live',
+        original_amount: amount.toString(), // Store original amount
+        is_zero_payment: isZeroPayment.toString()
       },
-      description: `${isTestMode ? '[TEST] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
+      description: `${isTestMode ? '[TEST] ' : ''}${isZeroPayment ? '[€0 TRACKING] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
+      // For €0 payments, we can set automatic payment methods
+      ...(isZeroPayment && isTestMode ? {
+        confirm: true,
+        payment_method: 'pm_card_visa', // Auto-confirm for €0 in test mode
+        return_url: 'https://example.com' // Required for auto-confirm
+      } : {})
     });
 
-    // Store order in database
+    // Store order in database with original amount
     await supabaseClient.from("orders").insert({
       stripe_session_id: paymentIntent.id,
       plan_type: planType,
-      amount: amount,
+      amount: amount, // Store original amount (including 0)
       currency: 'eur',
       status: "pending",
       created_at: new Date().toISOString()
     });
 
-    console.log('Payment intent created successfully:', paymentIntent.id);
+    console.log('Payment intent created successfully:', paymentIntent.id, 'Amount:', finalAmount, 'Original:', amount);
 
     return new Response(JSON.stringify({ 
       clientSecret: paymentIntent.client_secret,
-      paymentIntentId: paymentIntent.id
+      paymentIntentId: paymentIntent.id,
+      isZeroPayment: isZeroPayment,
+      finalAmount: finalAmount
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
