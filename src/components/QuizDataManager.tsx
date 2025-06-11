@@ -1,19 +1,10 @@
+
 import { supabase } from '@/integrations/supabase/client';
 import { QuizAnswer } from '../types/quiz';
 
 // Generate a unique session ID for this quiz session
 const generateSessionId = () => {
   return `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
-
-// Get or create session ID
-const getSessionId = () => {
-  let sessionId = localStorage.getItem('quiz_session_id');
-  if (!sessionId) {
-    sessionId = generateSessionId();
-    localStorage.setItem('quiz_session_id', sessionId);
-  }
-  return sessionId;
 };
 
 // Get user's IP address
@@ -28,6 +19,49 @@ const getUserIP = async (): Promise<string | null> => {
   }
 };
 
+// Check if there's an existing session for this IP
+const getOrCreateSessionForIP = async (): Promise<string> => {
+  const ipAddress = await getUserIP();
+  
+  if (!ipAddress) {
+    // Fallback to localStorage if IP not available
+    let sessionId = localStorage.getItem('quiz_session_id');
+    if (!sessionId) {
+      sessionId = generateSessionId();
+      localStorage.setItem('quiz_session_id', sessionId);
+    }
+    return sessionId;
+  }
+
+  // Check if there's an existing session for this IP
+  try {
+    const { data: existingSessions, error } = await supabase
+      .from('quiz_responses')
+      .select('user_session_id')
+      .eq('ip_address', ipAddress)
+      .order('created_at', { ascending: false })
+      .limit(1);
+
+    if (error) {
+      console.error('Error checking existing sessions:', error);
+    } else if (existingSessions && existingSessions.length > 0) {
+      // Use existing session for this IP
+      const sessionId = existingSessions[0].user_session_id;
+      localStorage.setItem('quiz_session_id', sessionId);
+      console.log('Using existing session for IP:', sessionId);
+      return sessionId;
+    }
+  } catch (error) {
+    console.error('Error checking existing sessions:', error);
+  }
+
+  // Create new session
+  const newSessionId = generateSessionId();
+  localStorage.setItem('quiz_session_id', newSessionId);
+  console.log('Created new session:', newSessionId);
+  return newSessionId;
+};
+
 // Clear all quiz session data
 export const clearQuizSession = async () => {
   const sessionId = localStorage.getItem('quiz_session_id');
@@ -38,6 +72,7 @@ export const clearQuizSession = async () => {
   localStorage.removeItem('userGender');
   localStorage.removeItem('userName');
   localStorage.removeItem('userEmail');
+  localStorage.removeItem('quiz_start_time');
   
   // Clear database records if session exists
   if (sessionId) {
@@ -60,7 +95,7 @@ export const hasExistingSession = () => {
 };
 
 export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
-  const sessionId = getSessionId();
+  const sessionId = await getOrCreateSessionForIP();
   
   // Convert answer to string for storage
   const answerString = Array.isArray(answer) ? answer.join(',') : String(answer);
@@ -77,14 +112,13 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
   const ipAddress = await getUserIP();
   
   // Calculate completion time
-  const startTime = localStorage.getItem('quiz_start_time');
-  let completionTime = null;
-  if (startTime) {
-    completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-  } else {
-    // Set start time if not set
-    localStorage.setItem('quiz_start_time', Date.now().toString());
+  let startTime = localStorage.getItem('quiz_start_time');
+  if (!startTime) {
+    startTime = Date.now().toString();
+    localStorage.setItem('quiz_start_time', startTime);
   }
+  
+  const completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
   
   // Save to localStorage
   localStorage.setItem('quizAnswers', JSON.stringify(allAnswers));
@@ -94,7 +128,7 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
   
   // Save to database with detailed logging and enhanced tracking
   try {
-    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender });
+    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender, ipAddress });
     
     const { data, error } = await supabase
       .from('quiz_responses')
@@ -109,7 +143,8 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
         last_question_id: questionId,
         last_activity_at: new Date().toISOString(),
         session_status: 'in_progress',
-        completion_time_seconds: completionTime
+        completion_time_seconds: completionTime,
+        started_at: new Date(parseInt(startTime)).toISOString()
       }, {
         onConflict: 'user_session_id,question_id'
       });

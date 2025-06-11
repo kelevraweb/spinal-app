@@ -4,6 +4,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useFacebookPixel } from "./hooks/useFacebookPixel";
 import Index from "./pages/Index";
 import Quiz from "./pages/Quiz";
 import Pricing from "./pages/Pricing";
@@ -22,29 +23,38 @@ import ManageSubscription from "./pages/ManageSubscription";
 
 const queryClient = new QueryClient();
 
+const AppContent = () => {
+  // Initialize Facebook Pixel for tracking across all pages
+  useFacebookPixel();
+  
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/quiz" element={<Quiz />} />
+      <Route path="/pricing" element={<Pricing />} />
+      <Route path="/pricing-discounted" element={<PricingDiscounted />} />
+      <Route path="/thank-you" element={<ThankYou />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+      <Route path="/terms-of-use" element={<TermsOfUse />} />
+      <Route path="/cookie-policy" element={<CookiePolicy />} />
+      <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
+      <Route path="/money-back-guarantee" element={<MoneyBackGuarantee />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/manage-subscription" element={<ManageSubscription />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/pricing" element={<Pricing />} />
-          <Route path="/pricing-discounted" element={<PricingDiscounted />} />
-          <Route path="/thank-you" element={<ThankYou />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-          <Route path="/terms-of-use" element={<TermsOfUse />} />
-          <Route path="/cookie-policy" element={<CookiePolicy />} />
-          <Route path="/subscription-policy" element={<SubscriptionPolicy />} />
-          <Route path="/money-back-guarantee" element={<MoneyBackGuarantee />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminDashboard />} />
-          <Route path="/manage-subscription" element={<ManageSubscription />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>

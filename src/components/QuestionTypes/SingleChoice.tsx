@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSmile, faMeh, faFrown, faClock, faCalendarAlt, faStopwatch, faDumbbell, faHeartbeat, faTrophy, faStar, faWalking, faRunning, faPersonWalking, faUserNinja, faSpinner, faChartLine, faChevronRight } from '@fortawesome/free-solid-svg-icons';
@@ -23,6 +23,9 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   autoAdvance = true,
   question
 }) => {
+  const [imagesLoaded, setImagesLoaded] = useState(false);
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
   // Safety check for options
   if (!options || !Array.isArray(options)) {
     console.error('SingleChoice: options prop is undefined or not an array:', options);
@@ -32,6 +35,61 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
       </div>
     );
   }
+
+  // Preload images for gender selection
+  useEffect(() => {
+    if (useImages && questionId === 'gender') {
+      const imageUrls = [
+        'https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png',
+        'https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png'
+      ];
+      
+      let loadedCount = 0;
+      imageUrls.forEach(url => {
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          if (loadedCount === imageUrls.length) {
+            setImagesLoaded(true);
+          }
+        };
+        img.onerror = () => {
+          setImageErrors(prev => ({ ...prev, [url]: true }));
+          loadedCount++;
+          if (loadedCount === imageUrls.length) {
+            setImagesLoaded(true);
+          }
+        };
+        img.src = url;
+      });
+    } else if (questionId === 'daily_activity') {
+      const imageUrls = [
+        '/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png',
+        '/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png',
+        '/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png',
+        '/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png'
+      ];
+      
+      let loadedCount = 0;
+      imageUrls.forEach(url => {
+        const img = new Image();
+        img.onload = () => {
+          loadedCount++;
+          if (loadedCount === imageUrls.length) {
+            setImagesLoaded(true);
+          }
+        };
+        img.onerror = () => {
+          setImageErrors(prev => ({ ...prev, [url]: true }));
+          loadedCount++;
+          if (loadedCount === imageUrls.length) {
+            setImagesLoaded(true);
+          }
+        };
+        img.src = url;
+      });
+    }
+  }, [useImages, questionId]);
 
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
@@ -92,12 +150,21 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             }`} 
             onClick={() => handleSelection('Maschio')}
           >
+            {/* Loading placeholder */}
+            {!imagesLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-[#71b8bc] border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            
             {/* Image container positioned to touch the footer from bottom */}
-            <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
+            <div className={`absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10 transition-opacity duration-300 ${imagesLoaded ? 'opacity-100' : 'opacity-0'}`}>
               <img 
                 src="https://i.postimg.cc/5Nkq12fR/a33b1e79-7e26-4bce-be77-283e1cda201d.png" 
                 alt="Uomo" 
                 className="w-full h-full object-contain object-bottom drop-shadow-lg" 
+                loading="eager"
+                onError={() => setImageErrors(prev => ({ ...prev, maschio: true }))}
               />
             </div>
             
@@ -123,12 +190,21 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
             }`} 
             onClick={() => handleSelection('Femmina')}
           >
+            {/* Loading placeholder */}
+            {!imagesLoaded && (
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="w-8 h-8 border-4 border-[#71b8bc] border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            )}
+            
             {/* Image container positioned to touch the footer from bottom */}
-            <div className="absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10">
+            <div className={`absolute bottom-10 md:bottom-12 left-1/2 transform -translate-x-1/2 w-40 h-44 md:w-56 md:h-64 z-10 transition-opacity duration-300 ${imagesLoaded ? 'opacity-100' : 'opacity-0'}`}>
               <img 
                 src="https://i.postimg.cc/cHZfTKcr/88c515a2-3d6c-485a-9dda-72f4e1137cb0.png" 
                 alt="Donna" 
                 className="w-full h-full object-contain object-bottom drop-shadow-lg" 
+                loading="eager"
+                onError={() => setImageErrors(prev => ({ ...prev, femmina: true }))}
               />
             </div>
             
@@ -175,75 +251,41 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
 
   // Show smaller image cards for daily_activity question
   if (questionId === 'daily_activity') {
+    const activityOptions = [
+      { text: 'Quasi nulla', image: '/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png' },
+      { text: 'Solo camminate leggere', image: '/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png' },
+      { text: 'Faccio sport o esercizi regolari', image: '/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png' },
+      { text: 'Alterno periodi attivi e sedentari', image: '/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png' }
+    ];
+
     return (
       <div className="w-full max-w-full flex flex-col space-y-3 mt-6">
-        <button 
-          type="button" 
-          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
-            value === 'Quasi nulla' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
-          }`} 
-          onClick={() => handleSelection('Quasi nulla')}
-        >
-          <span className="font-medium text-base text-left">Quasi nulla</span>
-          <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
-            <img 
-              src="/lovable-uploads/571517df-fff1-450c-a7ce-4106823bbb20.png" 
-              alt="Quasi nulla" 
-              className="w-full h-full object-contain" 
-            />
-          </div>
-        </button>
-        
-        <button 
-          type="button" 
-          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
-            value === 'Solo camminate leggere' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
-          }`} 
-          onClick={() => handleSelection('Solo camminate leggere')}
-        >
-          <span className="font-medium text-base text-left">Solo camminate leggere</span>
-          <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
-            <img 
-              src="/lovable-uploads/93841400-1ea7-4de9-acad-ab6555af2849.png" 
-              alt="Solo camminate leggere" 
-              className="w-full h-full object-contain" 
-            />
-          </div>
-        </button>
-        
-        <button 
-          type="button" 
-          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
-            value === 'Faccio sport o esercizi regolari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
-          }`} 
-          onClick={() => handleSelection('Faccio sport o esercizi regolari')}
-        >
-          <span className="font-medium text-base text-left">Faccio sport o esercizi regolari</span>
-          <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
-            <img 
-              src="/lovable-uploads/8a0a4be8-8641-4ed1-8b73-1763ad9c9593.png" 
-              alt="Faccio sport" 
-              className="w-full h-full object-contain" 
-            />
-          </div>
-        </button>
-        
-        <button 
-          type="button" 
-          className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
-            value === 'Alterno periodi attivi e sedentari' ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
-          }`} 
-          onClick={() => handleSelection('Alterno periodi attivi e sedentari')}
-        >
-          <span className="font-medium text-base text-left">Alterno periodi attivi e sedentari</span>
-          <div className="w-16 h-16 rounded-lg overflow-hidden ml-3">
-            <img 
-              src="/lovable-uploads/43e7ee8c-6523-4701-82bf-52356d8f8f9a.png" 
-              alt="Alterno periodi" 
-              className="w-full h-full object-contain" 
-            />
-          </div>
-        </button>
+        {activityOptions.map((option, index) => (
+          <button 
+            key={index}
+            type="button" 
+            className={`w-full max-w-full flex items-center justify-between p-3 rounded-lg border-2 transition-all bg-white ${
+              value === option.text ? 'border-[#71b8bc] bg-[#71b8bc]/10' : 'border-gray-300 hover:border-gray-400'
+            }`} 
+            onClick={() => handleSelection(option.text)}
+          >
+            <span className="font-medium text-base text-left">{option.text}</span>
+            <div className="w-16 h-16 rounded-lg overflow-hidden ml-3 relative">
+              {!imagesLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                  <div className="w-4 h-4 border-2 border-[#71b8bc] border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+              <img 
+                src={option.image}
+                alt={option.text}
+                className={`w-full h-full object-contain transition-opacity duration-300 ${imagesLoaded ? 'opacity-100' : 'opacity-0'}`}
+                loading="lazy"
+                onError={() => setImageErrors(prev => ({ ...prev, [option.image]: true }))}
+              />
+            </div>
+          </button>
+        ))}
       </div>
     );
   }
