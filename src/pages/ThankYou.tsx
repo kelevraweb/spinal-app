@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
-import { CheckCircle, Button } from '@/components';
+import { CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const ThankYou: React.FC = () => {
