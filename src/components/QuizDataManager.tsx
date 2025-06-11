@@ -1,312 +1,252 @@
+import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/integrations/supabase/client';
-import { QuizAnswer } from '../types/quiz';
 
-// Generate a unique session ID for this quiz session
-const generateSessionId = () => {
-  return `quiz_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-};
-
-// Get or create session ID
-const getSessionId = () => {
-  let sessionId = localStorage.getItem('quiz_session_id');
+// Function to generate a unique session ID
+export const getSessionId = (): string => {
+  let sessionId = localStorage.getItem('userSessionId');
   if (!sessionId) {
-    sessionId = generateSessionId();
-    localStorage.setItem('quiz_session_id', sessionId);
+    sessionId = uuidv4();
+    localStorage.setItem('userSessionId', sessionId);
   }
   return sessionId;
 };
 
-// Get user's IP address
-const getUserIP = async (): Promise<string | null> => {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    const data = await response.json();
-    return data.ip;
-  } catch (error) {
-    console.error('Error getting IP:', error);
-    return null;
-  }
+// Function to save user profile data (name and email)
+export const saveUserProfile = (name: string, email: string) => {
+  localStorage.setItem('userName', name);
+  localStorage.setItem('userEmail', email);
 };
 
-// Clear all quiz session data
-export const clearQuizSession = async () => {
-  const sessionId = localStorage.getItem('quiz_session_id');
-  
-  // Clear localStorage
-  localStorage.removeItem('quiz_session_id');
-  localStorage.removeItem('quizAnswers');
-  localStorage.removeItem('userGender');
-  localStorage.removeItem('userName');
-  localStorage.removeItem('userEmail');
-  
-  // Clear database records if session exists
-  if (sessionId) {
-    try {
-      await supabase
-        .from('quiz_responses')
-        .delete()
-        .eq('user_session_id', sessionId);
-    } catch (error) {
-      console.error('Error clearing database session:', error);
-    }
-  }
+// Function to save user's gender
+export const saveUserGender = (gender: string) => {
+  localStorage.setItem('userGender', gender);
 };
 
-// Check if there's an existing quiz session
-export const hasExistingSession = () => {
-  const sessionId = localStorage.getItem('quiz_session_id');
-  const answers = localStorage.getItem('quizAnswers');
-  return !!(sessionId && answers);
+// Function to get user's gender
+export const getUserGender = (): string | null => {
+  return localStorage.getItem('userGender');
 };
 
-export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
+// Function to save quiz response to local storage
+export const saveQuizResponseLocal = (questionId: string, answer: string) => {
   const sessionId = getSessionId();
-  
-  // Convert answer to string for storage
-  const answerString = Array.isArray(answer) ? answer.join(',') : String(answer);
-  
-  // Get gender from current answers
-  const genderAnswer = allAnswers.find(a => a.questionId === 'gender');
-  const gender = genderAnswer ? String(genderAnswer.answer) : null;
-  
-  // Get name and email if available
-  const userName = localStorage.getItem('userName');
-  const userEmail = localStorage.getItem('userEmail');
-  
-  // Get IP address
-  const ipAddress = await getUserIP();
-  
-  // Calculate completion time
-  const startTime = localStorage.getItem('quiz_start_time');
-  let completionTime = null;
-  if (startTime) {
-    completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
-  } else {
-    // Set start time if not set
-    localStorage.setItem('quiz_start_time', Date.now().toString());
-  }
-  
-  // Save to localStorage
-  localStorage.setItem('quizAnswers', JSON.stringify(allAnswers));
-  if (gender) {
-    localStorage.setItem('userGender', gender);
-  }
-  
-  // Save to database with detailed logging and enhanced tracking
+  localStorage.setItem(`quizResponse_${sessionId}_${questionId}`, answer);
+};
+
+// Function to get quiz response from local storage
+export const getQuizResponseLocal = (questionId: string): string | null => {
+  const sessionId = getSessionId();
+  return localStorage.getItem(`quizResponse_${sessionId}_${questionId}`);
+};
+
+// Function to save quiz response to Supabase
+export const saveQuizResponse = async (
+  questionId: string,
+  answer: string,
+  questionType: string,
+  options: string[] | null = null
+) => {
+  const sessionId = getSessionId();
+  const ipAddress = localStorage.getItem('userIPAddress') || 'N/A';
+  const userName = localStorage.getItem('userName') || '';
+  const userEmail = localStorage.getItem('userEmail') || '';
+  const gender = localStorage.getItem('userGender') || 'Femmina';
+
   try {
-    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender });
-    
-    const { data, error } = await supabase
-      .from('quiz_responses')
-      .upsert({
+    const { error } = await supabase.from('quiz_responses').insert([
+      {
         user_session_id: sessionId,
         question_id: questionId,
-        answer: answerString,
-        gender: gender,
+        answer: answer,
+        question_type: questionType,
+        options: options,
+        ip_address: ipAddress,
         user_name: userName,
         user_email: userEmail,
-        ip_address: ipAddress,
-        last_question_id: questionId,
-        last_activity_at: new Date().toISOString(),
-        session_status: 'in_progress',
-        completion_time_seconds: completionTime
-      }, {
-        onConflict: 'user_session_id,question_id'
-      });
-    
+        gender: gender,
+      },
+    ]);
+
     if (error) {
       console.error('Error saving quiz response:', error);
-    } else {
-      console.log('Quiz response saved successfully:', data);
     }
   } catch (error) {
-    console.error('Error saving to database:', error);
+    console.error('Error saving quiz response:', error);
   }
 };
 
-// Mark quiz as completed
+// Function to update quiz session status
+export const updateQuizSessionStatus = async (status: 'in_progress' | 'completed' | 'abandoned') => {
+  const sessionId = getSessionId();
+  try {
+    const { error } = await supabase
+      .from('quiz_responses')
+      .update({ session_status: status, last_activity_at: new Date().toISOString() })
+      .eq('user_session_id', sessionId);
+
+    if (error) {
+      console.error('Error updating quiz session status:', error);
+    }
+  } catch (error) {
+    console.error('Error updating quiz session status:', error);
+  }
+};
+
+// Function to mark quiz as completed
 export const markQuizCompleted = async () => {
-  const sessionId = localStorage.getItem('quiz_session_id');
-  if (!sessionId) return;
-  
-  const startTime = localStorage.getItem('quiz_start_time');
-  const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : null;
-  
+  await updateQuizSessionStatus('completed');
+};
+
+// Function to track quiz completion time
+export const trackQuizCompletionTime = async (startTime: Date) => {
+  const endTime = new Date();
+  const completionTimeSeconds = Math.round((endTime.getTime() - startTime.getTime()) / 1000);
+  const sessionId = getSessionId();
+
   try {
-    await supabase
+    const { error } = await supabase
       .from('quiz_responses')
-      .update({
-        session_status: 'completed',
-        completion_time_seconds: completionTime,
-        last_activity_at: new Date().toISOString()
-      })
+      .update({ completion_time_seconds: completionTimeSeconds })
       .eq('user_session_id', sessionId);
+
+    if (error) {
+      console.error('Error tracking quiz completion time:', error);
+    }
   } catch (error) {
-    console.error('Error marking quiz as completed:', error);
+    console.error('Error tracking quiz completion time:', error);
   }
 };
 
-// Mark quiz as abandoned
-export const markQuizAbandoned = async () => {
-  const sessionId = localStorage.getItem('quiz_session_id');
-  if (!sessionId) return;
-  
-  try {
-    await supabase
-      .from('quiz_responses')
-      .update({
-        session_status: 'abandoned',
-        last_activity_at: new Date().toISOString()
-      })
-      .eq('user_session_id', sessionId);
-  } catch (error) {
-    console.error('Error marking quiz as abandoned:', error);
-  }
-};
-
-export const loadQuizAnswers = async (): Promise<QuizAnswer[]> => {
-  // First try localStorage
-  const localAnswers = localStorage.getItem('quizAnswers');
-  if (localAnswers) {
-    try {
-      return JSON.parse(localAnswers);
-    } catch (error) {
-      console.error('Error parsing local answers:', error);
-    }
-  }
-  
-  // Then try database
-  const sessionId = localStorage.getItem('quiz_session_id');
-  if (sessionId) {
-    try {
-      const { data, error } = await supabase
-        .from('quiz_responses')
-        .select('question_id, answer')
-        .eq('user_session_id', sessionId);
-      
-      if (error) {
-        console.error('Error loading from database:', error);
-        return [];
-      }
-      
-      if (data) {
-        return data.map(item => ({
-          questionId: item.question_id,
-          answer: item.answer.includes(',') ? item.answer.split(',') : item.answer
-        }));
-      }
-    } catch (error) {
-      console.error('Error loading from database:', error);
-    }
-  }
-  
-  return [];
-};
-
-export const getUserGender = (): string => {
-  // First check localStorage
-  const storedGender = localStorage.getItem('userGender');
-  if (storedGender) {
-    return storedGender;
-  }
-  
-  // Then check quiz answers
-  const localAnswers = localStorage.getItem('quizAnswers');
-  if (localAnswers) {
-    try {
-      const answers = JSON.parse(localAnswers);
-      const genderAnswer = answers.find((answer: QuizAnswer) => answer.questionId === 'gender');
-      if (genderAnswer) {
-        const gender = String(genderAnswer.answer);
-        localStorage.setItem('userGender', gender);
-        return gender;
-      }
-    } catch (error) {
-      console.error('Error parsing quiz answers:', error);
-    }
-  }
-  
-  return 'Femmina'; // Default fallback
-};
-
-// New function to get user data from quiz
 export const getUserDataFromQuiz = async (): Promise<{
   name: string;
   email: string;
   gender: string;
   sessionId: string | null;
 }> => {
-  const sessionId = localStorage.getItem('quiz_session_id');
-  
-  // Try to get stored name and email from localStorage first
-  const storedName = localStorage.getItem('userName');
-  const storedEmail = localStorage.getItem('userEmail');
-  const storedGender = localStorage.getItem('userGender');
-  
-  if (storedName && storedEmail && storedGender) {
-    return {
-      name: storedName,
-      email: storedEmail,
-      gender: storedGender,
-      sessionId
-    };
-  }
-  
-  // If not in localStorage, try to get from database
-  if (sessionId) {
-    try {
+  try {
+    const sessionId = getSessionId();
+    
+    // Priorità 1: localStorage (da EmailCapture)
+    const savedEmail = localStorage.getItem('userEmail');
+    const savedName = localStorage.getItem('userName');
+    const savedGender = localStorage.getItem('userGender');
+    
+    console.log('getUserDataFromQuiz - localStorage data:', { savedEmail, savedName, savedGender });
+    
+    // Se abbiamo tutto in localStorage, usiamo quello
+    if (savedEmail && savedName && savedGender) {
+      return {
+        email: savedEmail,
+        name: savedName,
+        gender: savedGender,
+        sessionId
+      };
+    }
+    
+    // Priorità 2: database
+    if (sessionId) {
       const { data, error } = await supabase
         .from('quiz_responses')
-        .select('question_id, answer, gender')
-        .eq('user_session_id', sessionId);
-      
-      if (error) {
-        console.error('Error loading user data from database:', error);
-      } else if (data && data.length > 0) {
-        // Extract gender from any record
-        const gender = data[0].gender || 'Femmina';
-        
-        // For now, we'll need to get name and email from URL params or user input
-        // since they're not stored in quiz_responses table yet
+        .select('user_name, user_email, gender')
+        .eq('user_session_id', sessionId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (data && !error) {
+        console.log('getUserDataFromQuiz - database data:', data);
         return {
-          name: '',
-          email: '',
-          gender,
+          name: data.user_name || savedName || '',
+          email: data.user_email || savedEmail || '',
+          gender: data.gender || savedGender || 'Femmina',
           sessionId
         };
       }
-    } catch (error) {
-      console.error('Error fetching user data:', error);
     }
+    
+    // Fallback
+    return {
+      name: savedName || '',
+      email: savedEmail || '',
+      gender: savedGender || 'Femmina',
+      sessionId
+    };
+  } catch (error) {
+    console.error('Error in getUserDataFromQuiz:', error);
+    
+    // Fallback finale su localStorage
+    return {
+      name: localStorage.getItem('userName') || '',
+      email: localStorage.getItem('userEmail') || '',
+      gender: localStorage.getItem('userGender') || 'Femmina',
+      sessionId: getSessionId()
+    };
   }
-  
-  return {
-    name: '',
-    email: '',
-    gender: 'Femmina',
-    sessionId
-  };
 };
 
-// Function to save user profile data (name, email)
-export const saveUserProfile = async (name: string, email: string) => {
-  localStorage.setItem('userName', name);
-  localStorage.setItem('userEmail', email);
-  
-  // Also update the database records
-  const sessionId = localStorage.getItem('quiz_session_id');
-  if (sessionId) {
-    try {
-      await supabase
-        .from('quiz_responses')
-        .update({
-          user_name: name,
-          user_email: email,
-          last_activity_at: new Date().toISOString()
-        })
-        .eq('user_session_id', sessionId);
-    } catch (error) {
-      console.error('Error updating user profile in database:', error);
+// Function to start tracking user activity (timestamp)
+export const startTrackingUserActivity = async () => {
+  const sessionId = getSessionId();
+  const ipAddress = localStorage.getItem('userIPAddress') || 'N/A';
+
+  try {
+    // Check if a session already exists
+    const { data: existingSession, error: selectError } = await supabase
+      .from('quiz_responses')
+      .select('*')
+      .eq('user_session_id', sessionId)
+      .limit(1);
+
+    if (selectError) {
+      console.error('Error checking existing session:', selectError);
+      return;
     }
+
+    if (existingSession && existingSession.length > 0) {
+      // Session exists, update the last_activity_at timestamp
+      const { error: updateError } = await supabase
+        .from('quiz_responses')
+        .update({ last_activity_at: new Date().toISOString() })
+        .eq('user_session_id', sessionId);
+
+      if (updateError) {
+        console.error('Error updating session timestamp:', updateError);
+      }
+    } else {
+      // No session exists, create a new one
+      const { error: insertError } = await supabase.from('quiz_responses').insert([
+        {
+          user_session_id: sessionId,
+          ip_address: ipAddress,
+          started_at: new Date().toISOString(),
+          last_activity_at: new Date().toISOString(),
+          session_status: 'in_progress',
+        },
+      ]);
+
+      if (insertError) {
+        console.error('Error starting user activity tracking:', insertError);
+      }
+    }
+  } catch (error) {
+    console.error('Error starting/updating user activity tracking:', error);
+  }
+};
+
+// Function to update the last question ID answered by the user
+export const updateLastQuestionId = async (questionId: string) => {
+  const sessionId = getSessionId();
+
+  try {
+    const { error } = await supabase
+      .from('quiz_responses')
+      .update({ last_question_id: questionId })
+      .eq('user_session_id', sessionId);
+
+    if (error) {
+      console.error('Error updating last question ID:', error);
+    }
+  } catch (error) {
+    console.error('Error updating last question ID:', error);
   }
 };

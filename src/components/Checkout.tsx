@@ -69,36 +69,41 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Get name from URL parameter
-        const urlName = searchParams.get('name') || '';
-        const urlGender = searchParams.get('gender') || 'male';
+        console.log('=== CARICAMENTO DATI UTENTE ===');
         
-        // Get quiz data from database/localStorage
-        const quizData = await getUserDataFromQuiz();
-        
-        // Prioritize saved email from localStorage
+        // Priorità 1: Email salvata da EmailCapture
         const savedEmail = localStorage.getItem('userEmail');
-        let email = savedEmail || quizData.email || '';
+        console.log('Email da localStorage:', savedEmail);
+        
+        // Priorità 2: Nome da URL
+        const urlName = searchParams.get('name') || '';
+        const urlGender = searchParams.get('gender') || 'female';
+        console.log('URL params:', { urlName, urlGender });
+        
+        // Priorità 3: Dati dal quiz
+        const quizData = await getUserDataFromQuiz();
+        console.log('Dati dal quiz:', quizData);
         
         const finalUserInfo = {
           name: urlName || quizData.name || '',
-          email: email,
+          email: savedEmail || quizData.email || '', // PRIORITÀ ALL'EMAIL DA EMAIL CAPTURE!
           gender: quizData.gender || (urlGender === 'female' ? 'Femmina' : 'Maschio'),
           sessionId: quizData.sessionId
         };
         
-        console.log('Loaded user data:', finalUserInfo);
+        console.log('=== DATI FINALI UTENTE ===', finalUserInfo);
         setUserInfo(finalUserInfo);
         
       } catch (error) {
         console.error('Error loading user data:', error);
-        // Fallback to URL params if everything fails
+        // Fallback completo
+        const savedEmail = localStorage.getItem('userEmail');
         const urlName = searchParams.get('name') || '';
         const urlGender = searchParams.get('gender') || 'male';
         
         setUserInfo({
           name: urlName,
-          email: '',
+          email: savedEmail || '', // SEMPRE PRIORITÀ ALL'EMAIL SALVATA
           gender: urlGender === 'female' ? 'Femmina' : 'Maschio',
           sessionId: null
         });
@@ -207,15 +212,16 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       return;
     }
 
-    // Get user data for payment - use fallbacks if userInfo is empty
+    // PRIORITÀ ASSOLUTA ALL'EMAIL DA EMAIL CAPTURE
+    const savedEmail = localStorage.getItem('userEmail');
     const paymentName = userInfo.name || localStorage.getItem('userName') || searchParams.get('name') || 'Guest User';
-    const paymentEmail = userInfo.email || localStorage.getItem('userEmail') || 'guest@example.com';
+    const paymentEmail = savedEmail || userInfo.email || 'guest@example.com';
 
-    console.log('Processing payment with:', { 
+    console.log('=== DATI PAGAMENTO ===', { 
       paymentName, 
       paymentEmail,
-      userInfo,
-      stripeMode,
+      savedEmailFromStorage: savedEmail,
+      userInfoEmail: userInfo.email,
       selectedPlan,
       amount: selectedPlanDetails.price
     });
@@ -488,3 +494,5 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
+
+}

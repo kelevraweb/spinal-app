@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -16,6 +15,37 @@ const BeforeAfterComparison: React.FC = () => {
   const userName = searchParams.get('name') || 'Marco';
   
   useEffect(() => {
+    const determineGender = async () => {
+      console.log('=== DETERMINAZIONE GENERE BeforeAfter ===');
+      
+      // Priorità 1: URL parameter
+      const urlGender = searchParams.get('gender');
+      console.log('URL gender:', urlGender);
+      
+      // Priorità 2: localStorage
+      const savedGender = localStorage.getItem('userGender');
+      console.log('Saved gender:', savedGender);
+      
+      // Priorità 3: funzione getUserGender (database)
+      const dbGender = getUserGender();
+      console.log('DB gender:', dbGender);
+      
+      let finalGender: 'male' | 'female' = 'female'; // default
+      
+      if (urlGender === 'male' || urlGender === 'female') {
+        finalGender = urlGender;
+      } else if (savedGender === 'Maschio') {
+        finalGender = 'male';
+      } else if (savedGender === 'Femmina') {
+        finalGender = 'female';
+      } else if (dbGender === 'Maschio') {
+        finalGender = 'male';
+      }
+      
+      console.log('=== GENERE FINALE BeforeAfter ===', finalGender);
+      setUserGender(finalGender);
+    };
+    
     const visibilityTimer = setTimeout(() => {
       setIsVisible(true);
     }, 300);
@@ -24,21 +54,13 @@ const BeforeAfterComparison: React.FC = () => {
       setShowArrows(true);
     }, 1200);
     
-    // Get user gender using the new data manager
-    const gender = getUserGender();
-    console.log('Gender from getUserGender:', gender);
-    
-    if (gender === 'Maschio') {
-      setUserGender('male');
-    } else {
-      setUserGender('female');
-    }
+    determineGender();
     
     return () => {
       clearTimeout(visibilityTimer);
       clearTimeout(arrowTimer);
     };
-  }, []);
+  }, [searchParams]);
 
   // External image URLs - these will definitely work!
   const beforeImage = userGender === 'male' 
@@ -93,6 +115,11 @@ const BeforeAfterComparison: React.FC = () => {
       <h2 className="text-2xl md:text-3xl font-bold text-center mb-8 text-gray-800">
         {userName}, il tuo piano personalizzato è pronto!
       </h2>
+      
+      {/* Debug info */}
+      <div className="text-xs text-gray-500 text-center mb-4">
+        Genere rilevato: {userGender} | URL: {searchParams.get('gender')} | Stored: {localStorage.getItem('userGender')}
+      </div>
       
       {/* Main Before-After Layout */}
       <div className="relative">

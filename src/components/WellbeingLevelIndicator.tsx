@@ -1,213 +1,99 @@
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
+import { getUserGender } from './QuizDataManager';
 
-import React, { useState, useEffect } from 'react';
-import { Button } from './ui/button';
-import { Badge } from './ui/badge';
-import { Info, Heart, Brain, Zap, Bed } from 'lucide-react';
-
-interface WellbeingLevelIndicatorProps {
-  level: 'Low' | 'Medium' | 'High';
-  onContinue: () => void;
-  gender?: string;
-}
-
-const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
-  level,
-  onContinue,
-  gender
-}) => {
-  const [showContent, setShowContent] = useState(false);
+const WellbeingLevelIndicator: React.FC = () => {
+  const [searchParams] = useSearchParams();
+  const [userGender, setUserGender] = useState<'male' | 'female'>('female');
+  const userName = searchParams.get('name') || 'Marco';
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
+    const determineGender = () => {
+      console.log('=== DETERMINAZIONE GENERE WellbeingLevel ===');
+      
+      // Priorità 1: URL parameter
+      const urlGender = searchParams.get('gender');
+      console.log('URL gender:', urlGender);
+      
+      // Priorità 2: localStorage
+      const savedGender = localStorage.getItem('userGender');
+      console.log('Saved gender:', savedGender);
+      
+      // Priorità 3: funzione getUserGender (database)
+      const dbGender = getUserGender();
+      console.log('DB gender:', dbGender);
+      
+      let finalGender: 'male' | 'female' = 'female'; // default
+      
+      if (urlGender === 'male' || urlGender === 'female') {
+        finalGender = urlGender;
+      } else if (savedGender === 'Maschio') {
+        finalGender = 'male';
+      } else if (savedGender === 'Femmina') {
+        finalGender = 'female';
+      } else if (dbGender === 'Maschio') {
+        finalGender = 'male';
+      }
+      
+      console.log('=== GENERE FINALE WellbeingLevel ===', finalGender);
+      setUserGender(finalGender);
+    };
+    
+    determineGender();
+  }, [searchParams]);
 
-  const getLevelColor = () => {
-    switch (level) {
-      case 'Low':
-        return 'bg-green-100 text-green-800';
-      case 'Medium':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'High':
-        return 'bg-pink-100 text-pink-800';
-    }
+  const wellnessLevels = {
+    low: {
+      title: 'Basso',
+      description: 'Ti senti spesso stanco e senza energia. La tua routine quotidiana è influenzata da dolori e rigidità.',
+      imageMale: '/lovable-uploads/01_low_energy_male.png',
+      imageFemale: '/lovable-uploads/01_low_energy_female.png',
+    },
+    medium: {
+      title: 'Medio',
+      description: 'Hai alti e bassi durante la giornata. Alcuni giorni ti senti bene, altri sono più difficili a causa del dolore.',
+      imageMale: '/lovable-uploads/02_medium_energy_male.png',
+      imageFemale: '/lovable-uploads/02_medium_energy_female.png',
+    },
+    high: {
+      title: 'Alto',
+      description: 'Ti senti generalmente in forma e attivo. Il dolore è gestibile e non ti impedisce di goderti la vita.',
+      imageMale: '/lovable-uploads/03_high_energy_male.png',
+      imageFemale: '/lovable-uploads/03_high_energy_female.png',
+    },
   };
 
-  const getLevelText = () => {
-    switch (level) {
-      case 'Low':
-        return 'Basso';
-      case 'Medium':
-        return 'Medio';
-      case 'High':
-        return 'Alto';
-    }
-  };
+  // Determine which level to show based on URL parameter (default to medium)
+  const levelParam = searchParams.get('level') || 'medium';
+  const currentLevel = wellnessLevels[levelParam as keyof typeof wellnessLevels] || wellnessLevels.medium;
 
-  const getInfoText = () => {
-    switch (level) {
-      case 'Low':
-        return 'Livello BASSO di effetti negativi sul tuo benessere. Hai buone abitudini posturali ma c\'è sempre spazio per miglioramenti.';
-      case 'Medium':
-        return 'Livello MEDIO di effetti negativi sul tuo benessere. Alcuni aggiustamenti alle tue abitudini posturali potrebbero aiutarti a sentirti meglio.';
-      case 'High':
-        return 'Livello ALTO di effetti negativi sul tuo benessere. Le tue attuali abitudini posturali potrebbero impattare significativamente il tuo comfort quotidiano e la tua salute.';
-    }
-  };
-
-  const getLevelPosition = () => {
-    switch (level) {
-      case 'Low':
-        return '20%';
-      case 'Medium':
-        return '50%';
-      case 'High':
-        return '80%';
-    }
-  };
-
-  const getGenderImage = () => {
-    if (gender === 'Maschio') {
-      return '/lovable-uploads/e7153d0f-abb0-43b0-bdbc-491e1cacbfb2.png';
-    } else {
-      return '/lovable-uploads/2f0d9073-87c5-4875-a918-f292d1ddbdd1.png';
-    }
-  };
-
-  if (!showContent) {
-    return (
-      <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
-        <div className="bg-white rounded-3xl p-8 shadow-lg">
-          <div className="animate-pulse">
-            <div className="h-6 bg-gray-200 rounded mb-8"></div>
-            <div className="h-32 bg-gray-200 rounded mb-6"></div>
-            <div className="h-20 bg-gray-200 rounded mb-6"></div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="h-24 bg-gray-200 rounded"></div>
-              <div className="h-24 bg-gray-200 rounded"></div>
-              <div className="h-24 bg-gray-200 rounded"></div>
-              <div className="h-24 bg-gray-200 rounded"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  // Determine the correct image based on user's gender
+  const currentImage = userGender === 'male' ? currentLevel.imageMale : currentLevel.imageFemale;
 
   return (
-    <div className="mx-auto my-12 px-4 pt-16" style={{ maxWidth: '580px' }}>
-      <div className="bg-white rounded-3xl p-8 shadow-lg animate-fade-in">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            Riepilogo del tuo Profilo di Benessere
-          </h1>
+    <div className="max-w-4xl mx-auto mb-8 px-4">
+      {/* Debug info */}
+      <div className="text-xs text-gray-500 text-center mb-4">
+        Genere rilevato: {userGender} | URL: {searchParams.get('gender')} | Stored: {localStorage.getItem('userGender')}
+      </div>
+      
+      <h2 className="text-2xl font-bold text-center mb-4">
+        {userName}, ecco il tuo livello di benessere attuale:
+      </h2>
+      <div className="bg-white rounded-lg shadow-md p-6">
+        <div className="flex items-center justify-center mb-4">
+          <img
+            src={currentImage}
+            alt={`Livello di benessere ${currentLevel.title}`}
+            className="w-48 h-48 object-contain"
+          />
         </div>
-
-        {/* Negative Effects Level Section */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Livello di effetti negativi
-            </h2>
-            <Badge className={`${getLevelColor()} px-3 py-1 text-sm font-medium`}>
-              {getLevelText()}
-            </Badge>
-          </div>
-
-          {/* Gender-based Image */}
-          <div className="flex justify-center mb-6 py-0 my-0">
-            <div className="w-40 h-48">
-              <img 
-                src={getGenderImage()} 
-                alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
-                className="w-full h-full object-contain" 
-              />
-            </div>
-          </div>
-
-          {/* Level Bar */}
-          <div className="relative mb-6">
-            <div className="h-4 bg-gradient-to-r from-[#71b8bc] via-yellow-400 to-red-400 rounded-full relative">
-              <div 
-                className="absolute top-0 w-3 h-3 bg-white border-2 border-gray-800 rounded-full transform -translate-y-1 transition-all duration-1000" 
-                style={{
-                  left: getLevelPosition(),
-                  transform: `translateX(-50%) translateY(-25%)`
-                }} 
-              />
-            </div>
-            <div className="flex justify-between text-xs text-gray-500 mt-2">
-              <span>Basso</span>
-              <span>Medio</span>
-              <span>Alto</span>
-            </div>
-            <div 
-              className="absolute text-xs font-medium text-gray-800 mt-1 transform -translate-x-1/2" 
-              style={{ left: getLevelPosition() }}
-            >
-              Il tuo livello
-            </div>
-          </div>
-        </div>
-
-        {/* Info Box */}
-        <div className="bg-[#71b8bc]/10 border-l-4 border-[#71b8bc] p-4 mb-8 rounded-r-lg">
-          <div className="flex items-start">
-            <Info className="w-5 h-5 text-[#71b8bc] mt-0.5 mr-3 flex-shrink-0" />
-            <p className="text-gray-700 text-sm leading-relaxed">
-              {getInfoText()}
-            </p>
-          </div>
-        </div>
-
-        {/* Continue Button - MOVED BEFORE INDICATORS */}
-        <div className="text-center mb-8">
-          <Button 
-            onClick={onContinue} 
-            size="lg" 
-            className="bg-[#71b8bc] hover:bg-[#5da0a4] text-white px-8 py-3 w-full"
-          >
-            Scopri il tuo piano personalizzato
-          </Button>
-        </div>
-
-        {/* Indicators Grid - NOW AFTER BUTTON */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="flex items-center justify-center w-12 h-12 bg-[#71b8bc]/20 rounded-full mb-3 mx-auto">
-              <Heart className="w-6 h-6 text-[#71b8bc]" />
-            </div>
-            <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Salute Fisica</h3>
-            <p className="text-xs text-gray-600 text-center">Impatto su muscoli e articolazioni</p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="flex items-center justify-center w-12 h-12 bg-[#88c2aa]/20 rounded-full mb-3 mx-auto">
-              <Brain className="w-6 h-6 text-[#88c2aa]" />
-            </div>
-            <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Chiarezza Mentale</h3>
-            <p className="text-xs text-gray-600 text-center">Concentrazione e focus</p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="flex items-center justify-center w-12 h-12 bg-[#71b8bc]/20 rounded-full mb-3 mx-auto">
-              <Zap className="w-6 h-6 text-[#71b8bc]" />
-            </div>
-            <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Livelli di Energia</h3>
-            <p className="text-xs text-gray-600 text-center">Vitalità quotidiana</p>
-          </div>
-
-          <div className="bg-gray-50 p-4 rounded-xl">
-            <div className="flex items-center justify-center w-12 h-12 bg-[#88c2aa]/20 rounded-full mb-3 mx-auto">
-              <Bed className="w-6 h-6 text-[#88c2aa]" />
-            </div>
-            <h3 className="font-medium text-gray-800 text-center text-sm mb-1">Qualità del Sonno</h3>
-            <p className="text-xs text-gray-600 text-center">Riposo e recupero</p>
-          </div>
-        </div>
+        <h3 className="text-xl font-semibold text-center mb-2">
+          Livello di benessere: {currentLevel.title}
+        </h3>
+        <p className="text-gray-700 text-center">
+          {currentLevel.description}
+        </p>
       </div>
     </div>
   );
