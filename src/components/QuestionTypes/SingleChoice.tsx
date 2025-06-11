@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { QuizOption } from '../../types/quiz';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -22,6 +23,16 @@ const SingleChoice: React.FC<SingleChoiceProps> = ({
   autoAdvance = true,
   question
 }) => {
+  // Safety check for options
+  if (!options || !Array.isArray(options)) {
+    console.error('SingleChoice: options prop is undefined or not an array:', options);
+    return (
+      <div className="w-full max-w-full space-y-3 mt-6">
+        <p className="text-gray-500">Nessuna opzione disponibile</p>
+      </div>
+    );
+  }
+
   // Map of FontAwesome icons
   const iconMap: Record<string, any> = {
     'smile': faSmile,
