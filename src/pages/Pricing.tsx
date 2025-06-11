@@ -208,7 +208,7 @@ const Pricing: React.FC = () => {
                 </div>
               </div>}
             
-            {plan.isTest && (
+            {'isTest' in plan && plan.isTest && (
               <div className="absolute -top-2 -right-2 z-10">
                 <Badge variant="secondary" className="bg-blue-500 text-white px-2 py-1 text-xs font-bold shadow-lg">
                   🧪 TEST
@@ -216,7 +216,7 @@ const Pricing: React.FC = () => {
               </div>
             )}
             
-            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly' | 'test')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'} ${plan.isTest ? 'border-blue-200 bg-blue-50' : ''}`}>
+            <div onClick={() => setSelectedPlan(key as 'trial' | 'monthly' | 'quarterly' | 'test')} className={`relative border-2 rounded-lg p-4 cursor-pointer transition-all duration-200 ${selectedPlan === key ? 'border-green-500 bg-white shadow-lg' : 'border-gray-200 hover:border-gray-300 bg-white'} ${'isTest' in plan && plan.isTest ? 'border-blue-200 bg-blue-50' : ''}`}>
               <div className="flex items-center justify-between">
                 <div className="flex items-center flex-1">
                   <div className="mr-3">
@@ -228,7 +228,7 @@ const Pricing: React.FC = () => {
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
                     <div className="flex items-center space-x-2 mb-1">
-                      <span className={`text-lg font-bold ${plan.isTest ? 'text-blue-600' : 'text-green-600'}`}>
+                      <span className={`text-lg font-bold ${'isTest' in plan && plan.isTest ? 'text-blue-600' : 'text-green-600'}`}>
                         €{plan.price.toFixed(2)}
                       </span>
                     </div>
@@ -236,7 +236,7 @@ const Pricing: React.FC = () => {
                   </div>
                 </div>
 
-                <div className={`${plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center`}>
+                <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center`}>
                   <div className="text-gray-900 text-xl font-bold">
                     €{formatDailyPrice(plan.dailyPrice)}
                   </div>
