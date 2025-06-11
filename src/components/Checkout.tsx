@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -217,7 +216,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       userInfo,
       stripeMode,
       selectedPlan,
-      amount: selectedPlanDetails.price
+      amount: selectedPlanDetails.price,
+      sessionId: userInfo.sessionId
     });
 
     setIsLoading(true);
@@ -238,10 +238,12 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       console.log('Payment intent response:', { paymentData, paymentError });
 
       if (paymentError) {
+        console.error('Payment intent error:', paymentError);
         throw new Error(paymentError.message);
       }
 
       if (!paymentData?.clientSecret) {
+        console.error('No client secret in response:', paymentData);
         throw new Error('No client secret returned');
       }
 
@@ -263,22 +265,33 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       });
 
       if (confirmError) {
+        console.error('Payment confirmation error:', confirmError);
         throw new Error(confirmError.message);
       }
 
       if (paymentIntent && paymentIntent.status === 'succeeded') {
+        console.log('Payment succeeded, updating database...');
+        
         // Mark quiz as completed and link purchase to session
         await markQuizCompleted();
         
-        // Update order with quiz session ID
-        if (userInfo.sessionId) {
-          await supabase
+        // Update order with quiz session ID if available
+        if (userInfo.sessionId && paymentData.paymentIntentId) {
+          console.log('Updating order with quiz session ID:', userInfo.sessionId);
+          const { data: updateData, error: updateError } = await supabase
             .from('orders')
             .update({ quiz_session_id: userInfo.sessionId })
             .eq('stripe_session_id', paymentData.paymentIntentId);
+          
+          if (updateError) {
+            console.error('Error updating order with quiz session:', updateError);
+          } else {
+            console.log('Order updated with quiz session ID:', updateData);
+          }
         }
         
         // Payment successful
+        console.log('Calling onPurchase callback');
         onPurchase({
           planType: selectedPlan,
           amount: selectedPlanDetails.price
@@ -290,6 +303,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
             ? "Piano TEST attivato con successo e tracciato in Stripe." 
             : "Il tuo pagamento è stato elaborato con successo.",
         });
+      } else {
+        console.error('Payment intent status not succeeded:', paymentIntent?.status);
       }
 
     } catch (error) {
@@ -488,3 +503,5 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
+
+}

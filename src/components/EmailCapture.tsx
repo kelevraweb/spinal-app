@@ -17,9 +17,14 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
     if (email.trim() && !isSubmitting) {
       setIsSubmitting(true);
       
-      // Save email to localStorage
+      // Save email to localStorage and database
       const existingName = localStorage.getItem('userName') || '';
       saveUserProfile(existingName, email.trim());
+      
+      // Also save directly to localStorage for immediate access
+      localStorage.setItem('userEmail', email.trim());
+      
+      console.log('Email saved to localStorage and database:', email.trim());
       
       onSubmit(email.trim());
     }
