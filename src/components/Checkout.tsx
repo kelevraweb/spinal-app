@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
@@ -69,20 +70,18 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Get name from URL parameter
+        // Get name and email from URL parameters with ABSOLUTE PRIORITY
         const urlName = searchParams.get('name') || '';
+        const urlEmail = searchParams.get('email') || '';
         const urlGender = searchParams.get('gender') || 'male';
         
         // Get quiz data from database/localStorage
         const quizData = await getUserDataFromQuiz();
         
-        // Prioritize saved email from localStorage
-        const savedEmail = localStorage.getItem('userEmail');
-        let email = savedEmail || quizData.email || '';
-        
+        // URL parameters have absolute priority, then localStorage, then quiz data
         const finalUserInfo = {
-          name: urlName || quizData.name || '',
-          email: email,
+          name: urlName || quizData.name || localStorage.getItem('userName') || '',
+          email: urlEmail || localStorage.getItem('userEmail') || quizData.email || '',
           gender: quizData.gender || (urlGender === 'female' ? 'Femmina' : 'Maschio'),
           sessionId: quizData.sessionId
         };
@@ -94,11 +93,12 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         console.error('Error loading user data:', error);
         // Fallback to URL params if everything fails
         const urlName = searchParams.get('name') || '';
+        const urlEmail = searchParams.get('email') || '';
         const urlGender = searchParams.get('gender') || 'male';
         
         setUserInfo({
           name: urlName,
-          email: '',
+          email: urlEmail,
           gender: urlGender === 'female' ? 'Femmina' : 'Maschio',
           sessionId: null
         });
@@ -207,9 +207,9 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       return;
     }
 
-    // Get user data for payment - use fallbacks if userInfo is empty
-    const paymentName = userInfo.name || localStorage.getItem('userName') || searchParams.get('name') || 'Guest User';
-    const paymentEmail = userInfo.email || localStorage.getItem('userEmail') || 'guest@example.com';
+    // Get user data for payment - URL has absolute priority
+    const paymentName = userInfo.name || searchParams.get('name') || localStorage.getItem('userName') || 'Guest User';
+    const paymentEmail = userInfo.email || searchParams.get('email') || localStorage.getItem('userEmail') || 'guest@example.com';
 
     console.log('Processing payment with:', { 
       paymentName, 
@@ -488,5 +488,3 @@ const Checkout: React.FC<CheckoutProps> = (props) => {
 };
 
 export default Checkout;
-
-}
