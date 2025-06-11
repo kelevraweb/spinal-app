@@ -11,6 +11,7 @@ const ThankYou: React.FC = () => {
   const planType = searchParams.get('plan') || 'quarterly';
   const amount = parseFloat(searchParams.get('amount') || '34.99');
   const userName = searchParams.get('name') || '';
+  const userEmail = searchParams.get('email') || '';
 
   useEffect(() => {
     // Track Purchase event when component mounts
@@ -51,7 +52,12 @@ const ThankYou: React.FC = () => {
         
         <p className="text-gray-600 mb-6">
           Il tuo Piano Personalizzato per il Benessere della Schiena è ora in preparazione. 
-          Riceverai a breve un'email con il tuo piano e i dettagli di accesso.
+          {userEmail && (
+            <>
+              <br />
+              Riceverai tutto all'indirizzo: <strong>{userEmail}</strong>
+            </>
+          )}
         </p>
         
         <div className="bg-[#e5fcff] p-4 rounded-lg mb-6">
@@ -93,6 +99,11 @@ const ThankYou: React.FC = () => {
           <p className="text-sm text-green-700">
             {getPlanDisplayName(planType)} • Importo: €{amount.toFixed(2)}
           </p>
+          {userEmail && (
+            <p className="text-xs text-green-600 mt-1">
+              Email: {userEmail}
+            </p>
+          )}
         </div>
         
         <Link to="/" className="block w-full bg-[#ff1aa9] hover:bg-[#e6009a] text-white font-medium py-3 px-4 rounded-full transition-all shadow-md">

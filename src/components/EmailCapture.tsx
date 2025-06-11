@@ -21,6 +21,7 @@ const EmailCapture: React.FC<EmailCaptureProps> = ({ onSubmit }) => {
       const existingName = localStorage.getItem('userName') || '';
       saveUserProfile(existingName, email.trim());
       
+      // Passa l'email alla funzione onSubmit che gestirà la navigazione con URL params
       onSubmit(email.trim());
     }
   };
