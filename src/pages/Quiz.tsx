@@ -228,6 +228,12 @@ const Quiz: React.FC = () => {
     }));
   };
 
+  const handlePurchase = (purchaseData: { planType: string; amount: number }) => {
+    console.log('Purchase completed:', purchaseData);
+    // Handle purchase completion logic here
+    navigate('/thank-you');
+  };
+
   const getCurrentAnswer = () => {
     if (!state.currentQuestion) return undefined;
     const answer = state.answers.find(a => a.questionId === state.currentQuestion!.id);
@@ -306,9 +312,9 @@ const Quiz: React.FC = () => {
       case 'trustMap':
         return <TrustMapAnimation onContinue={handleSpecialPageComplete} />;
       case 'universities':
-        return <UniversityLogos onContinue={handleSpecialPageComplete} />;
+        return <UniversityLogos />;
       case 'expert':
-        return <ExpertReview onContinue={handleSpecialPageComplete} />;
+        return <ExpertReview />;
       case 'progressChart':
         return <ProgressChart onContinue={handleSpecialPageComplete} />;
       case 'wellbeingLevel':
@@ -324,7 +330,7 @@ const Quiz: React.FC = () => {
       case 'nameCapture':
         return <NameCapture onSubmit={handleNameCapture} />;
       case 'checkout':
-        return <Checkout />;
+        return <Checkout onPurchase={handlePurchase} />;
       default:
         return null;
     }
@@ -391,3 +397,5 @@ const Quiz: React.FC = () => {
 };
 
 export default Quiz;
+
+}
