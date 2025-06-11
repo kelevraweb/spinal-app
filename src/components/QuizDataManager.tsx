@@ -1,3 +1,4 @@
+
 import { v4 as uuidv4 } from 'uuid';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -39,6 +40,87 @@ export const getQuizResponseLocal = (questionId: string): string | null => {
   return localStorage.getItem(`quizResponse_${sessionId}_${questionId}`);
 };
 
+// Function to save quiz answer (used by Quiz.tsx)
+export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: any[]) => {
+  const sessionId = getSessionId();
+  const ipAddress = localStorage.getItem('userIPAddress') || 'N/A';
+  const userName = localStorage.getItem('userName') || '';
+  const userEmail = localStorage.getItem('userEmail') || '';
+  const gender = localStorage.getItem('userGender') || 'Femmina';
+
+  try {
+    const { error } = await supabase.from('quiz_responses').insert([
+      {
+        user_session_id: sessionId,
+        question_id: questionId,
+        answer: String(answer),
+        ip_address: ipAddress,
+        user_name: userName,
+        user_email: userEmail,
+        gender: gender,
+      },
+    ]);
+
+    if (error) {
+      console.error('Error saving quiz answer:', error);
+    }
+  } catch (error) {
+    console.error('Error saving quiz answer:', error);
+  }
+};
+
+// Function to load quiz answers (used by Quiz.tsx)
+export const loadQuizAnswers = async () => {
+  const sessionId = getSessionId();
+  try {
+    const { data, error } = await supabase
+      .from('quiz_responses')
+      .select('question_id, answer')
+      .eq('user_session_id', sessionId);
+
+    if (error) {
+      console.error('Error loading quiz answers:', error);
+      return [];
+    }
+
+    return data?.map(item => ({
+      questionId: item.question_id,
+      answer: item.answer
+    })) || [];
+  } catch (error) {
+    console.error('Error loading quiz answers:', error);
+    return [];
+  }
+};
+
+// Function to check if existing session exists (used by Quiz.tsx)
+export const hasExistingSession = (): boolean => {
+  const sessionId = localStorage.getItem('userSessionId');
+  return !!sessionId;
+};
+
+// Function to clear quiz session (used by Quiz.tsx)
+export const clearQuizSession = async () => {
+  const sessionId = localStorage.getItem('userSessionId');
+  if (sessionId) {
+    try {
+      // Delete from database
+      await supabase
+        .from('quiz_responses')
+        .delete()
+        .eq('user_session_id', sessionId);
+    } catch (error) {
+      console.error('Error clearing quiz session from database:', error);
+    }
+  }
+  
+  // Clear from localStorage
+  localStorage.removeItem('userSessionId');
+  localStorage.removeItem('userName');
+  localStorage.removeItem('userEmail');
+  localStorage.removeItem('userGender');
+};
+
 // Function to save quiz response to Supabase
 export const saveQuizResponse = async (
   questionId: string,
@@ -58,8 +140,6 @@ export const saveQuizResponse = async (
         user_session_id: sessionId,
         question_id: questionId,
         answer: answer,
-        question_type: questionType,
-        options: options,
         ip_address: ipAddress,
         user_name: userName,
         user_email: userEmail,
@@ -213,10 +293,12 @@ export const startTrackingUserActivity = async () => {
         console.error('Error updating session timestamp:', updateError);
       }
     } else {
-      // No session exists, create a new one
+      // No session exists, create a new one with required fields
       const { error: insertError } = await supabase.from('quiz_responses').insert([
         {
           user_session_id: sessionId,
+          question_id: 'session_start', // Required field
+          answer: 'session_started', // Required field
           ip_address: ipAddress,
           started_at: new Date().toISOString(),
           last_activity_at: new Date().toISOString(),

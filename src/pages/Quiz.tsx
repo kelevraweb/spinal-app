@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { QuizState, QuizAnswer, QuizOption } from '../types/quiz';
@@ -20,7 +19,7 @@ import UniversityLogos from '../components/UniversityLogos';
 import ExpertReview from '../components/ExpertReview';
 import WorldCommunity from '../components/WorldCommunity';
 import ProgressChart from '../components/ProgressChart';
-import WellbeingLevelIndicator from '../components/WellbeingLevelIndicator';
+import WellbeingLevelIndicatorFixed from '../components/WellbeingLevelIndicatorFixed';
 import EmailCapture from '../components/EmailCapture';
 import NameCapture from '../components/NameCapture';
 import SinusoidalGraph from '../components/SinusoidalGraph';
@@ -354,7 +353,7 @@ const Quiz: React.FC = () => {
       case 'wellbeingLevel':
         return <div className="max-w-[580px] mx-auto px-4">
             <TopNavBar currentStep={state.currentStep} totalSteps={state.totalSteps} onBack={handleBack} canGoBack={false} />
-            <WellbeingLevelIndicator level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
+            <WellbeingLevelIndicatorFixed level="Medium" onContinue={handleWellbeingLevelComplete} gender={getSelectedGender()} />
           </div>;
       case 'loadingAnalysis':
         return <div className="max-w-[580px] mx-auto px-4 min-h-screen bg-[#fbfaf8]">
