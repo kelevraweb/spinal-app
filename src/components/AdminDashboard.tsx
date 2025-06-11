@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -10,7 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faDownload, faSignOutAlt, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faSignOutAlt, faToggleOn, faToggleOff, faRefresh } from '@fortawesome/free-solid-svg-icons';
 
 interface AdminData {
   user_session_id: string;
@@ -29,6 +28,14 @@ interface AdminData {
   questions_answered: number;
 }
 
+interface DebugInfo {
+  quizResponsesCount: number;
+  ordersCount: number;
+  viewResult: any[];
+  rawQuizData: any[];
+  rawOrdersData: any[];
+}
+
 const AdminDashboard: React.FC = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -40,6 +47,8 @@ const AdminDashboard: React.FC = () => {
   const [stripeMode, setStripeMode] = useState('live');
   const [showTestProduct, setShowTestProduct] = useState(false);
   const [dropOffStats, setDropOffStats] = useState<Record<string, number>>({});
+  const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null);
+  const [showDebug, setShowDebug] = useState(false);
 
   useEffect(() => {
     // Check if admin is logged in
@@ -57,14 +66,77 @@ const AdminDashboard: React.FC = () => {
     filterData();
   }, [data, searchTerm, statusFilter]);
 
+  const fetchDebugData = async () => {
+    try {
+      console.log('=== INIZIO DEBUG DATI ===');
+      
+      // 1. Conta quiz_responses
+      const { count: quizCount, error: quizCountError } = await supabase
+        .from('quiz_responses')
+        .select('*', { count: 'exact', head: true });
+      
+      console.log('Quiz responses count:', quizCount, 'Error:', quizCountError);
+
+      // 2. Conta orders
+      const { count: ordersCount, error: ordersCountError } = await supabase
+        .from('orders')
+        .select('*', { count: 'exact', head: true });
+      
+      console.log('Orders count:', ordersCount, 'Error:', ordersCountError);
+
+      // 3. Prendi alcuni dati raw da quiz_responses
+      const { data: rawQuizData, error: rawQuizError } = await supabase
+        .from('quiz_responses')
+        .select('*')
+        .limit(5);
+      
+      console.log('Raw quiz data:', rawQuizData, 'Error:', rawQuizError);
+
+      // 4. Prendi alcuni dati raw da orders
+      const { data: rawOrdersData, error: rawOrdersError } = await supabase
+        .from('orders')
+        .select('*')
+        .limit(5);
+      
+      console.log('Raw orders data:', rawOrdersData, 'Error:', rawOrdersError);
+
+      // 5. Prova la vista admin_dashboard_data
+      const { data: viewData, error: viewError } = await supabase
+        .from('admin_dashboard_data')
+        .select('*')
+        .limit(5);
+      
+      console.log('Admin dashboard view data:', viewData, 'Error:', viewError);
+
+      setDebugInfo({
+        quizResponsesCount: quizCount || 0,
+        ordersCount: ordersCount || 0,
+        viewResult: viewData || [],
+        rawQuizData: rawQuizData || [],
+        rawOrdersData: rawOrdersData || []
+      });
+
+      console.log('=== FINE DEBUG DATI ===');
+    } catch (error) {
+      console.error('Errore durante il debug:', error);
+    }
+  };
+
   const fetchData = async () => {
     try {
+      console.log('Fetching admin dashboard data...');
+      
       const { data: adminData, error } = await supabase
         .from('admin_dashboard_data')
         .select('*')
         .order('started_at', { ascending: false });
 
-      if (error) throw error;
+      console.log('Admin data result:', { adminData, error });
+
+      if (error) {
+        console.error('Supabase error:', error);
+        throw error;
+      }
 
       // Transform the data to match our interface
       const transformedData = (adminData || []).map(item => ({
@@ -85,15 +157,28 @@ const AdminDashboard: React.FC = () => {
         questions_answered: Number(item.questions_answered) || 0
       }));
 
+      console.log('Transformed data:', transformedData);
       setData(transformedData);
       calculateDropOffStats(transformedData);
+
+      // Se non ci sono dati, esegui debug automaticamente
+      if (transformedData.length === 0) {
+        console.log('Nessun dato trovato, eseguo debug...');
+        await fetchDebugData();
+        setShowDebug(true);
+      }
+
     } catch (error) {
       console.error('Error fetching admin data:', error);
       toast({
         title: "Errore",
-        description: "Errore nel caricamento dei dati",
+        description: "Errore nel caricamento dei dati: " + (error as Error).message,
         variant: "destructive"
       });
+      
+      // Esegui debug anche in caso di errore
+      await fetchDebugData();
+      setShowDebug(true);
     } finally {
       setLoading(false);
     }
@@ -101,7 +186,6 @@ const AdminDashboard: React.FC = () => {
 
   const fetchSettings = async () => {
     try {
-      // Fetch both Stripe mode and test product setting
       const { data, error } = await supabase
         .from('admin_settings')
         .select('setting_key, setting_value')
@@ -283,6 +367,13 @@ const AdminDashboard: React.FC = () => {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Dashboard Amministratore</h1>
           <div className="flex items-center space-x-4">
+            <Button onClick={() => { fetchData(); fetchDebugData(); }} variant="outline">
+              <FontAwesomeIcon icon={faRefresh} className="mr-2" />
+              Ricarica
+            </Button>
+            <Button onClick={() => setShowDebug(!showDebug)} variant="outline">
+              {showDebug ? 'Nascondi Debug' : 'Mostra Debug'}
+            </Button>
             <Button onClick={toggleTestProduct} variant="outline">
               <FontAwesomeIcon 
                 icon={showTestProduct ? faToggleOn : faToggleOff} 
@@ -304,6 +395,53 @@ const AdminDashboard: React.FC = () => {
           </div>
         </div>
 
+        {/* Debug Info */}
+        {showDebug && debugInfo && (
+          <Card className="mb-6 border-yellow-200 bg-yellow-50">
+            <CardHeader>
+              <CardTitle className="text-yellow-800">🔍 Informazioni Debug</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div className="bg-white p-3 rounded">
+                  <div className="text-sm font-medium">Quiz Responses</div>
+                  <div className="text-2xl font-bold text-blue-600">{debugInfo.quizResponsesCount}</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-sm font-medium">Orders</div>
+                  <div className="text-2xl font-bold text-green-600">{debugInfo.ordersCount}</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-sm font-medium">Vista Risultati</div>
+                  <div className="text-2xl font-bold text-purple-600">{debugInfo.viewResult.length}</div>
+                </div>
+                <div className="bg-white p-3 rounded">
+                  <div className="text-sm font-medium">Stato Database</div>
+                  <div className="text-sm text-green-600">Connesso</div>
+                </div>
+              </div>
+              
+              {debugInfo.rawQuizData.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-yellow-800 mb-2">Esempio Quiz Response:</h4>
+                  <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
+                    {JSON.stringify(debugInfo.rawQuizData[0], null, 2)}
+                  </pre>
+                </div>
+              )}
+              
+              {debugInfo.rawOrdersData.length > 0 && (
+                <div>
+                  <h4 className="font-medium text-yellow-800 mb-2">Esempio Order:</h4>
+                  <pre className="bg-white p-2 rounded text-xs overflow-x-auto">
+                    {JSON.stringify(debugInfo.rawOrdersData[0], null, 2)}
+                  </pre>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
           <Card>
@@ -312,6 +450,11 @@ const AdminDashboard: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">{data.length}</div>
+              {debugInfo && (
+                <div className="text-xs text-gray-500">
+                  DB: {debugInfo.quizResponsesCount} quiz responses
+                </div>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -322,6 +465,11 @@ const AdminDashboard: React.FC = () => {
               <div className="text-2xl font-bold text-green-600">
                 {data.filter(d => d.purchased_plan).length}
               </div>
+              {debugInfo && (
+                <div className="text-xs text-gray-500">
+                  DB: {debugInfo.ordersCount} orders
+                </div>
+              )}
             </CardContent>
           </Card>
           <Card>
@@ -346,6 +494,37 @@ const AdminDashboard: React.FC = () => {
           </Card>
         </div>
 
+        {/* No Data Message */}
+        {data.length === 0 && (
+          <Card className="mb-6 border-orange-200 bg-orange-50">
+            <CardContent className="pt-6">
+              <div className="text-center">
+                <div className="text-4xl mb-4">📊</div>
+                <h3 className="text-lg font-semibold text-orange-800 mb-2">
+                  Nessun dato disponibile
+                </h3>
+                <p className="text-orange-700 mb-4">
+                  La dashboard non sta mostrando dati. Questo può accadere se:
+                </p>
+                <ul className="text-left text-orange-700 mb-4 space-y-1">
+                  <li>• Non ci sono ancora utenti che hanno iniziato il quiz</li>
+                  <li>• La vista del database non è configurata correttamente</li>
+                  <li>• Ci sono problemi con la connessione al database</li>
+                </ul>
+                <div className="flex justify-center space-x-4">
+                  <Button onClick={() => { fetchData(); fetchDebugData(); }} variant="outline">
+                    <FontAwesomeIcon icon={faRefresh} className="mr-2" />
+                    Ricarica Dati
+                  </Button>
+                  <Button onClick={() => setShowDebug(true)} variant="outline">
+                    Mostra Debug
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Drop-off Stats */}
         {Object.keys(dropOffStats).length > 0 && (
           <Card className="mb-6">
@@ -369,76 +548,80 @@ const AdminDashboard: React.FC = () => {
           </Card>
         )}
 
-        {/* Filters */}
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <div className="flex flex-col md:flex-row gap-4">
-              <Input
-                placeholder="Cerca per nome, email o session ID..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="md:w-1/3"
-              />
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="md:w-48">
-                  <SelectValue placeholder="Filtra per stato" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tutti</SelectItem>
-                  <SelectItem value="completed">Acquistato</SelectItem>
-                  <SelectItem value="abandoned">Abbandonato</SelectItem>
-                  <SelectItem value="in_progress">In corso</SelectItem>
-                </SelectContent>
-              </Select>
-              <Button onClick={exportData}>
-                <FontAwesomeIcon icon={faDownload} className="mr-2" />
-                Esporta CSV
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        {/* Filters - only show if we have data */}
+        {data.length > 0 && (
+          <Card className="mb-6">
+            <CardContent className="pt-6">
+              <div className="flex flex-col md:flex-row gap-4">
+                <Input
+                  placeholder="Cerca per nome, email o session ID..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="md:w-1/3"
+                />
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger className="md:w-48">
+                    <SelectValue placeholder="Filtra per stato" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tutti</SelectItem>
+                    <SelectItem value="completed">Acquistato</SelectItem>
+                    <SelectItem value="abandoned">Abbandonato</SelectItem>
+                    <SelectItem value="in_progress">In corso</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Button onClick={exportData}>
+                  <FontAwesomeIcon icon={faDownload} className="mr-2" />
+                  Esporta CSV
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
-        {/* Data Table */}
-        <Card>
-          <CardContent className="pt-6">
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Nome/Email</TableHead>
-                    <TableHead>IP</TableHead>
-                    <TableHead>Stato</TableHead>
-                    <TableHead>Domande</TableHead>
-                    <TableHead>Ultima Domanda</TableHead>
-                    <TableHead>Tempo</TableHead>
-                    <TableHead>Data Inizio</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.map((session) => (
-                    <TableRow key={session.user_session_id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{session.user_name || 'N/A'}</div>
-                          <div className="text-sm text-gray-500">{session.user_email || 'N/A'}</div>
-                          <div className="text-xs text-gray-400">{session.user_session_id.slice(0, 8)}...</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm">{session.ip_address || 'N/A'}</TableCell>
-                      <TableCell>{getStatusBadge(session)}</TableCell>
-                      <TableCell>{session.questions_answered}</TableCell>
-                      <TableCell className="text-sm">{session.last_question_id || 'N/A'}</TableCell>
-                      <TableCell>{formatTime(session.completion_time_seconds)}</TableCell>
-                      <TableCell className="text-sm">
-                        {session.started_at ? new Date(session.started_at).toLocaleDateString('it-IT') : 'N/A'}
-                      </TableCell>
+        {/* Data Table - only show if we have data */}
+        {data.length > 0 && (
+          <Card>
+            <CardContent className="pt-6">
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Nome/Email</TableHead>
+                      <TableHead>IP</TableHead>
+                      <TableHead>Stato</TableHead>
+                      <TableHead>Domande</TableHead>
+                      <TableHead>Ultima Domanda</TableHead>
+                      <TableHead>Tempo</TableHead>
+                      <TableHead>Data Inizio</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          </CardContent>
-        </Card>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredData.map((session) => (
+                      <TableRow key={session.user_session_id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{session.user_name || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{session.user_email || 'N/A'}</div>
+                            <div className="text-xs text-gray-400">{session.user_session_id.slice(0, 8)}...</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">{session.ip_address || 'N/A'}</TableCell>
+                        <TableCell>{getStatusBadge(session)}</TableCell>
+                        <TableCell>{session.questions_answered}</TableCell>
+                        <TableCell className="text-sm">{session.last_question_id || 'N/A'}</TableCell>
+                        <TableCell>{formatTime(session.completion_time_seconds)}</TableCell>
+                        <TableCell className="text-sm">
+                          {session.started_at ? new Date(session.started_at).toLocaleDateString('it-IT') : 'N/A'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );
