@@ -228,12 +228,6 @@ const Quiz: React.FC = () => {
     }));
   };
 
-  const handlePurchase = (purchaseData: { planType: string; amount: number }) => {
-    console.log('Purchase completed:', purchaseData);
-    // Handle purchase completion logic here
-    navigate('/thank-you');
-  };
-
   const getCurrentAnswer = () => {
     if (!state.currentQuestion) return undefined;
     const answer = state.answers.find(a => a.questionId === state.currentQuestion!.id);
@@ -256,50 +250,24 @@ const Quiz: React.FC = () => {
 
     const currentAnswer = getCurrentAnswer();
 
+    const questionProps = {
+      question: state.currentQuestion,
+      answer: currentAnswer,
+      onAnswer: handleAnswer
+    };
+
     switch (state.currentQuestion.type) {
       case 'single':
-        return (
-          <SingleChoice 
-            options={state.currentQuestion.options || []}
-            value={typeof currentAnswer === 'string' ? currentAnswer : ''}
-            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
-            useImages={state.currentQuestion.id === 'gender'}
-            questionId={state.currentQuestion.id}
-            question={state.currentQuestion.question}
-          />
-        );
+        return <SingleChoice {...questionProps} />;
       case 'multiple':
-        return (
-          <MultipleChoice 
-            options={state.currentQuestion.options || []}
-            value={Array.isArray(currentAnswer) ? currentAnswer : []}
-            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
-            maxSelections={state.currentQuestion.maxSelections}
-          />
-        );
+        return <MultipleChoice {...questionProps} />;
       case 'text':
       case 'email':
-        return (
-          <TextInput 
-            value={typeof currentAnswer === 'string' ? currentAnswer : ''}
-            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
-            placeholder="La tua risposta..."
-          />
-        );
+        return <TextInput {...questionProps} />;
       case 'scale':
-        return (
-          <ScaleInput 
-            value={typeof currentAnswer === 'number' ? currentAnswer : 5}
-            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
-          />
-        );
+        return <ScaleInput {...questionProps} />;
       case 'color':
-        return (
-          <ColorSelection 
-            value={Array.isArray(currentAnswer) ? currentAnswer : []}
-            onChange={(value) => handleAnswer(state.currentQuestion!.id, value)}
-          />
-        );
+        return <ColorSelection {...questionProps} />;
       default:
         return <div>Tipo di domanda non supportato</div>;
     }
@@ -310,34 +278,49 @@ const Quiz: React.FC = () => {
     
     switch (state.showSpecialPage) {
       case 'trustMap':
-        return <TrustMapAnimation onContinue={handleSpecialPageComplete} />;
+        return <TrustMapAnimation onComplete={handleSpecialPageComplete} />;
       case 'universities':
-        return <UniversityLogos />;
+        return <UniversityLogos onComplete={handleSpecialPageComplete} />;
       case 'expert':
-        return <ExpertReview />;
+        return <ExpertReview onComplete={handleSpecialPageComplete} />;
       case 'progressChart':
-        return <ProgressChart onContinue={handleSpecialPageComplete} />;
+        return <ProgressChart onComplete={handleSpecialPageComplete} />;
       case 'wellbeingLevel':
-        return <WellbeingLevelIndicator level="Medium" onContinue={handleSpecialPageComplete} gender={gender} />;
+        return <WellbeingLevelIndicator 
+          score={calculateWellbeingScore()} 
+          onComplete={handleSpecialPageComplete} 
+        />;
       case 'emailCapture':
-        return <EmailCapture onSubmit={handleEmailCapture} />;
+        return <EmailCapture onComplete={handleEmailCapture} />;
       case 'sinusoidalGraph':
-        return <SinusoidalGraph onContinue={handleSpecialPageComplete} />;
+        return <SinusoidalGraph onComplete={handleSpecialPageComplete} />;
       case 'worldCommunity':
-        return <WorldCommunity onContinue={handleSpecialPageComplete} />;
+        return <WorldCommunity onComplete={handleSpecialPageComplete} />;
       case 'loadingAnalysis':
         return <LoadingAnalysis onComplete={handleSpecialPageComplete} />;
       case 'nameCapture':
-        return <NameCapture onSubmit={handleNameCapture} />;
+        return <NameCapture onComplete={handleNameCapture} />;
       case 'checkout':
-        return <Checkout onPurchase={handlePurchase} />;
+        return <Checkout 
+          userProfile={state.userProfile} 
+          wellbeingScore={calculateWellbeingScore()}
+          gender={gender}
+        />;
       default:
         return null;
     }
   };
 
   if (showSessionModal) {
-    return <QuizSessionModal isOpen={showSessionModal} onContinue={() => handleSessionChoice('continue')} onRestart={() => handleSessionChoice('restart')} />;
+    return <QuizSessionModal onChoice={handleSessionChoice} />;
+  }
+
+  if (state.showSpecialPage) {
+    return (
+      <div className="min-h-screen">
+        {renderSpecialPage()}
+      </div>
+    );
   }
 
   const progressPercentage = (state.currentStep / state.totalSteps) * 100;
@@ -367,28 +350,26 @@ const Quiz: React.FC = () => {
                 exit={{ opacity: 0, x: -20 }}
                 transition={{ duration: 0.3 }}
               >
-                {state.showSpecialPage ? renderSpecialPage() : renderQuestion()}
+                {renderQuestion()}
               </motion.div>
             </AnimatePresence>
 
-            {!state.showSpecialPage && (
-              <div className="flex justify-between mt-8">
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  disabled={state.currentStep === 0}
-                >
-                  Indietro
-                </Button>
-                
-                <Button
-                  onClick={handleNext}
-                  disabled={!isAnswerValid() || state.isSubmitting}
-                >
-                  {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
-                </Button>
-              </div>
-            )}
+            <div className="flex justify-between mt-8">
+              <Button
+                variant="outline"
+                onClick={handleBack}
+                disabled={state.currentStep === 0}
+              >
+                Indietro
+              </Button>
+              
+              <Button
+                onClick={handleNext}
+                disabled={!isAnswerValid() || state.isSubmitting}
+              >
+                {state.currentStep === state.totalSteps - 1 ? 'Completa' : 'Avanti'}
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
