@@ -19,9 +19,12 @@ const getUserIP = async (): Promise<string | null> => {
   }
 };
 
-// Check if there's an existing session for this IP
+// Check if there's an existing session for this IP and user combination
 const getOrCreateSessionForIP = async (): Promise<string> => {
   const ipAddress = await getUserIP();
+  const userName = localStorage.getItem('userName');
+  const userEmail = localStorage.getItem('userEmail');
+  const userIdentifier = userEmail || userName || '';
   
   if (!ipAddress) {
     // Fallback to localStorage if IP not available
@@ -33,20 +36,21 @@ const getOrCreateSessionForIP = async (): Promise<string> => {
     return sessionId;
   }
 
-  // Check if there's an existing session for this IP
+  // Check if there's an existing "in corso" session for this IP + user combination
   try {
     const { data: existingSessions, error } = await supabase
-      .from('quiz_responses')
-      .select('user_session_id')
-      .eq('ip_address', ipAddress)
-      .order('created_at', { ascending: false })
+      .from('admin_dashboard_data')
+      .select('session_id')
+      .eq('ip', ipAddress)
+      .eq('stato', 'in corso')
+      .order('data_inizio', { ascending: false })
       .limit(1);
 
     if (error) {
       console.error('Error checking existing sessions:', error);
     } else if (existingSessions && existingSessions.length > 0) {
       // Use existing session for this IP
-      const sessionId = existingSessions[0].user_session_id;
+      const sessionId = existingSessions[0].session_id;
       localStorage.setItem('quiz_session_id', sessionId);
       console.log('Using existing session for IP:', sessionId);
       return sessionId;
@@ -62,6 +66,39 @@ const getOrCreateSessionForIP = async (): Promise<string> => {
   return newSessionId;
 };
 
+// Initialize session in admin_dashboard_data
+const initializeSession = async (sessionId: string): Promise<void> => {
+  const ipAddress = await getUserIP();
+  const userName = localStorage.getItem('userName');
+  const userEmail = localStorage.getItem('userEmail');
+  const userIdentifier = userEmail || userName || '';
+  
+  try {
+    const { error } = await supabase
+      .from('admin_dashboard_data')
+      .upsert({
+        session_id: sessionId,
+        nome_email: userIdentifier,
+        ip: ipAddress,
+        stato: 'in corso',
+        domande: 0,
+        ultima_domanda: null,
+        tempo: 0,
+        data_inizio: new Date().toISOString()
+      }, {
+        onConflict: 'session_id'
+      });
+
+    if (error) {
+      console.error('Error initializing session:', error);
+    } else {
+      console.log('Session initialized successfully:', sessionId);
+    }
+  } catch (error) {
+    console.error('Error initializing session:', error);
+  }
+};
+
 // Clear all quiz session data
 export const clearQuizSession = async () => {
   const sessionId = localStorage.getItem('quiz_session_id');
@@ -74,15 +111,17 @@ export const clearQuizSession = async () => {
   localStorage.removeItem('userEmail');
   localStorage.removeItem('quiz_start_time');
   
-  // Clear database records if session exists
+  // Mark session as incompleto if session exists
   if (sessionId) {
     try {
       await supabase
-        .from('quiz_responses')
-        .delete()
-        .eq('user_session_id', sessionId);
+        .from('admin_dashboard_data')
+        .update({
+          stato: 'incompleto'
+        })
+        .eq('session_id', sessionId);
     } catch (error) {
-      console.error('Error clearing database session:', error);
+      console.error('Error updating session status:', error);
     }
   }
 };
@@ -97,6 +136,12 @@ export const hasExistingSession = () => {
 export const saveQuizAnswer = async (questionId: string, answer: string | string[] | number, allAnswers: QuizAnswer[]) => {
   const sessionId = await getOrCreateSessionForIP();
   
+  // Initialize session if it's the first question
+  if (allAnswers.length === 1) {
+    await initializeSession(sessionId);
+    localStorage.setItem('quiz_start_time', Date.now().toString());
+  }
+  
   // Convert answer to string for storage
   const answerString = Array.isArray(answer) ? answer.join(',') : String(answer);
   
@@ -107,18 +152,14 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
   // Get name and email if available
   const userName = localStorage.getItem('userName');
   const userEmail = localStorage.getItem('userEmail');
+  const userIdentifier = userEmail || userName || '';
   
   // Get IP address
   const ipAddress = await getUserIP();
   
   // Calculate completion time
-  let startTime = localStorage.getItem('quiz_start_time');
-  if (!startTime) {
-    startTime = Date.now().toString();
-    localStorage.setItem('quiz_start_time', startTime);
-  }
-  
-  const completionTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+  const startTime = localStorage.getItem('quiz_start_time');
+  const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : 0;
   
   // Save to localStorage
   localStorage.setItem('quizAnswers', JSON.stringify(allAnswers));
@@ -126,36 +167,28 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     localStorage.setItem('userGender', gender);
   }
   
-  // Save to database - only to quiz_responses table (the view will be populated automatically)
+  // Update session in admin_dashboard_data
   try {
-    console.log('Saving quiz answer to database:', { sessionId, questionId, answerString, gender, ipAddress });
+    console.log('Updating session data:', { sessionId, questionId, allAnswers: allAnswers.length, completionTime });
     
-    const { data, error } = await supabase
-      .from('quiz_responses')
-      .upsert({
-        user_session_id: sessionId,
-        question_id: questionId,
-        answer: answerString,
-        gender: gender,
-        user_name: userName,
-        user_email: userEmail,
-        ip_address: ipAddress,
-        last_question_id: questionId,
-        last_activity_at: new Date().toISOString(),
-        session_status: 'in_progress',
-        completion_time_seconds: completionTime,
-        started_at: new Date(parseInt(startTime)).toISOString()
-      }, {
-        onConflict: 'user_session_id,question_id'
-      });
+    const { error } = await supabase
+      .from('admin_dashboard_data')
+      .update({
+        nome_email: userIdentifier,
+        ip: ipAddress,
+        domande: allAnswers.length,
+        ultima_domanda: questionId,
+        tempo: completionTime
+      })
+      .eq('session_id', sessionId);
     
     if (error) {
-      console.error('Database save error:', error);
+      console.error('Database update error:', error);
     } else {
-      console.log('Quiz response saved successfully to database');
+      console.log('Session data updated successfully');
     }
   } catch (error) {
-    console.error('Error saving to database:', error);
+    console.error('Error updating session data:', error);
   }
 };
 
@@ -165,18 +198,16 @@ export const markQuizCompleted = async () => {
   if (!sessionId) return;
   
   const startTime = localStorage.getItem('quiz_start_time');
-  const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : null;
+  const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : 0;
   
   try {
-    // Update only quiz_responses table (the view will reflect the changes automatically)
     await supabase
-      .from('quiz_responses')
+      .from('admin_dashboard_data')
       .update({
-        session_status: 'completed',
-        completion_time_seconds: completionTime,
-        last_activity_at: new Date().toISOString()
+        stato: 'completato',
+        tempo: completionTime
       })
-      .eq('user_session_id', sessionId);
+      .eq('session_id', sessionId);
     
     console.log('Quiz marked as completed');
   } catch (error) {
@@ -190,14 +221,12 @@ export const markQuizAbandoned = async () => {
   if (!sessionId) return;
   
   try {
-    // Update only quiz_responses table (the view will reflect the changes automatically)
     await supabase
-      .from('quiz_responses')
+      .from('admin_dashboard_data')
       .update({
-        session_status: 'abandoned',
-        last_activity_at: new Date().toISOString()
+        stato: 'incompleto'
       })
-      .eq('user_session_id', sessionId);
+      .eq('session_id', sessionId);
     
     console.log('Quiz marked as abandoned');
   } catch (error) {
@@ -216,31 +245,8 @@ export const loadQuizAnswers = async (): Promise<QuizAnswer[]> => {
     }
   }
   
-  // Then try database
-  const sessionId = localStorage.getItem('quiz_session_id');
-  if (sessionId) {
-    try {
-      const { data, error } = await supabase
-        .from('quiz_responses')
-        .select('question_id, answer')
-        .eq('user_session_id', sessionId);
-      
-      if (error) {
-        console.error('Error loading from database:', error);
-        return [];
-      }
-      
-      if (data) {
-        return data.map(item => ({
-          questionId: item.question_id,
-          answer: item.answer.includes(',') ? item.answer.split(',') : item.answer
-        }));
-      }
-    } catch (error) {
-      console.error('Error loading from database:', error);
-    }
-  }
-  
+  // For now, we don't store individual answers in admin_dashboard_data
+  // We only track session progress, so return empty array if no local data
   return [];
 };
 
@@ -293,26 +299,24 @@ export const getUserDataFromQuiz = async (): Promise<{
     };
   }
   
-  // If not in localStorage, try to get from database
+  // If not in localStorage, try to get from session data
   if (sessionId) {
     try {
       const { data, error } = await supabase
-        .from('quiz_responses')
-        .select('question_id, answer, gender')
-        .eq('user_session_id', sessionId);
+        .from('admin_dashboard_data')
+        .select('nome_email')
+        .eq('session_id', sessionId)
+        .single();
       
       if (error) {
         console.error('Error loading user data from database:', error);
-      } else if (data && data.length > 0) {
-        // Extract gender from any record
-        const gender = data[0].gender || 'Femmina';
-        
-        // For now, we'll need to get name and email from URL params or user input
-        // since they're not stored in quiz_responses table yet
+      } else if (data) {
+        // Extract what we can from nome_email field
+        const userIdentifier = data.nome_email || '';
         return {
-          name: '',
-          email: '',
-          gender,
+          name: userIdentifier,
+          email: userIdentifier.includes('@') ? userIdentifier : '',
+          gender: storedGender || 'Femmina',
           sessionId
         };
       }
@@ -334,22 +338,21 @@ export const saveUserProfile = async (name: string, email: string) => {
   localStorage.setItem('userName', name);
   localStorage.setItem('userEmail', email);
   
-  // Also update the database records - only quiz_responses table
+  // Also update the session data
   const sessionId = localStorage.getItem('quiz_session_id');
   if (sessionId) {
     try {
+      const userIdentifier = email || name;
       await supabase
-        .from('quiz_responses')
+        .from('admin_dashboard_data')
         .update({
-          user_name: name,
-          user_email: email,
-          last_activity_at: new Date().toISOString()
+          nome_email: userIdentifier
         })
-        .eq('user_session_id', sessionId);
+        .eq('session_id', sessionId);
       
-      console.log('User profile updated in database');
+      console.log('User profile updated in session');
     } catch (error) {
-      console.error('Error updating user profile in database:', error);
+      console.error('Error updating user profile in session:', error);
     }
   }
 };

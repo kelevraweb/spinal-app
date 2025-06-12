@@ -13,20 +13,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faSignOutAlt, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
 
 interface AdminData {
-  user_session_id: string;
-  ip_address: string | null;
-  started_at: string;
-  last_activity_at: string;
-  session_status: string;
-  user_name: string;
-  user_email: string;
-  last_question_id: string;
-  completion_time_seconds: number;
-  purchased_plan: string;
-  purchase_amount: number;
-  payment_status: string;
-  purchase_date: string;
-  questions_answered: number;
+  id: string;
+  session_id: string;
+  nome_email: string;
+  ip: string | null;
+  stato: string;
+  domande: number;
+  ultima_domanda: string | null;
+  tempo: number;
+  data_inizio: string;
+  created_at: string;
+  updated_at: string;
 }
 
 const AdminDashboard: React.FC = () => {
@@ -62,27 +59,23 @@ const AdminDashboard: React.FC = () => {
       const { data: adminData, error } = await supabase
         .from('admin_dashboard_data')
         .select('*')
-        .order('started_at', { ascending: false });
+        .order('data_inizio', { ascending: false });
 
       if (error) throw error;
 
       // Transform the data to match our interface
       const transformedData = (adminData || []).map(item => ({
-        ...item,
-        ip_address: item.ip_address ? String(item.ip_address) : null,
-        user_session_id: item.user_session_id || '',
-        started_at: item.started_at || '',
-        last_activity_at: item.last_activity_at || '',
-        session_status: item.session_status || '',
-        user_name: item.user_name || '',
-        user_email: item.user_email || '',
-        last_question_id: item.last_question_id || '',
-        completion_time_seconds: item.completion_time_seconds || 0,
-        purchased_plan: item.purchased_plan || '',
-        purchase_amount: item.purchase_amount || 0,
-        payment_status: item.payment_status || '',
-        purchase_date: item.purchase_date || '',
-        questions_answered: Number(item.questions_answered) || 0
+        id: item.id,
+        session_id: item.session_id,
+        nome_email: item.nome_email || '',
+        ip: item.ip ? String(item.ip) : null,
+        stato: item.stato || 'in corso',
+        domande: item.domande || 0,
+        ultima_domanda: item.ultima_domanda || '',
+        tempo: item.tempo || 0,
+        data_inizio: item.data_inizio || '',
+        created_at: item.created_at || '',
+        updated_at: item.updated_at || ''
       }));
 
       setData(transformedData);
@@ -126,8 +119,8 @@ const AdminDashboard: React.FC = () => {
   const calculateDropOffStats = (adminData: AdminData[]) => {
     const stats: Record<string, number> = {};
     adminData.forEach(session => {
-      if (session.session_status === 'abandoned' && session.last_question_id) {
-        stats[session.last_question_id] = (stats[session.last_question_id] || 0) + 1;
+      if (session.stato === 'incompleto' && session.ultima_domanda) {
+        stats[session.ultima_domanda] = (stats[session.ultima_domanda] || 0) + 1;
       }
     });
     setDropOffStats(stats);
@@ -138,19 +131,13 @@ const AdminDashboard: React.FC = () => {
 
     if (searchTerm) {
       filtered = filtered.filter(item =>
-        item.user_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.user_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        item.user_session_id.toLowerCase().includes(searchTerm.toLowerCase())
+        item.nome_email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        item.session_id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (statusFilter !== 'all') {
-      filtered = filtered.filter(item => {
-        if (statusFilter === 'completed') return item.purchased_plan;
-        if (statusFilter === 'abandoned') return !item.purchased_plan && item.session_status === 'abandoned';
-        if (statusFilter === 'in_progress') return item.session_status === 'in_progress';
-        return true;
-      });
+      filtered = filtered.filter(item => item.stato === statusFilter);
     }
 
     setFilteredData(filtered);
@@ -216,21 +203,16 @@ const AdminDashboard: React.FC = () => {
 
   const exportData = () => {
     const csvContent = [
-      'Session ID,Nome,Email,IP,Stato,Domande Risposte,Ultima Domanda,Tempo Completamento (sec),Piano Acquistato,Importo,Stato Pagamento,Data Inizio,Data Acquisto',
+      'Session ID,Nome/Email,IP,Stato,Domande,Ultima Domanda,Tempo (sec),Data Inizio',
       ...filteredData.map(row => [
-        row.user_session_id,
-        row.user_name || '',
-        row.user_email || '',
-        row.ip_address || '',
-        row.session_status,
-        row.questions_answered,
-        row.last_question_id || '',
-        row.completion_time_seconds || '',
-        row.purchased_plan || '',
-        row.purchase_amount || '',
-        row.payment_status || '',
-        row.started_at,
-        row.purchase_date || ''
+        row.session_id,
+        row.nome_email || '',
+        row.ip || '',
+        row.stato,
+        row.domande,
+        row.ultima_domanda || '',
+        row.tempo,
+        row.data_inizio
       ].join(','))
     ].join('\n');
 
@@ -238,7 +220,7 @@ const AdminDashboard: React.FC = () => {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `admin-data-${new Date().toISOString().split('T')[0]}.csv`;
+    a.download = `sessioni-quiz-${new Date().toISOString().split('T')[0]}.csv`;
     a.click();
     window.URL.revokeObjectURL(url);
   };
@@ -248,14 +230,17 @@ const AdminDashboard: React.FC = () => {
     navigate('/');
   };
 
-  const getStatusBadge = (session: AdminData) => {
-    if (session.purchased_plan) {
-      return <Badge className="bg-green-500">Acquistato: {session.purchased_plan}</Badge>;
+  const getStatusBadge = (stato: string) => {
+    switch (stato) {
+      case 'completato':
+        return <Badge className="bg-green-500">Completato</Badge>;
+      case 'incompleto':
+        return <Badge variant="destructive">Incompleto</Badge>;
+      case 'in corso':
+        return <Badge variant="secondary">In corso</Badge>;
+      default:
+        return <Badge variant="outline">{stato}</Badge>;
     }
-    if (session.session_status === 'abandoned') {
-      return <Badge variant="destructive">Abbandonato</Badge>;
-    }
-    return <Badge variant="secondary">In corso</Badge>;
   };
 
   const formatTime = (seconds: number) => {
@@ -281,7 +266,7 @@ const AdminDashboard: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold">Dashboard Amministratore</h1>
+          <h1 className="text-3xl font-bold">Dashboard Amministratore - Tracciamento Sessioni</h1>
           <div className="flex items-center space-x-4">
             <Button onClick={toggleTestProduct} variant="outline">
               <FontAwesomeIcon 
@@ -316,31 +301,31 @@ const AdminDashboard: React.FC = () => {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Acquisti</CardTitle>
+              <CardTitle className="text-sm font-medium">Completate</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-green-600">
-                {data.filter(d => d.purchased_plan).length}
+                {data.filter(d => d.stato === 'completato').length}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Abbandoni</CardTitle>
+              <CardTitle className="text-sm font-medium">Incomplete</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-red-600">
-                {data.filter(d => d.session_status === 'abandoned').length}
+                {data.filter(d => d.stato === 'incompleto').length}
               </div>
             </CardContent>
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle className="text-sm font-medium">Tasso Conversione</CardTitle>
+              <CardTitle className="text-sm font-medium">Tasso Completamento</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold text-blue-600">
-                {data.length > 0 ? ((data.filter(d => d.purchased_plan).length / data.length) * 100).toFixed(1) : 0}%
+                {data.length > 0 ? ((data.filter(d => d.stato === 'completato').length / data.length) * 100).toFixed(1) : 0}%
               </div>
             </CardContent>
           </Card>
@@ -385,9 +370,9 @@ const AdminDashboard: React.FC = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tutti</SelectItem>
-                  <SelectItem value="completed">Acquistato</SelectItem>
-                  <SelectItem value="abandoned">Abbandonato</SelectItem>
-                  <SelectItem value="in_progress">In corso</SelectItem>
+                  <SelectItem value="completato">Completato</SelectItem>
+                  <SelectItem value="incompleto">Incompleto</SelectItem>
+                  <SelectItem value="in corso">In corso</SelectItem>
                 </SelectContent>
               </Select>
               <Button onClick={exportData}>
@@ -405,7 +390,7 @@ const AdminDashboard: React.FC = () => {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Nome/Email</TableHead>
+                    <TableHead>Utente</TableHead>
                     <TableHead>IP</TableHead>
                     <TableHead>Stato</TableHead>
                     <TableHead>Domande</TableHead>
@@ -416,21 +401,20 @@ const AdminDashboard: React.FC = () => {
                 </TableHeader>
                 <TableBody>
                   {filteredData.map((session) => (
-                    <TableRow key={session.user_session_id}>
+                    <TableRow key={session.id}>
                       <TableCell>
                         <div>
-                          <div className="font-medium">{session.user_name || 'N/A'}</div>
-                          <div className="text-sm text-gray-500">{session.user_email || 'N/A'}</div>
-                          <div className="text-xs text-gray-400">{session.user_session_id.slice(0, 8)}...</div>
+                          <div className="font-medium">{session.nome_email || 'N/A'}</div>
+                          <div className="text-xs text-gray-400">{session.session_id.slice(0, 12)}...</div>
                         </div>
                       </TableCell>
-                      <TableCell className="text-sm">{session.ip_address || 'N/A'}</TableCell>
-                      <TableCell>{getStatusBadge(session)}</TableCell>
-                      <TableCell>{session.questions_answered}</TableCell>
-                      <TableCell className="text-sm">{session.last_question_id || 'N/A'}</TableCell>
-                      <TableCell>{formatTime(session.completion_time_seconds)}</TableCell>
+                      <TableCell className="text-sm">{session.ip || 'N/A'}</TableCell>
+                      <TableCell>{getStatusBadge(session.stato)}</TableCell>
+                      <TableCell>{session.domande}</TableCell>
+                      <TableCell className="text-sm">{session.ultima_domanda || 'N/A'}</TableCell>
+                      <TableCell>{formatTime(session.tempo)}</TableCell>
                       <TableCell className="text-sm">
-                        {session.started_at ? new Date(session.started_at).toLocaleDateString('it-IT') : 'N/A'}
+                        {session.data_inizio ? new Date(session.data_inizio).toLocaleDateString('it-IT') : 'N/A'}
                       </TableCell>
                     </TableRow>
                   ))}

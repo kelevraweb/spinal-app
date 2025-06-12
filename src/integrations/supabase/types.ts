@@ -9,6 +9,48 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      admin_dashboard_data: {
+        Row: {
+          created_at: string
+          data_inizio: string
+          domande: number
+          id: string
+          ip: unknown | null
+          nome_email: string | null
+          session_id: string
+          stato: string
+          tempo: number
+          ultima_domanda: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data_inizio?: string
+          domande?: number
+          id?: string
+          ip?: unknown | null
+          nome_email?: string | null
+          session_id: string
+          stato?: string
+          tempo?: number
+          ultima_domanda?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data_inizio?: string
+          domande?: number
+          id?: string
+          ip?: unknown | null
+          nome_email?: string | null
+          session_id?: string
+          stato?: string
+          tempo?: number
+          ultima_domanda?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       admin_settings: {
         Row: {
           created_at: string
@@ -69,60 +111,6 @@ export type Database = {
           stripe_session_id?: string | null
           updated_at?: string
           user_id?: string | null
-        }
-        Relationships: []
-      }
-      quiz_responses: {
-        Row: {
-          answer: string
-          completion_time_seconds: number | null
-          created_at: string
-          gender: string | null
-          id: string
-          ip_address: unknown | null
-          last_activity_at: string | null
-          last_question_id: string | null
-          question_id: string
-          session_status: string | null
-          started_at: string | null
-          updated_at: string
-          user_email: string | null
-          user_name: string | null
-          user_session_id: string
-        }
-        Insert: {
-          answer: string
-          completion_time_seconds?: number | null
-          created_at?: string
-          gender?: string | null
-          id?: string
-          ip_address?: unknown | null
-          last_activity_at?: string | null
-          last_question_id?: string | null
-          question_id: string
-          session_status?: string | null
-          started_at?: string | null
-          updated_at?: string
-          user_email?: string | null
-          user_name?: string | null
-          user_session_id: string
-        }
-        Update: {
-          answer?: string
-          completion_time_seconds?: number | null
-          created_at?: string
-          gender?: string | null
-          id?: string
-          ip_address?: unknown | null
-          last_activity_at?: string | null
-          last_question_id?: string | null
-          question_id?: string
-          session_status?: string | null
-          started_at?: string | null
-          updated_at?: string
-          user_email?: string | null
-          user_name?: string | null
-          user_session_id?: string
         }
         Relationships: []
       }
@@ -191,25 +179,7 @@ export type Database = {
       }
     }
     Views: {
-      admin_dashboard_data: {
-        Row: {
-          completion_time_seconds: number | null
-          ip_address: unknown | null
-          last_activity_at: string | null
-          last_question_id: string | null
-          payment_status: string | null
-          purchase_amount: number | null
-          purchase_date: string | null
-          purchased_plan: string | null
-          questions_answered: number | null
-          session_status: string | null
-          started_at: string | null
-          user_email: string | null
-          user_name: string | null
-          user_session_id: string | null
-        }
-        Relationships: []
-      }
+      [_ in never]: never
     }
     Functions: {
       cleanup_expired_passwords: {
