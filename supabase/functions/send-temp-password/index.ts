@@ -14,6 +14,8 @@ serve(async (req: Request) => {
 
   try {
     const { email } = await req.json();
+    
+    console.log("Processing password request for email:", email);
 
     if (!email) {
       throw new Error("Email is required");
@@ -22,6 +24,8 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
+
+    console.log("Environment check - RESEND_API_KEY configured:", !!resendApiKey);
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -33,7 +37,10 @@ serve(async (req: Request) => {
       .or(`user_email.eq.${email}`)
       .limit(1);
 
-    if (ordersError) throw ordersError;
+    if (ordersError) {
+      console.error("Orders query error:", ordersError);
+      throw ordersError;
+    }
 
     // Also check in quiz_responses for user_email
     const { data: quizResponses, error: quizError } = await supabase
@@ -42,7 +49,13 @@ serve(async (req: Request) => {
       .eq('user_email', email)
       .limit(1);
 
-    if (quizError) throw quizError;
+    if (quizError) {
+      console.error("Quiz responses query error:", quizError);
+      throw quizError;
+    }
+
+    console.log("Found orders:", orders?.length || 0);
+    console.log("Found quiz responses:", quizResponses?.length || 0);
 
     if ((!orders || orders.length === 0) && (!quizResponses || quizResponses.length === 0)) {
       throw new Error("No subscription found for this email");
@@ -77,45 +90,65 @@ serve(async (req: Request) => {
         expires_at: expiresAt.toISOString(),
       });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error("Insert temp password error:", insertError);
+      throw insertError;
+    }
+
+    console.log("Temp password stored successfully");
 
     // Send email with password if Resend is configured
     if (resendApiKey) {
-      const emailResponse = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${resendApiKey}`,
-        },
-        body: JSON.stringify({
-          from: 'SpinalApp <noreply@yourdomain.com>',
-          to: [email],
-          subject: 'Password temporanea per gestione piano - SpinalApp',
-          html: `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-              <h2 style="color: #71b8bc;">Password temporanea - SpinalApp</h2>
-              <p>Ciao,</p>
-              <p>Hai richiesto l'accesso alla gestione del tuo piano. Ecco la tua password temporanea:</p>
-              <div style="background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 20px 0;">
-                ${tempPassword}
+      try {
+        const emailResponse = await fetch('https://api.resend.com/emails', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${resendApiKey}`,
+          },
+          body: JSON.stringify({
+            from: 'SpinalApp <onboarding@resend.dev>',
+            to: [email],
+            subject: 'Password temporanea per gestione piano - SpinalApp',
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+                <h2 style="color: #71b8bc;">Password temporanea - SpinalApp</h2>
+                <p>Ciao,</p>
+                <p>Hai richiesto l'accesso alla gestione del tuo piano. Ecco la tua password temporanea:</p>
+                <div style="background-color: #f5f5f5; padding: 20px; text-align: center; font-size: 24px; font-weight: bold; letter-spacing: 2px; margin: 20px 0;">
+                  ${tempPassword}
+                </div>
+                <p><strong>Importante:</strong></p>
+                <ul>
+                  <li>Questa password scade tra 15 minuti</li>
+                  <li>Utilizzala per accedere alla gestione del tuo piano</li>
+                  <li>Non condividere questa password con nessuno</li>
+                </ul>
+                <p>Se non hai richiesto tu questa password, puoi ignorare questa email.</p>
+                <br>
+                <p>Cordiali saluti,<br>Il team SpinalApp</p>
               </div>
-              <p><strong>Importante:</strong></p>
-              <ul>
-                <li>Questa password scade tra 15 minuti</li>
-                <li>Utilizzala per accedere alla gestione del tuo piano</li>
-                <li>Non condividere questa password con nessuno</li>
-              </ul>
-              <p>Se non hai richiesto tu questa password, puoi ignorare questa email.</p>
-              <br>
-              <p>Cordiali saluti,<br>Il team SpinalApp</p>
-            </div>
-          `,
-        }),
-      });
+            `,
+          }),
+        });
 
-      if (!emailResponse.ok) {
-        console.error('Failed to send email:', await emailResponse.text());
+        const responseText = await emailResponse.text();
+        console.log("Email API response status:", emailResponse.status);
+        console.log("Email API response:", responseText);
+
+        if (!emailResponse.ok) {
+          console.error('Failed to send email:', responseText);
+          throw new Error(`Email sending failed: ${responseText}`);
+        }
+
+        console.log("Email sent successfully");
+      } catch (emailError) {
+        console.error('Email sending error:', emailError);
+        throw new Error(`Failed to send email: ${emailError.message}`);
       }
+    } else {
+      console.warn("RESEND_API_KEY not configured, email not sent");
+      throw new Error("Email service not configured");
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -123,7 +156,7 @@ serve(async (req: Request) => {
     });
 
   } catch (error) {
-    console.error("Error:", error);
+    console.error("Error in send-temp-password function:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,

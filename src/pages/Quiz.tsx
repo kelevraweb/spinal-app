@@ -141,12 +141,12 @@ const Quiz: React.FC = () => {
     setShouldAutoAdvance(state.currentQuestion?.type === 'single' && sessionChecked);
   }, [state.currentStep, state.currentQuestion, sessionChecked]);
 
-  // Auto-advance for single choice questions
+  // Auto-advance for single choice questions with reduced delay
   useEffect(() => {
     if (shouldAutoAdvance && currentAnswer && state.currentQuestion?.type === 'single') {
       const timer = setTimeout(() => {
         handleNext();
-      }, 800); // Small delay for better UX
+      }, 300); // Reduced from 800ms to 300ms for faster transitions
 
       return () => clearTimeout(timer);
     }
@@ -220,11 +220,11 @@ const Quiz: React.FC = () => {
           currentQuestion: quizQuestions[nextStep]
         }));
         setIsAnimating(false);
-      }, 200);
+      }, 150); // Reduced from 200ms to 150ms for faster transitions
     } else {
       setTimeout(() => {
         setIsAnimating(false);
-      }, 200);
+      }, 150); // Reduced from 200ms to 150ms
     }
   };
   
@@ -241,7 +241,7 @@ const Quiz: React.FC = () => {
         showSpecialPage: undefined
       });
       setIsAnimating(false);
-    }, 200);
+    }, 150); // Reduced from 200ms to 150ms
   };
   
   const handleSpecialPageComplete = () => {

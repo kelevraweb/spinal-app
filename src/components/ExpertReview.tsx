@@ -1,5 +1,6 @@
 
 import React, { useEffect } from 'react';
+import OptimizedImage from './OptimizedImage';
 
 const ExpertReview: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
@@ -22,10 +23,13 @@ const ExpertReview: React.FC = () => {
         <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
           <div className="relative w-32 h-32 flex-shrink-0">
             <div className="w-32 h-32 bg-white rounded-full overflow-hidden flex items-center justify-center border-4 border-[#88c2aa]/50 shadow-inner">
-              <img 
+              <OptimizedImage 
                 src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80"
-                alt="Dott.ssa Marta Bianchi" 
+                alt="Dott.ssa Federica Sabbatini" 
                 className="w-full h-full object-cover"
+                width={128}
+                height={128}
+                loading="eager"
               />
             </div>
             <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-white rounded-full border-4 border-green-50 flex items-center justify-center animate-bounce-slow">
@@ -37,7 +41,7 @@ const ExpertReview: React.FC = () => {
           </div>
           
           <div className="text-center md:text-left flex-grow">
-            <h3 className="font-bold text-xl mb-1">Dott.ssa Marta Bianchi</h3>
+            <h3 className="font-bold text-xl mb-1">Dott.ssa Federica Sabbatini</h3>
             <p className="text-sm text-gray-600 mb-3">Fisioterapista e specialista in posturologia</p>
             
             <div className="bg-white px-4 py-3 rounded-lg shadow-sm border border-gray-100 relative mb-4">
@@ -51,7 +55,7 @@ const ExpertReview: React.FC = () => {
                 Verificato
               </div>
               <p className="text-gray-700">
-                "La Dott.ssa Marta Bianchi, specialista in posturologia, ha supervisionato questo quiz per garantirne la qualità e la validità scientifica."
+                "La Dott.ssa Federica Sabbatini, specialista in posturologia, ha supervisionato questo quiz per garantirne la qualità e la validità scientifica."
               </p>
             </div>
           </div>

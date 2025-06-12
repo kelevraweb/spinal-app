@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useFacebookPixel } from '@/hooks/useFacebookPixel';
@@ -17,6 +18,9 @@ const ThankYou: React.FC = () => {
   const paymentData = { amount, plan: planType };
 
   useEffect(() => {
+    // Ensure page starts from top immediately
+    window.scrollTo(0, 0);
+    
     // Track Purchase event when component mounts
     trackPurchase({
       value: amount,
@@ -40,8 +44,8 @@ const ThankYou: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background to-muted flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-card rounded-lg shadow-lg p-8 text-center">
+    <div className="min-h-screen bg-gradient-to-br from-background to-muted py-8 px-4">
+      <div className="max-w-2xl w-full bg-card rounded-lg shadow-lg p-8 text-center mx-auto">
         <div className="mb-6">
           <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
             <CheckCircle className="w-8 h-8 text-white" />
