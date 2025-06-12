@@ -14,7 +14,6 @@ serve(async (req: Request) => {
 
   try {
     const { email } = await req.json();
-    console.log('Received request for email:', email);
 
     if (!email) {
       throw new Error("Email is required");
@@ -23,12 +22,6 @@ serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
-
-    console.log('Environment check:', {
-      hasSupabaseUrl: !!supabaseUrl,
-      hasServiceKey: !!supabaseServiceKey,
-      hasResendKey: !!resendApiKey
-    });
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
@@ -40,10 +33,7 @@ serve(async (req: Request) => {
       .or(`user_email.eq.${email}`)
       .limit(1);
 
-    if (ordersError) {
-      console.error('Orders query error:', ordersError);
-      throw ordersError;
-    }
+    if (ordersError) throw ordersError;
 
     // Also check in quiz_responses for user_email
     const { data: quizResponses, error: quizError } = await supabase
@@ -52,15 +42,7 @@ serve(async (req: Request) => {
       .eq('user_email', email)
       .limit(1);
 
-    if (quizError) {
-      console.error('Quiz responses query error:', quizError);
-      throw quizError;
-    }
-
-    console.log('Database check results:', {
-      ordersFound: orders?.length || 0,
-      quizResponsesFound: quizResponses?.length || 0
-    });
+    if (quizError) throw quizError;
 
     if ((!orders || orders.length === 0) && (!quizResponses || quizResponses.length === 0)) {
       throw new Error("No subscription found for this email");
@@ -68,7 +50,6 @@ serve(async (req: Request) => {
 
     // Generate a random 6-digit password
     const tempPassword = Math.floor(100000 + Math.random() * 900000).toString();
-    console.log('Generated temp password:', tempPassword);
     
     // Hash the password (simple hash for temporary use)
     const encoder = new TextEncoder();
@@ -96,17 +77,10 @@ serve(async (req: Request) => {
         expires_at: expiresAt.toISOString(),
       });
 
-    if (insertError) {
-      console.error('Insert error:', insertError);
-      throw insertError;
-    }
-
-    console.log('Password stored successfully');
+    if (insertError) throw insertError;
 
     // Send email with password if Resend is configured
     if (resendApiKey) {
-      console.log('Sending email via Resend...');
-      
       const emailResponse = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
@@ -114,7 +88,7 @@ serve(async (req: Request) => {
           'Authorization': `Bearer ${resendApiKey}`,
         },
         body: JSON.stringify({
-          from: 'SpinalApp <support@spinalapp.net>',
+          from: 'SpinalApp <noreply@yourdomain.com>',
           to: [email],
           subject: 'Password temporanea per gestione piano - SpinalApp',
           html: `
@@ -139,18 +113,9 @@ serve(async (req: Request) => {
         }),
       });
 
-      const emailResult = await emailResponse.text();
-      console.log('Email response status:', emailResponse.status);
-      console.log('Email response:', emailResult);
-
       if (!emailResponse.ok) {
-        console.error('Failed to send email:', emailResult);
-        throw new Error(`Failed to send email: ${emailResult}`);
+        console.error('Failed to send email:', await emailResponse.text());
       }
-      
-      console.log('Email sent successfully');
-    } else {
-      console.warn('No RESEND_API_KEY found, email not sent');
     }
 
     return new Response(JSON.stringify({ success: true }), {
@@ -158,7 +123,7 @@ serve(async (req: Request) => {
     });
 
   } catch (error) {
-    console.error("Error in send-temp-password:", error);
+    console.error("Error:", error);
     return new Response(JSON.stringify({ error: error.message }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 400,
