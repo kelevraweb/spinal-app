@@ -86,6 +86,7 @@ export type Database = {
           status: string | null
           stripe_session_id: string | null
           updated_at: string
+          user_email: string | null
           user_id: string | null
         }
         Insert: {
@@ -98,6 +99,7 @@ export type Database = {
           status?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_email?: string | null
           user_id?: string | null
         }
         Update: {
@@ -110,6 +112,7 @@ export type Database = {
           status?: string | null
           stripe_session_id?: string | null
           updated_at?: string
+          user_email?: string | null
           user_id?: string | null
         }
         Relationships: []
@@ -185,6 +188,10 @@ export type Database = {
       cleanup_expired_passwords: {
         Args: Record<PropertyKey, never>
         Returns: undefined
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
       }
     }
     Enums: {

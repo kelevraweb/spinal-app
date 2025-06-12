@@ -15,16 +15,15 @@ interface PaymentRequest {
   firstName: string;
   lastName: string;
   isDiscounted: boolean;
+  quizSessionId?: string;
 }
 
 serve(async (req: Request) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    // Initialize Supabase client to check admin settings
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey, {
@@ -40,7 +39,6 @@ serve(async (req: Request) => {
 
     const isTestMode = adminSetting?.setting_value === 'test';
     
-    // Get the appropriate Stripe secret key
     let stripeKey: string;
     if (isTestMode) {
       stripeKey = Deno.env.get("STRIPE_TEST_SECRET_KEY") || Deno.env.get("STRIPE_SECRET_KEY") || "";
@@ -53,25 +51,20 @@ serve(async (req: Request) => {
     }
 
     console.log('Using Stripe mode:', isTestMode ? 'TEST' : 'LIVE');
-    console.log('Using Stripe key:', stripeKey.substring(0, 12) + '...');
 
-    // Get payment details from request body
-    const { planType, amount, email, firstName, lastName, isDiscounted }: PaymentRequest = await req.json();
+    const { planType, amount, email, firstName, lastName, isDiscounted, quizSessionId }: PaymentRequest = await req.json();
 
     console.log('Processing payment intent for:', { planType, amount, email, isDiscounted, stripeMode: isTestMode ? 'TEST' : 'LIVE' });
 
-    // Configure Stripe
     const stripe = new Stripe(stripeKey, {
       apiVersion: "2023-10-16",
     });
 
-    // Check if a Stripe customer record exists for this email
     const customers = await stripe.customers.list({ email: email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
     } else {
-      // Create a new customer if one doesn't exist
       const newCustomer = await stripe.customers.create({
         email: email,
         name: `${firstName} ${lastName}`,
@@ -79,18 +72,14 @@ serve(async (req: Request) => {
       customerId = newCustomer.id;
     }
 
-    // Handle €0 payments - Stripe requires minimum €0.50 in live mode
-    // In test mode, €0 is allowed
     let finalAmount = amount;
     let isZeroPayment = amount === 0;
     
     if (isZeroPayment && !isTestMode) {
-      // In live mode, use minimum amount of €0.50 (50 cents)
-      finalAmount = 50; // 50 cents
+      finalAmount = 50; // 50 cents minimum for live mode
       console.log('Converting €0 payment to €0.50 for live mode (Stripe minimum requirement)');
     }
 
-    // Create payment intent for single payment
     const paymentIntent = await stripe.paymentIntents.create({
       amount: finalAmount,
       currency: 'eur',
@@ -101,25 +90,27 @@ serve(async (req: Request) => {
         customer_email: email,
         customer_name: `${firstName} ${lastName}`,
         stripe_mode: isTestMode ? 'test' : 'live',
-        original_amount: amount.toString(), // Store original amount
-        is_zero_payment: isZeroPayment.toString()
+        original_amount: amount.toString(),
+        is_zero_payment: isZeroPayment.toString(),
+        quiz_session_id: quizSessionId || ''
       },
       description: `${isTestMode ? '[TEST] ' : ''}${isZeroPayment ? '[€0 TRACKING] ' : ''}Starting fee for ${planType} plan - ${isDiscounted ? 'Discounted' : 'Regular'} pricing`,
-      // For €0 payments in test mode, we can set automatic payment methods
       ...(isZeroPayment && isTestMode ? {
         confirm: true,
-        payment_method: 'pm_card_visa', // Auto-confirm for €0 in test mode
-        return_url: 'https://example.com' // Required for auto-confirm
+        payment_method: 'pm_card_visa',
+        return_url: 'https://example.com'
       } : {})
     });
 
-    // Store order in database with original amount
+    // Store order in database with proper user tracking
     await supabaseClient.from("orders").insert({
       stripe_session_id: paymentIntent.id,
       plan_type: planType,
-      amount: amount, // Store original amount (including 0)
+      amount: amount,
       currency: 'eur',
       status: "pending",
+      user_email: email,
+      quiz_session_id: quizSessionId,
       created_at: new Date().toISOString()
     });
 
