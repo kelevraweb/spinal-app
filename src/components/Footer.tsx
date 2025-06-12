@@ -36,7 +36,7 @@ const Footer: React.FC = () => {
             <h4 className="font-semibold mb-4">Accesso</h4>
             <ul className="space-y-2 text-sm">
               <li><Link to="/admin/login" className="text-gray-400 hover:text-white">Accesso Admin</Link></li>
-              <li><Link to="/manage-subscription" className="text-gray-400 hover:text-white">Gestione Piano</Link></li>
+              <li><a href="https://billing.stripe.com/p/login/7sYaEY0urbKwfrLfuTcAo00" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Gestione Piano</a></li>
               <li><a href="https://spinal.systeme.io/dashboard/it/login" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white">Area Riservata</a></li>
             </ul>
           </div>

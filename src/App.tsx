@@ -19,7 +19,6 @@ import SubscriptionPolicy from "./pages/SubscriptionPolicy";
 import MoneyBackGuarantee from "./pages/MoneyBackGuarantee";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
-import ManageSubscription from "./pages/ManageSubscription";
 
 const queryClient = new QueryClient();
 
@@ -42,7 +41,6 @@ const AppContent = () => {
       <Route path="/money-back-guarantee" element={<MoneyBackGuarantee />} />
       <Route path="/admin/login" element={<AdminLogin />} />
       <Route path="/admin" element={<AdminDashboard />} />
-      <Route path="/manage-subscription" element={<ManageSubscription />} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );

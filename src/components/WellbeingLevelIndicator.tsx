@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
 import { Info, Heart, Brain, Zap, Bed } from 'lucide-react';
+import OptimizedImage from './OptimizedImage';
 
 interface WellbeingLevelIndicatorProps {
   level: 'Low' | 'Medium' | 'High';
@@ -117,13 +118,16 @@ const WellbeingLevelIndicator: React.FC<WellbeingLevelIndicatorProps> = ({
             </Badge>
           </div>
 
-          {/* Gender-based Image */}
+          {/* Gender-based Image - now optimized */}
           <div className="flex justify-center mb-6 py-0 my-0">
             <div className="w-40 h-48">
-              <img 
+              <OptimizedImage 
                 src={getGenderImage()} 
                 alt={gender === 'Maschio' ? 'Uomo con mal di schiena' : 'Donna con mal di schiena'} 
-                className="w-full h-full object-contain" 
+                className="w-full h-full object-contain"
+                width={160}
+                height={192}
+                loading="eager"
               />
             </div>
           </div>

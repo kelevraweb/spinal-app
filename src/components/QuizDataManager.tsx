@@ -126,9 +126,9 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
     localStorage.setItem('userGender', gender);
   }
   
-  // Save to database with detailed logging and enhanced tracking
+  // Save to database with enhanced tracking
   try {
-    console.log('Saving quiz answer:', { sessionId, questionId, answerString, gender, ipAddress });
+    console.log('Saving quiz answer to database:', { sessionId, questionId, answerString, gender, ipAddress });
     
     const { data, error } = await supabase
       .from('quiz_responses')
@@ -150,12 +150,45 @@ export const saveQuizAnswer = async (questionId: string, answer: string | string
       });
     
     if (error) {
-      console.error('Error saving quiz response:', error);
+      console.error('Database save error:', error);
+      // Try to sync to admin_dashboard_data table for reporting
+      await syncToAdminDashboard(sessionId, allAnswers, ipAddress, userName, userEmail, gender);
     } else {
-      console.log('Quiz response saved successfully:', data);
+      console.log('Quiz response saved successfully to database');
+      // Also sync to admin dashboard
+      await syncToAdminDashboard(sessionId, allAnswers, ipAddress, userName, userEmail, gender);
     }
   } catch (error) {
     console.error('Error saving to database:', error);
+  }
+};
+
+// Sync data to admin dashboard table
+const syncToAdminDashboard = async (sessionId: string, allAnswers: QuizAnswer[], ipAddress: string | null, userName: string | null, userEmail: string | null, gender: string | null) => {
+  try {
+    const startTime = localStorage.getItem('quiz_start_time');
+    const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : null;
+    
+    await supabase
+      .from('admin_dashboard_data')
+      .upsert({
+        user_session_id: sessionId,
+        ip_address: ipAddress,
+        user_name: userName,
+        user_email: userEmail,
+        session_status: 'in_progress',
+        questions_answered: allAnswers.length,
+        last_question_id: allAnswers[allAnswers.length - 1]?.questionId,
+        started_at: startTime ? new Date(parseInt(startTime)).toISOString() : new Date().toISOString(),
+        last_activity_at: new Date().toISOString(),
+        completion_time_seconds: completionTime
+      }, {
+        onConflict: 'user_session_id'
+      });
+    
+    console.log('Admin dashboard data synced successfully');
+  } catch (error) {
+    console.error('Error syncing to admin dashboard:', error);
   }
 };
 
@@ -168,6 +201,7 @@ export const markQuizCompleted = async () => {
   const completionTime = startTime ? Math.floor((Date.now() - parseInt(startTime)) / 1000) : null;
   
   try {
+    // Update quiz_responses table
     await supabase
       .from('quiz_responses')
       .update({
@@ -176,6 +210,18 @@ export const markQuizCompleted = async () => {
         last_activity_at: new Date().toISOString()
       })
       .eq('user_session_id', sessionId);
+    
+    // Update admin_dashboard_data table
+    await supabase
+      .from('admin_dashboard_data')
+      .update({
+        session_status: 'completed',
+        completion_time_seconds: completionTime,
+        last_activity_at: new Date().toISOString()
+      })
+      .eq('user_session_id', sessionId);
+    
+    console.log('Quiz marked as completed in both tables');
   } catch (error) {
     console.error('Error marking quiz as completed:', error);
   }
@@ -187,6 +233,7 @@ export const markQuizAbandoned = async () => {
   if (!sessionId) return;
   
   try {
+    // Update quiz_responses table
     await supabase
       .from('quiz_responses')
       .update({
@@ -194,6 +241,17 @@ export const markQuizAbandoned = async () => {
         last_activity_at: new Date().toISOString()
       })
       .eq('user_session_id', sessionId);
+    
+    // Update admin_dashboard_data table
+    await supabase
+      .from('admin_dashboard_data')
+      .update({
+        session_status: 'abandoned',
+        last_activity_at: new Date().toISOString()
+      })
+      .eq('user_session_id', sessionId);
+    
+    console.log('Quiz marked as abandoned in both tables');
   } catch (error) {
     console.error('Error marking quiz as abandoned:', error);
   }
@@ -332,6 +390,7 @@ export const saveUserProfile = async (name: string, email: string) => {
   const sessionId = localStorage.getItem('quiz_session_id');
   if (sessionId) {
     try {
+      // Update quiz_responses table
       await supabase
         .from('quiz_responses')
         .update({
@@ -340,6 +399,18 @@ export const saveUserProfile = async (name: string, email: string) => {
           last_activity_at: new Date().toISOString()
         })
         .eq('user_session_id', sessionId);
+      
+      // Update admin_dashboard_data table
+      await supabase
+        .from('admin_dashboard_data')
+        .update({
+          user_name: name,
+          user_email: email,
+          last_activity_at: new Date().toISOString()
+        })
+        .eq('user_session_id', sessionId);
+      
+      console.log('User profile updated in both database tables');
     } catch (error) {
       console.error('Error updating user profile in database:', error);
     }

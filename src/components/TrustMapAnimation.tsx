@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { ChevronRight } from 'lucide-react';
+import OptimizedImage from './OptimizedImage';
 
 interface TrustMapAnimationProps {
   worldMap?: boolean;
@@ -213,12 +214,15 @@ const TrustMapAnimation: React.FC<TrustMapAnimationProps> = ({ worldMap = false,
           </div>
         </div>
         
-        {/* Doctor image on the right */}
+        {/* Doctor image on the right - now optimized */}
         <div className="w-[40%] relative overflow-hidden">
-          <img
+          <OptimizedImage
             src="/lovable-uploads/a67741c9-cbfa-4a7e-85a8-a89ad910a516.png"
             alt="Medici esperti"
             className="h-full object-contain object-right"
+            width={200}
+            height={300}
+            loading="eager"
           />
         </div>
       </div>
