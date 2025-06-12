@@ -411,7 +411,19 @@ const Quiz: React.FC = () => {
     if (!state.currentQuestion) return null;
     switch (state.currentQuestion.type) {
       case 'single':
-        return <SingleChoice options={state.currentQuestion.options || []} value={currentAnswer as string} onChange={handleAnswerChange} useImages={state.currentQuestion.id === 'gender'} questionId={state.currentQuestion.id} autoAdvance={true} question={state.currentQuestion.question} />;
+        return <SingleChoice 
+          question={{
+            id: state.currentQuestion.id,
+            text: state.currentQuestion.question,
+            options: (state.currentQuestion.options || []).map(opt => 
+              typeof opt === 'string' ? opt : opt.text
+            ),
+            required: state.currentQuestion.required
+          }}
+          value={currentAnswer as string} 
+          onChange={handleAnswerChange} 
+          onNext={shouldAutoAdvance ? handleNext : undefined}
+        />;
       case 'multiple':
         return <MultipleChoice options={state.currentQuestion.options || []} value={currentAnswer as string[]} onChange={handleAnswerChange} maxSelections={state.currentQuestion.maxSelections} onNextClick={handleNext} />;
       case 'text':
