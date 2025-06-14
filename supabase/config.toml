@@ -6,3 +6,11 @@ project_id = "smizbfjsujlnfpcwfaty"
 [functions.create-payment-intent]
 
 [functions.verify-payment]
+
+[functions.facebook-conversion]
+
+[functions.get-facebook-config]
+
+[functions.tiktok-conversion]
+
+[functions.get-tiktok-config]

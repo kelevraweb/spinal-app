@@ -1,14 +1,15 @@
-
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
+import { useSecureTikTokPixel } from '@/hooks/useSecureTikTokPixel';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const ThankYou: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const { trackPurchase } = useSecureFacebookPixel();
+  const { trackPurchase: trackFacebookPurchase } = useSecureFacebookPixel();
+  const { trackPurchase: trackTikTokPurchase } = useSecureTikTokPixel();
   const navigate = useNavigate();
 
   // Get purchase data from URL params
@@ -22,16 +23,19 @@ const ThankYou: React.FC = () => {
     // Ensure page starts from top immediately
     window.scrollTo(0, 0);
     
-    // Track Purchase event when component mounts
-    trackPurchase({
+    // Track Purchase event when component mounts for both pixels
+    const purchaseData = {
       value: amount,
       currency: 'EUR',
       plan_type: planType,
       content_ids: [planType],
       email: email, // Pass email to CAPI
       name: userName, // Pass name to CAPI
-    });
-  }, [amount, planType, trackPurchase, email, userName]);
+    };
+
+    trackFacebookPurchase(purchaseData);
+    trackTikTokPurchase(purchaseData);
+  }, [amount, planType, trackFacebookPurchase, trackTikTokPurchase, email, userName]);
 
   const getPlanDisplayName = (plan: string) => {
     switch (plan) {

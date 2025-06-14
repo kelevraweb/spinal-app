@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
 import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
+import { useSecureTikTokPixel } from '@/hooks/useSecureTikTokPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { getUserDataFromQuiz, markQuizCompleted } from './QuizDataManager';
 import { loadStripe } from '@stripe/stripe-js';
@@ -47,7 +48,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
-  const { trackInitiateCheckout, trackPurchase } = useSecureFacebookPixel();
+  const { trackInitiateCheckout: trackFacebookInitiateCheckout, trackPurchase: trackFacebookPurchase } = useSecureFacebookPixel();
+  const { trackInitiateCheckout: trackTikTokInitiateCheckout, trackPurchase: trackTikTokPurchase } = useSecureTikTokPixel();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   
@@ -190,14 +192,16 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   const selectedPlanDetails = plans[selectedPlan];
 
   useEffect(() => {
-    // Track InitiateCheckout when component mounts
-    trackInitiateCheckout({
+    const eventData = {
       value: selectedPlanDetails.price,
       currency: 'EUR',
       plan_type: selectedPlan,
       content_ids: [selectedPlan]
-    });
-  }, [selectedPlan, selectedPlanDetails.price, trackInitiateCheckout]);
+    };
+    // Track InitiateCheckout when component mounts for both pixels
+    trackFacebookInitiateCheckout(eventData);
+    trackTikTokInitiateCheckout(eventData);
+  }, [selectedPlan, selectedPlanDetails.price, trackFacebookInitiateCheckout, trackTikTokInitiateCheckout]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -275,15 +279,18 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           amount: selectedPlanDetails.price
         };
 
-        // Track purchase event
-        trackPurchase({
+        const eventData = {
             value: purchaseData.amount,
             currency: 'EUR',
             plan_type: purchaseData.planType,
             content_ids: [purchaseData.planType],
             email: paymentEmail,
             name: paymentName,
-        });
+        };
+        
+        // Track purchase event for both pixels
+        trackFacebookPurchase(eventData);
+        trackTikTokPurchase(eventData);
         
         // Payment successful
         onPurchase(purchaseData);
