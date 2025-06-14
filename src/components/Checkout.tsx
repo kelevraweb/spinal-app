@@ -438,7 +438,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
           className="h-6 w-auto"
           loading="eager"
-          fetchpriority="high"
+          fetchPriority="high"
         />
       </div>
 

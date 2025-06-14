@@ -1,20 +1,21 @@
 
 import React, { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
 import { CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 
 const ThankYou: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const { trackPurchase } = useFacebookPixel();
+  const { trackPurchase } = useSecureFacebookPixel();
   const navigate = useNavigate();
 
   // Get purchase data from URL params
   const planType = searchParams.get('plan') || 'quarterly';
   const amount = parseFloat(searchParams.get('amount') || '34.99');
   const userName = searchParams.get('name') || '';
+  const email = searchParams.get('email') || ''; // Get email for CAPI
   const paymentData = { amount, plan: planType };
 
   useEffect(() => {
@@ -26,9 +27,11 @@ const ThankYou: React.FC = () => {
       value: amount,
       currency: 'EUR',
       plan_type: planType,
-      content_ids: [planType]
+      content_ids: [planType],
+      email: email, // Pass email to CAPI
+      name: userName, // Pass name to CAPI
     });
-  }, [amount, planType, trackPurchase]);
+  }, [amount, planType, trackPurchase, email, userName]);
 
   const getPlanDisplayName = (plan: string) => {
     switch (plan) {

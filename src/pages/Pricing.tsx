@@ -274,7 +274,7 @@ const Pricing: React.FC = () => {
               <FontAwesomeIcon icon={faShieldAlt} className="text-green-500 mr-3 text-2xl" />
               <p className="font-bold text-lg">Pagamento Sicuro e Protetto</p>
             </div>
-            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" loading="eager" fetchpriority="high" />
+            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" loading="eager" fetchPriority="high" />
           </div>
         </div>
 
