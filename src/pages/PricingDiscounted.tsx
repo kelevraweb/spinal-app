@@ -14,7 +14,7 @@ import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import CountdownOffer from '@/components/CountdownOffer';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
 import TestModeWarning from '@/components/TestModeWarning';
-import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
 import { supabase } from '@/integrations/supabase/client';
 
 const PricingDiscounted: React.FC = () => {
@@ -24,7 +24,7 @@ const PricingDiscounted: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('quarterly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const [showTestProduct, setShowTestProduct] = useState(false);
-  const { trackAddToCart } = useFacebookPixel();
+  const { trackAddToCart } = useSecureFacebookPixel();
 
   // Get user name and gender from URL params
   const userName = searchParams.get('name') || '';
@@ -314,7 +314,7 @@ const PricingDiscounted: React.FC = () => {
               <FontAwesomeIcon icon={faShieldAlt} className="text-green-500 mr-3 text-2xl" />
               <p className="font-bold text-lg">Pagamento Sicuro e Protetto</p>
             </div>
-            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" />
+            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" loading="eager" fetchpriority="high" />
           </div>
         </div>
 
@@ -326,14 +326,16 @@ const PricingDiscounted: React.FC = () => {
             <div className="w-24 h-1 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] mx-auto rounded-full"></div>
           </div>
           <div className="grid grid-cols-1 gap-4">
-            {["Ti svegli con meno rigidità e più scioltezza nei movimenti", "Non vivi più giornate segnate dal mal di schiena o da fastidi continui", "Ti muovi con più fluidità, sicurezza e controllo", "Migliori la tua postura, anche quando lavori o stai seduto a lungo", "Recuperi energia fisica grazie a un corpo che si muove meglio", "Riscopri il piacere di fare gesti semplici senza dolore o sforzo"].map((objective, index) => <div key={index} className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-[#71b8bc] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            {["Ti svegli con meno rigidità e più scioltezza nei movimenti", "Non vivi più giornate segnate dal mal di schiena o da fastidi continui", "Ti muovi con più fluidità, sicurezza e controllo", "Migliori la tua postura, anche quando lavori o stai seduto a lungo", "Recuperi energia fisica grazie a un corpo che si muove meglio", "Riscopri il piacere di fare gesti semplici senza dolore o sforzo"].map((objective, index) => (
+              <div key={index} className="bg-white rounded-xl shadow-lg p-4 border-l-4 border-[#71b8bc] hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="flex items-start">
                   <div className="w-6 h-6 bg-gradient-to-r from-[#71b8bc] to-[#88c2aa] rounded-full flex items-center justify-center mr-3 flex-shrink-0">
                     <FontAwesomeIcon icon={faCheck} className="text-white text-xs" />
                   </div>
                   <p className="text-gray-700 text-sm font-medium">{objective}</p>
                 </div>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -353,10 +355,12 @@ const PricingDiscounted: React.FC = () => {
             }, {
               percentage: "45%",
               text: "degli utenti soffre degli stessi problemi tuoi"
-            }].map((stat, index) => <div key={index} className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
+            }].map((stat, index) => (
+                <div key={index} className="bg-white/10 rounded-2xl p-4 backdrop-blur-sm">
                   <div className="text-3xl md:text-4xl font-bold mb-3">{stat.percentage}</div>
                   <p className="text-white/90 text-sm">{stat.text}</p>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -367,10 +371,12 @@ const PricingDiscounted: React.FC = () => {
               Senza il nostro piano
             </h2>
             <div className="space-y-3">
-              {["Mal di schiena costante che rallenta le tue giornate", "Dolore o rigidità quando ti alzi dal letto o dalla sedia", "Tensione alle spalle e collo dopo ore davanti al PC", "Sensazione di blocco o fatica a fare anche movimenti semplici", "Rinunci a camminate o attività per paura del dolore", "Ti abitui al disagio fisico, pensando sia \"normale\""].map((item, index) => <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
+              {["Mal di schiena costante che rallenta le tue giornate", "Dolore o rigidità quando ti alzi dal letto o dalla sedia", "Tensione alle spalle e collo dopo ore davanti al PC", "Sensazione di blocco o fatica a fare anche movimenti semplici", "Rinunci a camminate o attività per paura del dolore", "Ti abitui al disagio fisico, pensando sia \"normale\""].map((item, index) => (
+                <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
                   <FontAwesomeIcon icon={faCheck} className="text-red-500 mr-3 mt-1 text-sm" />
                   <p className="text-gray-700 text-sm">{item}</p>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
 
@@ -379,10 +385,12 @@ const PricingDiscounted: React.FC = () => {
               Con il nostro piano "Schiena Libera"
             </h2>
             <div className="space-y-3">
-              {["Meno dolore lombare, cervicale o dorsale già dopo pochi giorni", "Più mobilità e fluidità nei movimenti quotidiani", "Postura migliorata senza sforzi estremi o attrezzi", "Routine semplice da seguire anche con poco tempo", "Ritorno alla libertà di muoverti senza paura o limitazioni", "Sensazione di benessere fisico costante e naturale"].map((item, index) => <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
+              {["Meno dolore lombare, cervicale o dorsale già dopo pochi giorni", "Più mobilità e fluidità nei movimenti quotidiani", "Postura migliorata senza sforzi estremi o attrezzi", "Routine semplice da seguire anche con poco tempo", "Ritorno alla libertà di muoverti senza paura o limitazioni", "Sensazione di benessere fisico costante e naturale"].map((item, index) => (
+                <div key={index} className="bg-white rounded-lg p-3 flex items-start shadow-sm">
                   <FontAwesomeIcon icon={faCheck} className="text-green-500 mr-3 mt-1 text-sm" />
                   <p className="text-gray-700 text-sm">{item}</p>
-                </div>)}
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -426,7 +434,8 @@ const PricingDiscounted: React.FC = () => {
           </h2>
           
           <div className="max-w-[580px] mx-auto space-y-3">
-            {faqItems.map(faq => <Collapsible key={faq.id} open={openFAQ === faq.id} onOpenChange={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
+            {faqItems.map(faq => (
+              <Collapsible key={faq.id} open={openFAQ === faq.id} onOpenChange={() => setOpenFAQ(openFAQ === faq.id ? null : faq.id)}>
                 <CollapsibleTrigger className="w-full">
                   <div className="bg-white rounded-xl shadow-lg p-4 hover:shadow-xl transition-all duration-300 cursor-pointer">
                     <div className="flex justify-between items-center">
@@ -440,7 +449,8 @@ const PricingDiscounted: React.FC = () => {
                     {faq.answer}
                   </div>
                 </CollapsibleContent>
-              </Collapsible>)}
+              </Collapsible>
+            ))}
           </div>
         </div>
 
@@ -466,14 +476,16 @@ const PricingDiscounted: React.FC = () => {
             name: "Gianni B., 64 anni",
             title: "Sto ricominciando a camminare senza dolori",
             text: "Dopo anni di rigidità e fastidi alla schiena, riesco a camminare a lungo senza fermarmi. Questo piano mi ha dato più risultati di fisioterapie molto più costose."
-          }].map((testimonial, index) => <div key={index} className="bg-white rounded-2xl shadow-xl p-4 md:p-6 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+          }].map((testimonial, index) => (
+              <div key={index} className="bg-white rounded-2xl shadow-xl p-4 md:p-6 border-l-4 border-[#71b8bc] hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
                 <div className="flex text-yellow-400 mb-3">
                   <Rating rating={5} />
                 </div>
                 <h3 className="font-bold mb-2 text-base text-gray-800">"{testimonial.title}"</h3>
                 <p className="text-sm text-[#71b8bc] mb-3 font-medium">{testimonial.name}</p>
                 <p className="text-gray-700 leading-relaxed text-sm">{testimonial.text}</p>
-              </div>)}
+              </div>
+            ))}
           </div>
         </div>
 

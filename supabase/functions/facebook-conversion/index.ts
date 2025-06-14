@@ -27,21 +27,28 @@ serve(async (req: Request) => {
   }
 
   try {
-    const PIXEL_ID = '1282457903238969';
-    const ACCESS_TOKEN = 'EAANlC14nHVkBOZCdxZBpXmVfgIMfjPJ598jhIJOoXOB8ZCKMCWCBDBHR94QhZCCt0U9qc2CdFltWxyWNJdPFCiTnMWp9ZCJnGTMmbr7GqZAhb2Bso0lkQHTPO0wrhx0HZCNk1S1FiZCPQ3A6RCfxMZA0AwUYHySwhaPDwJimprafs8UqZAHtZBOEydxUaeU2jdfxgZDZD';
-    const TEST_EVENT_CODE = 'TEST25893';
+    const PIXEL_ID = Deno.env.get("FACEBOOK_PIXEL_ID");
+    const ACCESS_TOKEN = Deno.env.get("FACEBOOK_ACCESS_TOKEN");
+    const TEST_EVENT_CODE = Deno.env.get("FACEBOOK_TEST_EVENT_CODE");
+
+    if (!PIXEL_ID || !ACCESS_TOKEN) {
+      throw new Error("Facebook Pixel ID or Access Token is not configured in environment variables.");
+    }
 
     const eventData: ConversionEvent = await req.json();
 
-    const conversionData = {
+    const conversionPayload: any = {
       data: [{
         event_name: eventData.event_name,
         event_time: eventData.event_time,
         user_data: eventData.user_data,
         custom_data: eventData.custom_data
       }],
-      test_event_code: TEST_EVENT_CODE
     };
+
+    if (TEST_EVENT_CODE) {
+      conversionPayload.test_event_code = TEST_EVENT_CODE;
+    }
 
     const response = await fetch(`https://graph.facebook.com/v19.0/${PIXEL_ID}/events`, {
       method: 'POST',
@@ -49,7 +56,7 @@ serve(async (req: Request) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        ...conversionData,
+        ...conversionPayload,
         access_token: ACCESS_TOKEN
       })
     });

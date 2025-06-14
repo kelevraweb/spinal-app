@@ -3,7 +3,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSpinner, faLock, faCheckCircle } from '@fortawesome/free-solid-svg-icons';
-import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { getUserDataFromQuiz, markQuizCompleted } from './QuizDataManager';
 import { loadStripe } from '@stripe/stripe-js';
@@ -47,7 +47,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
   const stripe = useStripe();
   const elements = useElements();
   const { toast } = useToast();
-  const { trackInitiateCheckout } = useFacebookPixel();
+  const { trackInitiateCheckout, trackPurchase } = useSecureFacebookPixel();
   const location = useLocation();
   const [searchParams] = useSearchParams();
   
@@ -197,7 +197,7 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
       plan_type: selectedPlan,
       content_ids: [selectedPlan]
     });
-  }, [selectedPlan]);
+  }, [selectedPlan, selectedPlanDetails.price, trackInitiateCheckout]);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -270,11 +270,23 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
         // Mark quiz as completed and link purchase to session
         await markQuizCompleted();
         
-        // Payment successful
-        onPurchase({
+        const purchaseData = {
           planType: selectedPlan,
           amount: selectedPlanDetails.price
+        };
+
+        // Track purchase event
+        trackPurchase({
+            value: purchaseData.amount,
+            currency: 'EUR',
+            plan_type: purchaseData.planType,
+            content_ids: [purchaseData.planType],
+            email: paymentEmail,
+            name: paymentName,
         });
+        
+        // Payment successful
+        onPurchase(purchaseData);
         
         toast({
           title: "Pagamento completato!",
@@ -425,6 +437,8 @@ const StripeCheckoutForm: React.FC<CheckoutProps> = ({ onPurchase, selectedPlan 
           src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" 
           alt="Metodi di pagamento accettati: PayPal, Mastercard, Visa, American Express, Discover Network" 
           className="h-6 w-auto"
+          loading="eager"
+          fetchpriority="high"
         />
       </div>
 

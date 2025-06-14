@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import Checkout from '@/components/Checkout';
 import BeforeAfterComparison from '@/components/BeforeAfterComparison';
 import PurchaseNotifications from '@/components/PurchaseNotifications';
-import { useFacebookPixel } from '@/hooks/useFacebookPixel';
+import { useSecureFacebookPixel } from '@/hooks/useSecureFacebookPixel';
 import { supabase } from '@/integrations/supabase/client';
 
 const Pricing: React.FC = () => {
@@ -22,7 +22,7 @@ const Pricing: React.FC = () => {
   const [selectedPlan, setSelectedPlan] = useState<'trial' | 'monthly' | 'quarterly' | 'test'>('monthly');
   const [openFAQ, setOpenFAQ] = useState<string | null>(null);
   const [showTestProduct, setShowTestProduct] = useState(false);
-  const { trackAddToCart } = useFacebookPixel();
+  const { trackAddToCart } = useSecureFacebookPixel();
 
   // Get user name and gender from URL params
   const userName = searchParams.get('name') || '';
@@ -274,7 +274,7 @@ const Pricing: React.FC = () => {
               <FontAwesomeIcon icon={faShieldAlt} className="text-green-500 mr-3 text-2xl" />
               <p className="font-bold text-lg">Pagamento Sicuro e Protetto</p>
             </div>
-            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" />
+            <img src="/lovable-uploads/da294585-2e35-4f7d-86d5-abed6dfc94b2.png" alt="Metodi di pagamento accettati" className="max-w-xs h-auto mx-auto" loading="eager" fetchpriority="high" />
           </div>
         </div>
 
