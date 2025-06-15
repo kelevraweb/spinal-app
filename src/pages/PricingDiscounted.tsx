@@ -199,30 +199,43 @@ const PricingDiscounted: React.FC = () => {
     }
   ];
 
-const formatStyledPrice = (price: number, className = '', centsSuperscript = true) => {
-  const [integer, decimal] = price.toFixed(2).split(',');
-  const euros = integer.includes('.') ? integer.split('.')[0] : integer;
-  const cents = decimal || price.toFixed(2).split('.')[1] || '00';
-  return (
-    <span className={`flex items-baseline ${className}`}>
-      <span style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1 }}>{euros}</span>
-      <span
-        style={{
-          fontSize: '1.05rem',
-          fontWeight: 600,
-          marginLeft: '1px',
-          verticalAlign: centsSuperscript ? 'super' : 'baseline',
-          lineHeight: centsSuperscript ? '1' : undefined,
-          position: centsSuperscript ? 'relative' : undefined,
-          top: centsSuperscript ? '-2px' : undefined,
-        }}
-        className={centsSuperscript ? 'ml-0.5 align-super' : ''}
-      >
-        ,{cents}
+  const formatStyledPrice = (
+    price: number,
+    {
+      eurosClass = "",
+      centsClass = "",
+      superCents = true,
+      styleOverwrite = {},
+    }: {
+      eurosClass?: string;
+      centsClass?: string;
+      superCents?: boolean;
+      styleOverwrite?: React.CSSProperties;
+    } = {}
+  ) => {
+    const [integer, decimal] = price
+      .toFixed(2)
+      .replace(".", ",")
+      .split(",");
+    return (
+      <span className="inline-flex items-baseline" style={styleOverwrite}>
+        <span className={eurosClass}>{integer}</span>
+        <span
+          className={centsClass}
+          style={{
+            marginLeft: "2px",
+            verticalAlign: superCents ? "super" : "baseline",
+            position: superCents ? "relative" : undefined,
+            top: superCents ? "-3px" : undefined,
+            fontWeight: 600,
+            ...styleOverwrite
+          }}
+        >
+          ,{decimal}
+        </span>
       </span>
-    </span>
-  );
-};
+    );
+  };
 
   const PricingSection = ({
     compact = false
@@ -276,14 +289,23 @@ const formatStyledPrice = (price: number, className = '', centsSuperscript = tru
                   
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    {/* PREZZO SCONTO E BARRATO: FORMATTATI CON LO STILE RICHIESTO */}
+                    {/* Prezzo SCONTATO: PICCOLO */}
                     <div className="flex items-end space-x-2 mb-1">
-                      <span className={`text-green-600 ${'isTest' in plan && plan.isTest ? 'text-blue-600 font-bold' : 'font-bold'}`}>
-                        {formatStyledPrice(plan.discountedPrice, '', true)}
+                      <span className={`text-[0.95rem] font-bold text-gray-900 ${'isTest' in plan && plan.isTest ? 'text-blue-600' : ''}`}>
+                        {formatStyledPrice(plan.discountedPrice, {
+                          eurosClass: "",
+                          centsClass: "text-xs",
+                          superCents: true,
+                        })}
                       </span>
+                      {/* Prezzo BARRATO: ANCORA PIÙ PICCOLO */}
                       {!('isTest' in plan && plan.isTest) && (
-                        <span className="text-[0.9rem] text-gray-500 line-through" style={{ marginLeft: 2, fontSize: '0.8rem' }}>
-                          {formatStyledPrice(plan.originalPrice, '', false)}
+                        <span className="text-[0.8rem] text-gray-400 line-through ml-1" style={{fontWeight: 400}}>
+                          {formatStyledPrice(plan.originalPrice, {
+                            eurosClass: "",
+                            centsClass: "text-[10px]",
+                            superCents: false,
+                          })}
                         </span>
                       )}
                     </div>
@@ -292,15 +314,24 @@ const formatStyledPrice = (price: number, className = '', centsSuperscript = tru
                   </div>
                 </div>
 
-                {/* PREZZO GIORNALIERO FORMATTATO */}
+                {/* PREZZO GIORNALIERO: GRANDE */}
                 <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center flex flex-col items-center`}>
-                  <div className="text-gray-900 font-bold" style={{ fontSize: '1.2rem', lineHeight: '1.15' }}>
-                    {formatStyledPrice(plan.dailyPrice, '', true)}
+                  <div className="text-green-700 font-extrabold" style={{ fontSize: "1.35rem", lineHeight: "1.05" }}>
+                    {formatStyledPrice(plan.dailyPrice, {
+                      eurosClass: "",
+                      centsClass: "text-xs",
+                      superCents: true,
+                    })}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
+                  {/* Prezzo giornaliero originale barrato piccolo */}
                   {!('isTest' in plan && plan.isTest) && (
-                    <div className="text-[10px] text-gray-500 line-through leading-tight" style={{ fontSize: '0.68rem' }}>
-                      {formatStyledPrice(plan.originalDailyPrice, '', false)}
+                    <div className="text-[10px] text-gray-400 line-through leading-tight" style={{ fontSize: "0.7rem" }}>
+                      {formatStyledPrice(plan.originalDailyPrice, {
+                        eurosClass: "",
+                        centsClass: "text-[9px]",
+                        superCents: false,
+                      })}
                     </div>
                   )}
                 </div>
@@ -311,8 +342,17 @@ const formatStyledPrice = (price: number, className = '', centsSuperscript = tru
 
     {/* ... keep existing code (button/disclaimer/offer label) ... */}
     <div className="text-center mt-6">
-      <Button onClick={handleSelectPlan} className={`w-full ${selectedPlan === 'test' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}>
-        {selectedPlan === 'test' ? 'OTTIENI PIANO TEST GRATUITO' : 'OTTIENI IL MIO PIANO SCONTATO'}
+      <Button
+        onClick={handleSelectPlan}
+        className={`w-full ${
+          selectedPlan === 'test'
+            ? 'bg-blue-500 hover:bg-blue-600'
+            : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'
+        } text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}
+      >
+        {selectedPlan === 'test'
+          ? 'OTTIENI PIANO TEST GRATUITO'
+          : 'OTTIENI IL MIO PIANO SCONTATO'}
       </Button>
     </div>
 
@@ -322,11 +362,13 @@ const formatStyledPrice = (price: number, className = '', centsSuperscript = tru
 
     {selectedPlan !== 'test' && (
       <div className="text-center mt-3 text-sm text-gray-600">
-        <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
+        <p>
+          🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.
+        </p>
       </div>
     )}
   </div>
-);
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
