@@ -320,7 +320,7 @@ const PricingDiscounted: React.FC = () => {
 
                 {/* PREZZO GIORNALIERO: NUMERO GRANDE, CENTESIMI PICCOLI */}
                 <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center flex flex-col items-center`}>
-                  <div className="text-green-700 font-extrabold" style={{ fontSize: "1.5rem", lineHeight: "1.05" }}>
+                  <div className="text-green-700 font-extrabold" style={{ fontSize: "1.8rem", lineHeight: "1.05" }}>
                     {formatStyledPrice(plan.dailyPrice, {
                       eurosClass: "",
                       centsClass: "text-xs",
@@ -329,9 +329,17 @@ const PricingDiscounted: React.FC = () => {
                     })}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
-                  {/* Prezzo giornaliero originale barrato piccolo */}
+                  {/* Prezzo giornaliero originale barrato piccolo e più visibile */}
                   {!('isTest' in plan && plan.isTest) && (
-                    <div className="text-[0.6rem] text-gray-400 line-through leading-tight" style={{ fontSize: "0.6rem" }}>
+                    <div
+                      className="text-[0.6rem] text-gray-400 line-through leading-tight"
+                      style={{
+                        fontSize: "0.6rem",
+                        textDecorationThickness: "2px", // Barratura più spessa
+                        textDecorationColor: "#A0AEC0", // grigio medio per più contrasto
+                        textDecorationLine: "line-through"
+                      }}
+                    >
                       {formatStyledPrice(plan.originalDailyPrice, {
                         eurosClass: "",
                         centsClass: "text-[9px]",
