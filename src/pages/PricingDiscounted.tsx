@@ -206,11 +206,13 @@ const PricingDiscounted: React.FC = () => {
       centsClass = "",
       superCents = true,
       styleOverwrite = {},
+      uniformSize = false,
     }: {
       eurosClass?: string;
       centsClass?: string;
       superCents?: boolean;
       styleOverwrite?: React.CSSProperties;
+      uniformSize?: boolean;
     } = {}
   ) => {
     const [integer, decimal] = price
@@ -218,15 +220,15 @@ const PricingDiscounted: React.FC = () => {
       .replace(".", ",")
       .split(",");
     return (
-      <span className="inline-flex items-baseline" style={styleOverwrite}>
+      <span className={`inline-flex items-baseline ${uniformSize ? "gap-0" : ""}`} style={styleOverwrite}>
         <span className={eurosClass}>{integer}</span>
         <span
-          className={centsClass}
+          className={uniformSize ? eurosClass : centsClass}
           style={{
             marginLeft: "2px",
-            verticalAlign: superCents ? "super" : "baseline",
-            position: superCents ? "relative" : undefined,
-            top: superCents ? "-3px" : undefined,
+            verticalAlign: superCents && !uniformSize ? "super" : "baseline",
+            position: superCents && !uniformSize ? "relative" : undefined,
+            top: superCents && !uniformSize ? "-3px" : undefined,
             fontWeight: 600,
             ...styleOverwrite
           }}
@@ -289,22 +291,24 @@ const PricingDiscounted: React.FC = () => {
                   
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    {/* Prezzo SCONTATO: PICCOLO */}
+                    {/* Prezzo principale SCONTATO: TUTTO PICCOLO E UNIFORME */}
                     <div className="flex items-end space-x-2 mb-1">
-                      <span className={`text-[0.95rem] font-bold text-gray-900 ${'isTest' in plan && plan.isTest ? 'text-blue-600' : ''}`}>
+                      <span className={`text-sm font-bold text-gray-900 ${'isTest' in plan && plan.isTest ? 'text-blue-600' : ''}`}>
                         {formatStyledPrice(plan.discountedPrice, {
                           eurosClass: "",
-                          centsClass: "text-xs",
-                          superCents: true,
+                          centsClass: "",
+                          superCents: false,
+                          uniformSize: true,
                         })}
                       </span>
-                      {/* Prezzo BARRATO: ANCORA PIÙ PICCOLO */}
+                      {/* Prezzo BARRATO: PICCOLISSIMO */}
                       {!('isTest' in plan && plan.isTest) && (
-                        <span className="text-[0.8rem] text-gray-400 line-through ml-1" style={{fontWeight: 400}}>
+                        <span className="text-[0.7rem] text-gray-400 line-through ml-1" style={{fontWeight: 400}}>
                           {formatStyledPrice(plan.originalPrice, {
                             eurosClass: "",
                             centsClass: "text-[10px]",
                             superCents: false,
+                            uniformSize: true,
                           })}
                         </span>
                       )}
@@ -314,23 +318,25 @@ const PricingDiscounted: React.FC = () => {
                   </div>
                 </div>
 
-                {/* PREZZO GIORNALIERO: GRANDE */}
+                {/* PREZZO GIORNALIERO: NUMERO GRANDE, CENTESIMI PICCOLI */}
                 <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center flex flex-col items-center`}>
-                  <div className="text-green-700 font-extrabold" style={{ fontSize: "1.35rem", lineHeight: "1.05" }}>
+                  <div className="text-green-700 font-extrabold" style={{ fontSize: "1.5rem", lineHeight: "1.05" }}>
                     {formatStyledPrice(plan.dailyPrice, {
                       eurosClass: "",
                       centsClass: "text-xs",
                       superCents: true,
+                      uniformSize: false,
                     })}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
                   {/* Prezzo giornaliero originale barrato piccolo */}
                   {!('isTest' in plan && plan.isTest) && (
-                    <div className="text-[10px] text-gray-400 line-through leading-tight" style={{ fontSize: "0.7rem" }}>
+                    <div className="text-[0.6rem] text-gray-400 line-through leading-tight" style={{ fontSize: "0.6rem" }}>
                       {formatStyledPrice(plan.originalDailyPrice, {
                         eurosClass: "",
                         centsClass: "text-[9px]",
                         superCents: false,
+                        uniformSize: true,
                       })}
                     </div>
                   )}
