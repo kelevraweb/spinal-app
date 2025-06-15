@@ -7,6 +7,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 
+// Bypass type for admin_credentials—fix for build error
+type AdminCredentialRow = {
+  user_profile_id: string;
+  username: string;
+};
+
 const UsernameAdminLogin: React.FC = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -19,12 +25,13 @@ const UsernameAdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Verifica le credenziali admin dalla tabella admin_credentials
-      const { data: adminCredentials, error: credError } = await supabase
-        .from('admin_credentials')
+      // MANUAL QUERY: "as any" to bypass TS table error for 'admin_credentials'
+      const { data: adminCredentials, error: credError } = await (supabase
+        // @ts-expect-error Bypass type error for build
+        .from('admin_credentials') as any)
         .select('*')
         .eq('username', username)
-        .single();
+        .maybeSingle();
 
       if (credError || !adminCredentials) {
         throw new Error('Username o password non validi');
@@ -35,7 +42,7 @@ const UsernameAdminLogin: React.FC = () => {
         throw new Error('Username o password non validi');
       }
 
-      // Crea una sessione admin fittizia nel localStorage
+      // Crea una sessione admin fittizia SOLO in localStorage (non sessionStorage)
       localStorage.setItem('admin_session', JSON.stringify({
         userId: adminCredentials.user_profile_id,
         username: username,
@@ -47,7 +54,7 @@ const UsernameAdminLogin: React.FC = () => {
         title: "Login effettuato",
         description: "Benvenuto nell'area amministrativa",
       });
-      
+
       // Naviga al dashboard admin
       navigate('/admin');
     } catch (error) {

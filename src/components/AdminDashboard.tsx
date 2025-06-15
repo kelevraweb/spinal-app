@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -11,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faDownload, faSignOutAlt, faToggleOn, faToggleOff } from '@fortawesome/free-solid-svg-icons';
+import { useUsernameAdmin } from "@/hooks/useUsernameAdmin";
 
 interface AdminData {
   id: string;
@@ -38,17 +38,22 @@ const AdminDashboard: React.FC = () => {
   const [showTestProduct, setShowTestProduct] = useState(false);
   const [dropOffStats, setDropOffStats] = useState<Record<string, number>>({});
 
-  useEffect(() => {
-    // Check if admin is logged in
-    const isLoggedIn = sessionStorage.getItem('admin_logged_in');
-    if (!isLoggedIn) {
-      navigate('/admin/login');
-      return;
-    }
+  // NEW: use custom admin session check
+  const { isAdmin, isLoading: isAuthLoading, logout: adminLogout } = useUsernameAdmin();
 
+  useEffect(() => {
+    // Protect the dashboard route using isAdmin from hook
+    if (!isAuthLoading && !isAdmin) {
+      navigate('/admin/login');
+    }
+  }, [isAdmin, isAuthLoading, navigate]);
+
+  useEffect(() => {
+    if (!isAdmin) return; // Only fetch if admin
     fetchData();
     fetchSettings();
-  }, [navigate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAdmin]);
 
   useEffect(() => {
     filterData();
@@ -225,9 +230,9 @@ const AdminDashboard: React.FC = () => {
     window.URL.revokeObjectURL(url);
   };
 
+  // LOGOUT now uses custom hook for consistency
   const logout = () => {
-    sessionStorage.removeItem('admin_logged_in');
-    navigate('/');
+    adminLogout();
   };
 
   const getStatusBadge = (stato: string) => {
