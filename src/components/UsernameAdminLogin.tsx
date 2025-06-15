@@ -25,10 +25,9 @@ const UsernameAdminLogin: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // MANUAL QUERY: "as any" to bypass TS table error for 'admin_credentials'
-      const { data: adminCredentials, error: credError } = await (supabase
-        // @ts-expect-error Bypass type error for build
-        .from('admin_credentials') as any)
+      // Now fully typed, no type error workaround needed!
+      const { data: adminCredentials, error: credError } = await supabase
+        .from('admin_credentials')
         .select('*')
         .eq('username', username)
         .maybeSingle();
