@@ -66,6 +66,9 @@ const AdminDashboard: React.FC = () => {
         .select('*')
         .order('data_inizio', { ascending: false });
 
+      // Log raw Supabase response for debugging
+      console.log('[AdminDashboard] Raw admin_dashboard_data from Supabase:', adminData, error);
+
       if (error) throw error;
 
       // Transform the data to match our interface
@@ -392,39 +395,45 @@ const AdminDashboard: React.FC = () => {
         <Card>
           <CardContent className="pt-6">
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Utente</TableHead>
-                    <TableHead>IP</TableHead>
-                    <TableHead>Stato</TableHead>
-                    <TableHead>Domande</TableHead>
-                    <TableHead>Ultima Domanda</TableHead>
-                    <TableHead>Tempo</TableHead>
-                    <TableHead>Data Inizio</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredData.map((session) => (
-                    <TableRow key={session.id}>
-                      <TableCell>
-                        <div>
-                          <div className="font-medium">{session.nome_email || 'N/A'}</div>
-                          <div className="text-xs text-gray-400">{session.session_id.slice(0, 12)}...</div>
-                        </div>
-                      </TableCell>
-                      <TableCell className="text-sm">{session.ip || 'N/A'}</TableCell>
-                      <TableCell>{getStatusBadge(session.stato)}</TableCell>
-                      <TableCell>{session.domande}</TableCell>
-                      <TableCell className="text-sm">{session.ultima_domanda || 'N/A'}</TableCell>
-                      <TableCell>{formatTime(session.tempo)}</TableCell>
-                      <TableCell className="text-sm">
-                        {session.data_inizio ? new Date(session.data_inizio).toLocaleDateString('it-IT') : 'N/A'}
-                      </TableCell>
+              {filteredData.length === 0 ? (
+                <div className="text-center text-gray-500 py-10">
+                  Nessuna sessione trovata.
+                </div>
+              ) : (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Utente</TableHead>
+                      <TableHead>IP</TableHead>
+                      <TableHead>Stato</TableHead>
+                      <TableHead>Domande</TableHead>
+                      <TableHead>Ultima Domanda</TableHead>
+                      <TableHead>Tempo</TableHead>
+                      <TableHead>Data Inizio</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredData.map((session) => (
+                      <TableRow key={session.id}>
+                        <TableCell>
+                          <div>
+                            <div className="font-medium">{session.nome_email || 'N/A'}</div>
+                            <div className="text-xs text-gray-400">{session.session_id.slice(0, 12)}...</div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-sm">{session.ip || 'N/A'}</TableCell>
+                        <TableCell>{getStatusBadge(session.stato)}</TableCell>
+                        <TableCell>{session.domande}</TableCell>
+                        <TableCell className="text-sm">{session.ultima_domanda || 'N/A'}</TableCell>
+                        <TableCell>{formatTime(session.tempo)}</TableCell>
+                        <TableCell className="text-sm">
+                          {session.data_inizio ? new Date(session.data_inizio).toLocaleDateString('it-IT') : 'N/A'}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              )}
             </div>
           </CardContent>
         </Card>
