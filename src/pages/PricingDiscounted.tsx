@@ -303,7 +303,15 @@ const PricingDiscounted: React.FC = () => {
                       </span>
                       {/* Prezzo BARRATO: PICCOLISSIMO */}
                       {!('isTest' in plan && plan.isTest) && (
-                        <span className="text-[0.7rem] text-gray-400 line-through ml-1" style={{fontWeight: 400}}>
+                        <span
+                          className="text-[0.7rem] text-gray-600 line-through ml-1"
+                          style={{ 
+                            fontWeight: 400,
+                            textDecorationLine: "line-through",
+                            textDecorationColor: "#64748b", // grigio scuro
+                            textDecorationThickness: "2.5px",
+                          }}
+                        >
                           {formatStyledPrice(plan.originalPrice, {
                             eurosClass: "",
                             centsClass: "text-[10px]",
@@ -332,12 +340,13 @@ const PricingDiscounted: React.FC = () => {
                   {/* Prezzo giornaliero originale barrato piccolo e più visibile */}
                   {!('isTest' in plan && plan.isTest) && (
                     <div
-                      className="text-[0.6rem] text-gray-400 line-through leading-tight"
+                      className="text-[0.6rem] text-gray-600 line-through leading-tight"
                       style={{
                         fontSize: "0.6rem",
-                        textDecorationThickness: "2px", // Barratura più spessa
-                        textDecorationColor: "#A0AEC0", // grigio medio per più contrasto
-                        textDecorationLine: "line-through"
+                        textDecorationLine: "line-through",
+                        textDecorationColor: "#64748b", // grigio scuro
+                        textDecorationThickness: "3px",
+                        lineHeight: "1.1",
                       }}
                     >
                       {formatStyledPrice(plan.originalDailyPrice, {
