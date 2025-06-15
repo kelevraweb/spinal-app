@@ -1,10 +1,10 @@
 
 import React from 'react';
-import SecureAdminLogin from './SecureAdminLogin';
+import UsernameAdminLogin from './UsernameAdminLogin';
 
-// This component now uses secure authentication instead of hardcoded credentials
+// This component now uses username-based authentication instead of email
 const AdminLogin: React.FC = () => {
-  return <SecureAdminLogin />;
+  return <UsernameAdminLogin />;
 };
 
 export default AdminLogin;
