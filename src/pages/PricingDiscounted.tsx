@@ -199,6 +199,31 @@ const PricingDiscounted: React.FC = () => {
     }
   ];
 
+const formatStyledPrice = (price: number, className = '', centsSuperscript = true) => {
+  const [integer, decimal] = price.toFixed(2).split(',');
+  const euros = integer.includes('.') ? integer.split('.')[0] : integer;
+  const cents = decimal || price.toFixed(2).split('.')[1] || '00';
+  return (
+    <span className={`flex items-baseline ${className}`}>
+      <span style={{ fontSize: '2rem', fontWeight: 700, lineHeight: 1 }}>{euros}</span>
+      <span
+        style={{
+          fontSize: '1.05rem',
+          fontWeight: 600,
+          marginLeft: '1px',
+          verticalAlign: centsSuperscript ? 'super' : 'baseline',
+          lineHeight: centsSuperscript ? '1' : undefined,
+          position: centsSuperscript ? 'relative' : undefined,
+          top: centsSuperscript ? '-2px' : undefined,
+        }}
+        className={centsSuperscript ? 'ml-0.5 align-super' : ''}
+      >
+        ,{cents}
+      </span>
+    </span>
+  );
+};
+
   const PricingSection = ({
     compact = false
   }) => (
@@ -251,24 +276,31 @@ const PricingDiscounted: React.FC = () => {
                   
                   <div>
                     <h3 className="text-base font-bold text-gray-900 mb-1">{plan.title}</h3>
-                    <div className="flex items-center space-x-2 mb-1">
-                      <span className={`text-lg font-bold ${'isTest' in plan && plan.isTest ? 'text-blue-600' : 'text-green-600'}`}>
-                        €{plan.discountedPrice.toFixed(2)}
+                    {/* PREZZO SCONTO E BARRATO: FORMATTATI CON LO STILE RICHIESTO */}
+                    <div className="flex items-end space-x-2 mb-1">
+                      <span className={`text-green-600 ${'isTest' in plan && plan.isTest ? 'text-blue-600 font-bold' : 'font-bold'}`}>
+                        {formatStyledPrice(plan.discountedPrice, '', true)}
                       </span>
-                      {!('isTest' in plan && plan.isTest) && <span className="text-sm text-gray-500 line-through">€{plan.originalPrice}</span>}
+                      {!('isTest' in plan && plan.isTest) && (
+                        <span className="text-[0.9rem] text-gray-500 line-through" style={{ marginLeft: 2, fontSize: '0.8rem' }}>
+                          {formatStyledPrice(plan.originalPrice, '', false)}
+                        </span>
+                      )}
                     </div>
                     {'isTest' in plan && plan.isTest && <p className="text-xs text-blue-600">Solo per test - Nessun pagamento richiesto</p>}
+                    <p className="text-xs text-gray-500"></p>
                   </div>
                 </div>
 
-                <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center`}>
-                  <div className="text-gray-900 text-xl font-bold">
-                    €{formatDailyPrice(plan.dailyPrice)}
+                {/* PREZZO GIORNALIERO FORMATTATO */}
+                <div className={`${'isTest' in plan && plan.isTest ? 'bg-blue-100' : 'bg-gray-100'} rounded-lg px-3 py-2 text-center flex flex-col items-center`}>
+                  <div className="text-gray-900 font-bold" style={{ fontSize: '1.2rem', lineHeight: '1.15' }}>
+                    {formatStyledPrice(plan.dailyPrice, '', true)}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
                   {!('isTest' in plan && plan.isTest) && (
-                    <div className="text-[10px] text-gray-500 line-through">
-                      €{formatDailyPrice(plan.originalDailyPrice)}
+                    <div className="text-[10px] text-gray-500 line-through leading-tight" style={{ fontSize: '0.68rem' }}>
+                      {formatStyledPrice(plan.originalDailyPrice, '', false)}
                     </div>
                   )}
                 </div>
@@ -277,23 +309,24 @@ const PricingDiscounted: React.FC = () => {
           </div>)}
       </div>
 
-      <div className="text-center mt-6">
-        <Button onClick={handleSelectPlan} className={`w-full ${selectedPlan === 'test' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}>
-          {selectedPlan === 'test' ? 'OTTIENI PIANO TEST GRATUITO' : 'OTTIENI IL MIO PIANO SCONTATO'}
-        </Button>
-      </div>
-
-      <div className="text-center mt-4 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
-        <p>{disclaimers[selectedPlan]}</p>
-      </div>
-
-      {selectedPlan !== 'test' && (
-        <div className="text-center mt-3 text-sm text-gray-600">
-          <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
-        </div>
-      )}
+    {/* ... keep existing code (button/disclaimer/offer label) ... */}
+    <div className="text-center mt-6">
+      <Button onClick={handleSelectPlan} className={`w-full ${selectedPlan === 'test' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600'} text-white font-bold py-3 px-6 rounded-lg text-base shadow-lg transition-all duration-300 transform hover:scale-105`}>
+        {selectedPlan === 'test' ? 'OTTIENI PIANO TEST GRATUITO' : 'OTTIENI IL MIO PIANO SCONTATO'}
+      </Button>
     </div>
-  );
+
+    <div className="text-center mt-4 text-xs text-gray-600 bg-gray-50 p-3 rounded-lg">
+      <p>{disclaimers[selectedPlan]}</p>
+    </div>
+
+    {selectedPlan !== 'test' && (
+      <div className="text-center mt-3 text-sm text-gray-600">
+        <p>🔥 Offerta limitata! I prezzi torneranno normali alla scadenza del countdown.</p>
+      </div>
+    )}
+  </div>
+);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white bg-[#fbfaf8]">
