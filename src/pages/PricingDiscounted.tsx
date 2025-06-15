@@ -301,7 +301,7 @@ const PricingDiscounted: React.FC = () => {
                           uniformSize: true,
                         })}
                       </span>
-                      {/* Prezzo BARRATO: PICCOLISSIMO */}
+                      {/* Prezzo BARRATO: SINGOLO SPAN COSÌ LA BARRATURA FUNZIONA */}
                       {!('isTest' in plan && plan.isTest) && (
                         <span
                           className="text-[0.7rem] text-gray-600 line-through ml-1"
@@ -312,12 +312,7 @@ const PricingDiscounted: React.FC = () => {
                             textDecorationThickness: "2.5px",
                           }}
                         >
-                          {formatStyledPrice(plan.originalPrice, {
-                            eurosClass: "",
-                            centsClass: "text-[10px]",
-                            superCents: false,
-                            uniformSize: true,
-                          })}
+                          €{plan.originalPrice.toFixed(2).replace('.', ',')}
                         </span>
                       )}
                     </div>
@@ -337,7 +332,7 @@ const PricingDiscounted: React.FC = () => {
                     })}
                   </div>
                   <div className="text-xs text-gray-600">al giorno</div>
-                  {/* Prezzo giornaliero originale barrato piccolo e più visibile */}
+                  {/* Prezzo giornaliero originale barrato - SINGOLO SPAN */}
                   {!('isTest' in plan && plan.isTest) && (
                     <div
                       className="text-[0.6rem] text-gray-600 line-through leading-tight"
@@ -349,12 +344,7 @@ const PricingDiscounted: React.FC = () => {
                         lineHeight: "1.1",
                       }}
                     >
-                      {formatStyledPrice(plan.originalDailyPrice, {
-                        eurosClass: "",
-                        centsClass: "text-[9px]",
-                        superCents: false,
-                        uniformSize: true,
-                      })}
+                      €{plan.originalDailyPrice.toFixed(2).replace('.', ',')}
                     </div>
                   )}
                 </div>
@@ -363,7 +353,7 @@ const PricingDiscounted: React.FC = () => {
           </div>)}
       </div>
 
-    {/* ... keep existing code (button/disclaimer/offer label) ... */}
+    {/* ... keep existing code (button/disclaimer/offer label sections) */}
     <div className="text-center mt-6">
       <Button
         onClick={handleSelectPlan}
